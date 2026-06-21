@@ -15,6 +15,7 @@
     "clean": "rm -rf dist coverage"
   },
   "dependencies": {
+    "@neoark/manifest": "workspace:*",
     "@noble/curves": "^1.6.0",
     "@noble/hashes": "^1.5.0"
   },
