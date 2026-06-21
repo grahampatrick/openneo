@@ -82,6 +82,9 @@ importers:
 
   tools/importer:
     dependencies:
+      '@neoark/manifest':
+        specifier: workspace:*
+        version: link:../../packages/manifest
       '@noble/curves':
         specifier: ^1.6.0
         version: 1.9.7

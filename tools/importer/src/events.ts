@@ -11,9 +11,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0
  */
-import { schnorr } from '@noble/curves/secp256k1'
-import { sha256 } from '@noble/hashes/sha2'
-import { bytesToHex, hexToBytes, utf8ToBytes } from '@noble/hashes/utils'
+import { computeEventId, signEvent as signEventShared, verifyEventSignature } from '@neoark/manifest'
 import type { ArkEvent, Verse } from './types'
 import {
   CREATED_AT,
@@ -24,25 +22,29 @@ import {
 } from './config'
 import type { NeoosKey } from './keys'
 
-const ZERO_AUX = new Uint8Array(32)
+/** NIP-01 event id (re-exported from the shared crypto core). */
+export const eventId = computeEventId
 
-interface UnsignedEvent {
-  pubkey: string
-  created_at: number
-  kind: number
-  tags: string[][]
-  content: string
-}
-
-export function eventId(e: UnsignedEvent): string {
-  const serialized = JSON.stringify([0, e.pubkey, e.created_at, e.kind, e.tags, e.content])
-  return bytesToHex(sha256(utf8ToBytes(serialized)))
-}
-
-export function signEvent(unsigned: UnsignedEvent, key: NeoosKey): ArkEvent {
-  const id = eventId(unsigned)
-  const sig = bytesToHex(schnorr.sign(hexToBytes(id), key.sec, ZERO_AUX))
-  return { id, ...unsigned, sig }
+/**
+ * Sign an event body with a NeoOS key (delegates to @neoark/manifest). Fields
+ * are re-emitted in NIP-01 envelope order (id, pubkey, created_at, kind, tags,
+ * content, sig) so the serialized corpus is byte-stable; the id/sig are
+ * order-independent, so this is purely cosmetic.
+ */
+export function signEvent(
+  body: { created_at: number; kind: number; tags: string[][]; content: string },
+  key: NeoosKey,
+): ArkEvent {
+  const e = signEventShared(body, key.secHex)
+  return {
+    id: e.id,
+    pubkey: e.pubkey,
+    created_at: e.created_at,
+    kind: e.kind,
+    tags: e.tags,
+    content: e.content,
+    sig: e.sig,
+  }
 }
 
 /** Build a signed kind:30700 verse event. */
@@ -55,18 +57,11 @@ export function buildVerseEvent(v: Verse, contentHash: string, key: NeoosKey): A
     ['h', contentHash],
     ['src', v.source],
   ]
-  return signEvent(
-    { pubkey: key.pubkey, created_at: CREATED_AT, kind: KIND_VERSE, tags, content: v.text },
-    key,
-  )
+  return signEvent({ created_at: CREATED_AT, kind: KIND_VERSE, tags, content: v.text }, key)
 }
 
 /** Build a signed kind:30701 translation-manifest event. */
-export function buildManifestEvent(
-  key: NeoosKey,
-  root: string,
-  content: string,
-): ArkEvent {
+export function buildManifestEvent(key: NeoosKey, root: string, content: string): ArkEvent {
   const tags: string[][] = [
     ['d', TRANSLATION_ID],
     ['name', 'NeoOS'],
@@ -74,14 +69,8 @@ export function buildManifestEvent(
     ['root', `b3:${root}`],
     ['alt', `NeoOS translation manifest (${TRANSLATION_ID})`],
   ]
-  return signEvent(
-    { pubkey: key.pubkey, created_at: CREATED_AT, kind: KIND_MANIFEST, tags, content },
-    key,
-  )
+  return signEvent({ created_at: CREATED_AT, kind: KIND_MANIFEST, tags, content }, key)
 }
 
-export function verifyEvent(e: ArkEvent): boolean {
-  const { id, sig, ...unsigned } = e
-  if (eventId(unsigned) !== id) return false
-  return schnorr.verify(hexToBytes(sig), hexToBytes(id), hexToBytes(e.pubkey))
-}
+/** Verify an event id + Schnorr signature (re-exported from the shared core). */
+export const verifyEvent = verifyEventSignature

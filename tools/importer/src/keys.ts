@@ -8,15 +8,15 @@
  *
  * SPDX-License-Identifier: AGPL-3.0
  */
-import { schnorr } from '@noble/curves/secp256k1'
+import { getPublicKey } from '@neoark/manifest'
 import { blake3 } from '@noble/hashes/blake3'
-import { bytesToHex, hexToBytes, utf8ToBytes } from '@noble/hashes/utils'
+import { bytesToHex, utf8ToBytes } from '@noble/hashes/utils'
 
 const DEV_SEED = 'NeoOS-corpus-signing-key/dev/v1'
 
 export interface NeoosKey {
-  /** 32-byte secret key. */
-  sec: Uint8Array
+  /** 32-byte secret key, hex (the form @neoark/manifest signing helpers take). */
+  secHex: string
   /** 32-byte x-only public key (hex). */
   pubkey: string
   /** True when using the deterministic dev key (no NEOOS_SECKEY set). */
@@ -25,18 +25,17 @@ export interface NeoosKey {
 
 export function loadNeoosKey(env: NodeJS.ProcessEnv = process.env): NeoosKey {
   const fromEnv = env.NEOOS_SECKEY?.trim()
-  let sec: Uint8Array
+  let secHex: string
   let isDev: boolean
   if (fromEnv) {
     if (!/^[0-9a-fA-F]{64}$/.test(fromEnv)) {
       throw new Error('NEOOS_SECKEY must be 32-byte hex (64 chars)')
     }
-    sec = hexToBytes(fromEnv)
+    secHex = fromEnv.toLowerCase()
     isDev = false
   } else {
-    sec = blake3(utf8ToBytes(DEV_SEED)) // 32 bytes
+    secHex = bytesToHex(blake3(utf8ToBytes(DEV_SEED))) // deterministic 32-byte seed
     isDev = true
   }
-  const pubkey = bytesToHex(schnorr.getPublicKey(sec))
-  return { sec, pubkey, isDev }
+  return { secHex, pubkey: getPublicKey(secHex), isDev }
 }
