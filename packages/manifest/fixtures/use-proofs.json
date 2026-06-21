@@ -1,0 +1,145 @@
+[
+  {
+    "id": "549ac432e9d7a362bc560d2060c3b93108fbd0746266c3eec5e95e070f9b61d9",
+    "created_at": 1717545600,
+    "kind": 30078,
+    "tags": [
+      [
+        "d",
+        "ark-up:osv-en-2025:John:3:16-21:1717545600"
+      ],
+      [
+        "ark_translation",
+        "osv-en-2025"
+      ],
+      [
+        "ark_blake3",
+        "b3:7d3a9f2c1e8b4a6d5f0c2b1a9e8d7c6b5a4f3e2d1c0b9a8f7e6d5c4b3a2f1e0d"
+      ],
+      [
+        "ark_passage",
+        "John",
+        "3",
+        "16",
+        "21"
+      ],
+      [
+        "ark_trigger",
+        "80pct_visible_30s"
+      ],
+      [
+        "ark_app",
+        "neoark-reader/0.3.2"
+      ],
+      [
+        "bolt11_hash",
+        "52fe6094743bfd4f9be4321d98adc7e23c1ab622b0ba830e271d1ee1cbfd7850"
+      ],
+      [
+        "preimage",
+        "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1"
+      ],
+      [
+        "amount_sat",
+        "10"
+      ]
+    ],
+    "content": "",
+    "pubkey": "4d4b6cd1361032ca9bd2aeb9d900aa4d45d9ead80ac9423374c451a7254d0766",
+    "sig": "6321e9fca779ca17d07b8c07602d3424fe1ecf0ab6ae29ea34d2d6784df59dfbc0ebe9f33946539cf4a84e3228903e50713f69e441c4a5849a36892e45c0dfc6"
+  },
+  {
+    "id": "8d9735a4c0d43d0adff00bffc01600eeeb96459e98a3044a61a8982e70e39b89",
+    "created_at": 1717549200,
+    "kind": 30078,
+    "tags": [
+      [
+        "d",
+        "ark-up:osv-en-2025:Genesis:1:1-1:1717549200"
+      ],
+      [
+        "ark_translation",
+        "osv-en-2025"
+      ],
+      [
+        "ark_blake3",
+        "b3:7d3a9f2c1e8b4a6d5f0c2b1a9e8d7c6b5a4f3e2d1c0b9a8f7e6d5c4b3a2f1e0d"
+      ],
+      [
+        "ark_passage",
+        "Genesis",
+        "1",
+        "1",
+        "1"
+      ],
+      [
+        "ark_trigger",
+        "copy_or_share_with_attribution"
+      ],
+      [
+        "ark_app",
+        "sermon-notes/1.0"
+      ],
+      [
+        "bolt11_hash",
+        "f14dfc875b1ae75784112f7a93a97a236867a656502ffe4d7cefab60cfe7aed2"
+      ],
+      [
+        "preimage",
+        "b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2"
+      ],
+      [
+        "amount_sat",
+        "50"
+      ]
+    ],
+    "content": "",
+    "pubkey": "4d4b6cd1361032ca9bd2aeb9d900aa4d45d9ead80ac9423374c451a7254d0766",
+    "sig": "52072f7eeda87563af7542a8c9e84d8c0210a31c90e3144d9c4ddd6ded56699df16de49dc39200c2ac991d434f303013c7afffb0a89336062aa1723193046954"
+  },
+  {
+    "id": "65d73e41a344743e2aeb2a7f46dd45ccd5e157f301b1e11dcb205f66431d6c8b",
+    "created_at": 1717552800,
+    "kind": 30078,
+    "tags": [
+      [
+        "d",
+        "ark-up:osv-en-2025:Psalm:23:1-6:1717552800"
+      ],
+      [
+        "ark_translation",
+        "osv-en-2025"
+      ],
+      [
+        "ark_blake3",
+        "b3:7d3a9f2c1e8b4a6d5f0c2b1a9e8d7c6b5a4f3e2d1c0b9a8f7e6d5c4b3a2f1e0d"
+      ],
+      [
+        "ark_passage",
+        "Psalm",
+        "23",
+        "1",
+        "6"
+      ],
+      [
+        "ark_trigger",
+        "user_highlights_verse"
+      ],
+      [
+        "bolt11_hash",
+        "4b80290f1d4d74e661a0ea719372cba50562116c980eda7f250ae4115017c641"
+      ],
+      [
+        "preimage",
+        "c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3"
+      ],
+      [
+        "amount_sat",
+        "5"
+      ]
+    ],
+    "content": "",
+    "pubkey": "4d4b6cd1361032ca9bd2aeb9d900aa4d45d9ead80ac9423374c451a7254d0766",
+    "sig": "a70627c6c0db11d66a6ccd75bb5d732d7bb9e97d721ffe33b5e6fff240d6beb1a316c5f19f373417febb68f81d8862f2b53d3eb1f3d44b5f1297ee6ecfebeea2"
+  }
+]
