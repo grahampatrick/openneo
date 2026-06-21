@@ -1,0 +1,26 @@
+{
+  "name": "@neoark/importer",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "license": "AGPL-3.0",
+  "description": "NeoOS corpus importer — source texts → content-addressed ARK verse events",
+  "scripts": {
+    "fetch": "tsx src/fetch-sources.ts",
+    "import": "tsx src/import.ts",
+    "verify": "tsx src/verify.ts",
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc -p tsconfig.json",
+    "test": "vitest run --coverage",
+    "clean": "rm -rf dist coverage"
+  },
+  "dependencies": {
+    "@noble/curves": "^1.6.0",
+    "@noble/hashes": "^1.5.0"
+  },
+  "devDependencies": {
+    "@vitest/coverage-v8": "^1.6.0",
+    "tsx": "^4.16.0",
+    "vitest": "^1.6.0"
+  }
+}

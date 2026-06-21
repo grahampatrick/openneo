@@ -1,0 +1,137 @@
+{
+  "version": "neoos-naming-1",
+  "note": "Global Hebrew naming conventions for NeoOS. Applied after BSB base text import. Every substitution is traceable — original term preserved in accuracy-corrections.json. Names are transliterations, not copyrightable.",
+
+  "divine_names": {
+    "note": "The most critical category. Every substitution must be consistent across all 87 books.",
+    "replacements": [
+      { "from": ["LORD", "YHWH", "Yahweh", "Jehovah"], "to": "Yahuah",          "notes": "The Father's Name. 4-letter YHWH tetragrammaton restored as Yahuah." },
+      { "from": ["LORD God", "LORD Elohim"],            "to": "Yahuah Elohiym",  "notes": "Combined title — keep both." },
+      { "from": ["God", "Elohim", "Elohim"],            "to": "Elohiym",         "notes": "Generic plural form. Context matters — do not replace 'god' (lowercase, pagan) with Elohiym." },
+      { "from": ["Jesus"],                              "to": "Yahusha",         "notes": "The Son's Name. Greek Iesous ← Hebrew Yahusha (Yahuah saves)." },
+      { "from": ["Christ", "Messiah"],                  "to": "Mashiach",        "notes": "The Anointed One. Retain 'Christ' only in compound 'Jesus Christ' → 'Yahusha HaMashiach'." },
+      { "from": ["Jesus Christ"],                       "to": "Yahusha HaMashiach", "notes": "Full title." },
+      { "from": ["Holy Spirit", "Holy Ghost"],          "to": "Ruach HaQodesh", "notes": "The Set-Apart Spirit." },
+      { "from": ["Spirit of God"],                      "to": "Ruach Elohiym",   "notes": "Spirit of Elohiym." },
+      { "from": ["Lord"],                               "to": "Adonai",          "notes": "When referring to a title (not YHWH name). Small caps LORD = Yahuah; title Lord = Adonai." },
+      { "from": ["the LORD of hosts"],                  "to": "Yahuah Tseva'oth","notes": "LORD of armies/hosts." }
+    ]
+  },
+
+  "people_names": {
+    "note": "Key figures restored to Hebrew names. Not exhaustive — focus on figures named 100+ times.",
+    "replacements": [
+      { "from": ["Moses"],      "to": "Mosheh",      "notes": "Moshe/Mosheh — Hebrew form." },
+      { "from": ["Aaron"],      "to": "Aharon",      "notes": "" },
+      { "from": ["Abraham"],    "to": "Abraham",     "notes": "Already Hebrew-derived; retain." },
+      { "from": ["Isaac"],      "to": "Yitschaq",    "notes": "" },
+      { "from": ["Jacob"],      "to": "Ya'aqov",     "notes": "" },
+      { "from": ["Israel"],     "to": "Yashar'el",   "notes": "As a person name. As a nation name, see places." },
+      { "from": ["David"],      "to": "Dauid",       "notes": "Hebrew Dawid." },
+      { "from": ["Solomon"],    "to": "Shlomoh",     "notes": "" },
+      { "from": ["Elijah"],     "to": "EliYahu",     "notes": "My El is Yahuah." },
+      { "from": ["Elisha"],     "to": "Eliysha",     "notes": "" },
+      { "from": ["Isaiah"],     "to": "Yesha'yahu",  "notes": "Salvation of Yahuah." },
+      { "from": ["Jeremiah"],   "to": "Yirmeyahu",   "notes": "" },
+      { "from": ["Ezekiel"],    "to": "Yechezq'el",  "notes": "" },
+      { "from": ["Daniel"],     "to": "Daniy'el",    "notes": "" },
+      { "from": ["Hosea"],      "to": "Husha",       "notes": "" },
+      { "from": ["Joshua"],     "to": "Yahusha",     "notes": "Same as the Son's name — intentional." },
+      { "from": ["Noah"],       "to": "Noach",       "notes": "" },
+      { "from": ["Adam"],       "to": "Adam",        "notes": "Retain — Hebrew already." },
+      { "from": ["Eve"],        "to": "Chavvah",     "notes": "Living/Life." },
+      { "from": ["Cain"],       "to": "Qayin",       "notes": "" },
+      { "from": ["Abel"],       "to": "Hevel",       "notes": "" },
+      { "from": ["Enoch"],      "to": "Chanok",      "notes": "" },
+      { "from": ["Noah"],       "to": "Noach",       "notes": "" },
+      { "from": ["Nimrod"],     "to": "Nimrod",      "notes": "Retain." },
+      { "from": ["Joseph"],     "to": "Yoceph",      "notes": "" },
+      { "from": ["Judah"],      "to": "Yahudah",     "notes": "" },
+      { "from": ["Levi"],       "to": "Leviy",       "notes": "" },
+      { "from": ["Benjamin"],   "to": "Binyamiyn",   "notes": "" },
+      { "from": ["Mary"],       "to": "Miryam",      "notes": "Both mother of Yahusha and Mary Magdalene." },
+      { "from": ["John"],       "to": "Yahuchanon",  "notes": "The apostle and the Baptist." },
+      { "from": ["Peter"],      "to": "Kepha",       "notes": "Aramaic for Rock. Or Petros (Greek). Kepha preferred." },
+      { "from": ["Paul"],       "to": "Sha'ul",      "notes": "His Hebrew name. Paul = Roman name." },
+      { "from": ["James"],      "to": "Ya'aqov",     "notes": "James is a mistranslation of Ya'aqov (Jacob)." },
+      { "from": ["Stephen"],    "to": "Stephanos",   "notes": "Greek — retain." },
+      { "from": ["Pharaoh"],    "to": "Phar'oh",     "notes": "" },
+      { "from": ["Satan"],      "to": "Ha'Satan",    "notes": "The adversary. Ha = 'the' in Hebrew." },
+      { "from": ["Lucifer"],    "to": "Heylel",      "notes": "Isa 14:12. Heylel = shining one. Lucifer is a Latin mistranslation." },
+      { "from": ["Michael"],    "to": "Miyka'el",    "notes": "Who is like El." },
+      { "from": ["Gabriel"],    "to": "Gavri'el",    "notes": "Man of El." }
+    ]
+  },
+
+  "place_names": {
+    "replacements": [
+      { "from": ["Jerusalem"],    "to": "Yerushalayim", "notes": "" },
+      { "from": ["Israel"],       "to": "Yashar'el",    "notes": "As nation name." },
+      { "from": ["Zion"],         "to": "Tsiyon",       "notes": "" },
+      { "from": ["Jordan"],       "to": "Yarden",       "notes": "" },
+      { "from": ["Sinai"],        "to": "Ciynai",       "notes": "" },
+      { "from": ["Egypt"],        "to": "Mitsrayim",    "notes": "" },
+      { "from": ["Bethlehem"],    "to": "Beth Lechem",  "notes": "House of Bread." },
+      { "from": ["Nazareth"],     "to": "Natsareth",    "notes": "" },
+      { "from": ["Galilee"],      "to": "Galiyl",       "notes": "" },
+      { "from": ["Babylon"],      "to": "Babel",        "notes": "" },
+      { "from": ["Assyria"],      "to": "Ashshur",      "notes": "" },
+      { "from": ["Canaan"],       "to": "Kena'an",      "notes": "" },
+      { "from": ["Eden"],         "to": "Eden",         "notes": "Retain." },
+      { "from": ["Calvary"],      "to": "Golgotha",     "notes": "Place of the Skull — Aramaic/Hebrew original." }
+    ]
+  },
+
+  "accuracy_terms": {
+    "note": "Accuracy-first replacements where standard English translations are demonstrably incorrect or misleading.",
+    "replacements": [
+      { "from": ["firmament", "expanse", "great expanse", "vault"],
+        "to": "firmament",
+        "notes": "Gen 1:6-8,14-17,20. Hebrew raqia = a solid beaten/stretched surface. 'Expanse' is a modern softening. 'Firmament' is the accurate English." },
+      { "from": ["hell"],
+        "to": "CONTEXT_DEPENDENT",
+        "notes": "Never collapse to one English word. Sheol (Hebrew underworld/grave), Hades (Greek underworld), Gehenna (valley of Hinnom, NT judgment fire), Tartarus (2 Pet 2:4, abyss). Each gets its Hebrew/Greek name." },
+      { "from": ["Sheol"],       "to": "Sheol",       "notes": "Retain Hebrew — do not translate as hell or grave." },
+      { "from": ["Hades"],       "to": "Hades",       "notes": "Retain Greek." },
+      { "from": ["Gehenna"],     "to": "Gehenna",     "notes": "Retain — valley of Ben-Hinnom." },
+      { "from": ["Tartarus"],    "to": "Tartarus",    "notes": "2 Pet 2:4 only." },
+      { "from": ["angel"],       "to": "messenger",   "notes": "Malak (Hebrew) / Angelos (Greek) = messenger. 'Angel' is acceptable but 'messenger' more accurate for context." },
+      { "from": ["baptize", "baptism"],
+        "to": "immerse / immersion",
+        "notes": "Greek baptizo = to immerse. 'Baptize' is a transliteration that obscures meaning." },
+      { "from": ["church"],
+        "to": "assembly",
+        "notes": "Greek ekklesia = called-out assembly. 'Church' carries building/institution connotations not in the original." },
+      { "from": ["passover"],    "to": "Pecach",      "notes": "Hebrew Pecach. Passover is an English interpretation." },
+      { "from": ["Easter"],      "to": "Pecach",      "notes": "Acts 12:4 KJV — gross mistranslation. Always Pecach." },
+      { "from": ["Pentecost"],   "to": "Shavu'oth",   "notes": "The Feast of Weeks." },
+      { "from": ["tabernacles"], "to": "Sukkoth",     "notes": "The Feast of Booths/Tabernacles." },
+      { "from": ["atonement"],   "to": "Yom Kippur",  "notes": "Day of Atonement." },
+      { "from": ["Lord's Supper", "Last Supper"],
+        "to": "Pecach Seder",
+        "notes": "Context: this was the Passover meal." },
+      { "from": ["commandments", "the law"],
+        "to": "Torah",
+        "notes": "When referring to Mosaic instruction. Torah = instruction/teaching, not merely 'law'." },
+      { "from": ["sin"],         "to": "sin",         "notes": "Retain — Chata (Hebrew) / Hamartia (Greek). No replacement needed." },
+      { "from": ["repent"],      "to": "repent",      "notes": "Retain — Shuv (turn back) / Metanoia (change of mind). Both valid." },
+      { "from": ["covenant"],    "to": "covenant",    "notes": "Retain — Berit (Hebrew). 'Testament' in book titles only." },
+      { "from": ["Old Testament"],  "to": "Tanakh / Hebrew Scriptures", "notes": "In headers/metadata only. Verse text unchanged." },
+      { "from": ["New Testament"],  "to": "Brit Chadashah",             "notes": "The Renewed Covenant. In headers/metadata." }
+    ]
+  },
+
+  "feasts_and_appointed_times": {
+    "note": "Moedim (appointed times). Retain Hebrew names throughout.",
+    "replacements": [
+      { "from": ["Passover"],          "to": "Pecach" },
+      { "from": ["Unleavened Bread"],  "to": "Chag HaMatstsoth" },
+      { "from": ["Firstfruits"],       "to": "Yom HaBikkuriym" },
+      { "from": ["Pentecost", "Weeks"],"to": "Shavu'oth" },
+      { "from": ["Trumpets"],          "to": "Yom Teruah" },
+      { "from": ["Atonement"],         "to": "Yom Kippur" },
+      { "from": ["Tabernacles", "Booths"], "to": "Sukkoth" },
+      { "from": ["Sabbath"],           "to": "Shabbath" }
+    ]
+  }
+}

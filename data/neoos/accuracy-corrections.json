@@ -1,0 +1,496 @@
+{
+  "version": "neoos-accuracy-1",
+  "note": "Auto-generated audit of the naming-map transformation. Every applied substitution is reproducible from naming-map.json; the original text is preserved per-verse in the corpus build.",
+  "naming_map_version": "neoos-naming-1",
+  "applied_rules": 85,
+  "skipped_rules": [
+    {
+      "from": "Abraham",
+      "to": "Abraham",
+      "reason": "identity (retain)"
+    },
+    {
+      "from": "Adam",
+      "to": "Adam",
+      "reason": "identity (retain)"
+    },
+    {
+      "from": "Nimrod",
+      "to": "Nimrod",
+      "reason": "identity (retain)"
+    },
+    {
+      "from": "Eden",
+      "to": "Eden",
+      "reason": "identity (retain)"
+    },
+    {
+      "from": "firmament",
+      "to": "firmament",
+      "reason": "identity (retain)"
+    },
+    {
+      "from": "hell",
+      "to": "CONTEXT_DEPENDENT",
+      "reason": "context-dependent"
+    },
+    {
+      "from": "Sheol",
+      "to": "Sheol",
+      "reason": "identity (retain)"
+    },
+    {
+      "from": "Hades",
+      "to": "Hades",
+      "reason": "identity (retain)"
+    },
+    {
+      "from": "Gehenna",
+      "to": "Gehenna",
+      "reason": "identity (retain)"
+    },
+    {
+      "from": "Tartarus",
+      "to": "Tartarus",
+      "reason": "identity (retain)"
+    },
+    {
+      "from": "baptize",
+      "to": "immerse / immersion",
+      "reason": "ambiguous dual form"
+    },
+    {
+      "from": "baptism",
+      "to": "immerse / immersion",
+      "reason": "ambiguous dual form"
+    },
+    {
+      "from": "Lord's Supper",
+      "to": "Pecach Seder",
+      "reason": "metadata-only"
+    },
+    {
+      "from": "Last Supper",
+      "to": "Pecach Seder",
+      "reason": "metadata-only"
+    },
+    {
+      "from": "sin",
+      "to": "sin",
+      "reason": "identity (retain)"
+    },
+    {
+      "from": "repent",
+      "to": "repent",
+      "reason": "identity (retain)"
+    },
+    {
+      "from": "covenant",
+      "to": "covenant",
+      "reason": "identity (retain)"
+    },
+    {
+      "from": "Old Testament",
+      "to": "Tanakh / Hebrew Scriptures",
+      "reason": "ambiguous dual form"
+    },
+    {
+      "from": "New Testament",
+      "to": "Brit Chadashah",
+      "reason": "metadata-only"
+    }
+  ],
+  "rule_index": [
+    {
+      "from": "the LORD of hosts",
+      "to": "Yahuah Tseva'oth"
+    },
+    {
+      "from": "Unleavened Bread",
+      "to": "Chag HaMatstsoth"
+    },
+    {
+      "from": "Spirit of God",
+      "to": "Ruach Elohiym"
+    },
+    {
+      "from": "great expanse",
+      "to": "firmament"
+    },
+    {
+      "from": "Jesus Christ",
+      "to": "Yahusha HaMashiach"
+    },
+    {
+      "from": "commandments",
+      "to": "Torah"
+    },
+    {
+      "from": "LORD Elohim",
+      "to": "Yahuah Elohiym"
+    },
+    {
+      "from": "Holy Spirit",
+      "to": "Ruach HaQodesh"
+    },
+    {
+      "from": "tabernacles",
+      "to": "Sukkoth"
+    },
+    {
+      "from": "Firstfruits",
+      "to": "Yom HaBikkuriym"
+    },
+    {
+      "from": "Tabernacles",
+      "to": "Sukkoth"
+    },
+    {
+      "from": "Holy Ghost",
+      "to": "Ruach HaQodesh"
+    },
+    {
+      "from": "Jerusalem",
+      "to": "Yerushalayim"
+    },
+    {
+      "from": "Bethlehem",
+      "to": "Beth Lechem"
+    },
+    {
+      "from": "Pentecost",
+      "to": "Shavu'oth"
+    },
+    {
+      "from": "atonement",
+      "to": "Yom Kippur"
+    },
+    {
+      "from": "Atonement",
+      "to": "Yom Kippur"
+    },
+    {
+      "from": "LORD God",
+      "to": "Yahuah Elohiym"
+    },
+    {
+      "from": "Jeremiah",
+      "to": "Yirmeyahu"
+    },
+    {
+      "from": "Benjamin",
+      "to": "Binyamiyn"
+    },
+    {
+      "from": "Nazareth",
+      "to": "Natsareth"
+    },
+    {
+      "from": "passover",
+      "to": "Pecach"
+    },
+    {
+      "from": "Passover",
+      "to": "Pecach"
+    },
+    {
+      "from": "Trumpets",
+      "to": "Yom Teruah"
+    },
+    {
+      "from": "Jehovah",
+      "to": "Yahuah"
+    },
+    {
+      "from": "Messiah",
+      "to": "Mashiach"
+    },
+    {
+      "from": "Solomon",
+      "to": "Shlomoh"
+    },
+    {
+      "from": "Ezekiel",
+      "to": "Yechezq'el"
+    },
+    {
+      "from": "Stephen",
+      "to": "Stephanos"
+    },
+    {
+      "from": "Pharaoh",
+      "to": "Phar'oh"
+    },
+    {
+      "from": "Lucifer",
+      "to": "Heylel"
+    },
+    {
+      "from": "Michael",
+      "to": "Miyka'el"
+    },
+    {
+      "from": "Gabriel",
+      "to": "Gavri'el"
+    },
+    {
+      "from": "Galilee",
+      "to": "Galiyl"
+    },
+    {
+      "from": "Babylon",
+      "to": "Babel"
+    },
+    {
+      "from": "Assyria",
+      "to": "Ashshur"
+    },
+    {
+      "from": "Calvary",
+      "to": "Golgotha"
+    },
+    {
+      "from": "expanse",
+      "to": "firmament"
+    },
+    {
+      "from": "the law",
+      "to": "Torah"
+    },
+    {
+      "from": "Sabbath",
+      "to": "Shabbath"
+    },
+    {
+      "from": "Yahweh",
+      "to": "Yahuah"
+    },
+    {
+      "from": "Elohim",
+      "to": "Elohiym"
+    },
+    {
+      "from": "Christ",
+      "to": "Mashiach"
+    },
+    {
+      "from": "Israel",
+      "to": "Yashar'el"
+    },
+    {
+      "from": "Elijah",
+      "to": "EliYahu"
+    },
+    {
+      "from": "Elisha",
+      "to": "Eliysha"
+    },
+    {
+      "from": "Isaiah",
+      "to": "Yesha'yahu"
+    },
+    {
+      "from": "Daniel",
+      "to": "Daniy'el"
+    },
+    {
+      "from": "Joshua",
+      "to": "Yahusha"
+    },
+    {
+      "from": "Joseph",
+      "to": "Yoceph"
+    },
+    {
+      "from": "Jordan",
+      "to": "Yarden"
+    },
+    {
+      "from": "Canaan",
+      "to": "Kena'an"
+    },
+    {
+      "from": "church",
+      "to": "assembly"
+    },
+    {
+      "from": "Easter",
+      "to": "Pecach"
+    },
+    {
+      "from": "Booths",
+      "to": "Sukkoth"
+    },
+    {
+      "from": "Jesus",
+      "to": "Yahusha"
+    },
+    {
+      "from": "Moses",
+      "to": "Mosheh"
+    },
+    {
+      "from": "Aaron",
+      "to": "Aharon"
+    },
+    {
+      "from": "Isaac",
+      "to": "Yitschaq"
+    },
+    {
+      "from": "Jacob",
+      "to": "Ya'aqov"
+    },
+    {
+      "from": "David",
+      "to": "Dauid"
+    },
+    {
+      "from": "Hosea",
+      "to": "Husha"
+    },
+    {
+      "from": "Enoch",
+      "to": "Chanok"
+    },
+    {
+      "from": "Judah",
+      "to": "Yahudah"
+    },
+    {
+      "from": "Peter",
+      "to": "Kepha"
+    },
+    {
+      "from": "James",
+      "to": "Ya'aqov"
+    },
+    {
+      "from": "Satan",
+      "to": "Ha'Satan"
+    },
+    {
+      "from": "Sinai",
+      "to": "Ciynai"
+    },
+    {
+      "from": "Egypt",
+      "to": "Mitsrayim"
+    },
+    {
+      "from": "vault",
+      "to": "firmament"
+    },
+    {
+      "from": "angel",
+      "to": "messenger"
+    },
+    {
+      "from": "Weeks",
+      "to": "Shavu'oth"
+    },
+    {
+      "from": "LORD",
+      "to": "Yahuah"
+    },
+    {
+      "from": "YHWH",
+      "to": "Yahuah"
+    },
+    {
+      "from": "Lord",
+      "to": "Adonai"
+    },
+    {
+      "from": "Noah",
+      "to": "Noach"
+    },
+    {
+      "from": "Cain",
+      "to": "Qayin"
+    },
+    {
+      "from": "Abel",
+      "to": "Hevel"
+    },
+    {
+      "from": "Levi",
+      "to": "Leviy"
+    },
+    {
+      "from": "Mary",
+      "to": "Miryam"
+    },
+    {
+      "from": "John",
+      "to": "Yahuchanon"
+    },
+    {
+      "from": "Paul",
+      "to": "Sha'ul"
+    },
+    {
+      "from": "Zion",
+      "to": "Tsiyon"
+    },
+    {
+      "from": "God",
+      "to": "Elohiym"
+    },
+    {
+      "from": "Eve",
+      "to": "Chavvah"
+    }
+  ],
+  "corrections": [
+    {
+      "ref": "GEN 1:6",
+      "original": "And God said, “Let there be an expanse between the waters, to separate the waters from the waters.”",
+      "correction": "And Elohiym said, “Let there be a firmament between the waters, to separate the waters from the waters.”",
+      "rationale": "Hebrew raqia = a beaten/stretched solid surface; \"firmament\" is accurate, \"expanse\" is a modern softening.",
+      "source_ref": "data/neoos/naming-map.json"
+    },
+    {
+      "ref": "GEN 1:7",
+      "original": "So God made the expanse and separated the waters beneath it from the waters above. And it was so.",
+      "correction": "So Elohiym made the firmament and separated the waters beneath it from the waters above. And it was so.",
+      "rationale": "Hebrew raqia — firmament.",
+      "source_ref": "data/neoos/naming-map.json"
+    },
+    {
+      "ref": "GEN 1:8",
+      "original": "God called the expanse “sky.” And there was evening, and there was morning—the second day.",
+      "correction": "Elohiym called the firmament “sky.” And there was evening, and there was morning—the second day.",
+      "rationale": "Hebrew raqia — firmament.",
+      "source_ref": "data/neoos/naming-map.json"
+    },
+    {
+      "ref": "GEN 1:14",
+      "original": "And God said, “Let there be lights in the expanse of the sky to distinguish between the day and the night, and let them be signs to mark the seasons and days and years.",
+      "correction": "And Elohiym said, “Let there be lights in the firmament of the sky to distinguish between the day and the night, and let them be signs to mark the seasons and days and years.",
+      "rationale": "Hebrew raqia — firmament.",
+      "source_ref": "data/neoos/naming-map.json"
+    },
+    {
+      "ref": "GEN 1:15",
+      "original": "And let them serve as lights in the expanse of the sky to shine upon the earth.” And it was so.",
+      "correction": "And let them serve as lights in the firmament of the sky to shine upon the earth.” And it was so.",
+      "rationale": "Hebrew raqia — firmament.",
+      "source_ref": "data/neoos/naming-map.json"
+    },
+    {
+      "ref": "GEN 1:17",
+      "original": "God set these lights in the expanse of the sky to shine upon the earth,",
+      "correction": "Elohiym set these lights in the firmament of the sky to shine upon the earth,",
+      "rationale": "Hebrew raqia — firmament.",
+      "source_ref": "data/neoos/naming-map.json"
+    },
+    {
+      "ref": "GEN 1:20",
+      "original": "And God said, “Let the waters teem with living creatures, and let birds fly above the earth in the open expanse of the sky.”",
+      "correction": "And Elohiym said, “Let the waters teem with living creatures, and let birds fly above the earth in the open firmament of the sky.”",
+      "rationale": "Hebrew raqia — firmament.",
+      "source_ref": "data/neoos/naming-map.json"
+    }
+  ]
+}
