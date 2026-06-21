@@ -9,3 +9,7 @@ coverage/
 # Large raw source downloads — fetched on demand, not committed
 tools/importer/sources/raw/*.xlsx
 tools/importer/sources/raw/*.zip
+
+# SvelteKit
+.svelte-kit/
+apps/*/build/
