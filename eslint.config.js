@@ -39,6 +39,20 @@ export default tseslint.config(
     },
   },
   {
-    ignores: ['**/dist/**', '**/node_modules/**', '**/coverage/**', '**/*.config.*'],
+    // The SvelteKit PWA is type-checked by svelte-check; ESLint's type-aware
+    // rules fight UI idioms (numbers in templates) and the $service-worker
+    // virtual module, so disable the type-checked layer for the app.
+    files: ['apps/reader/**/*.ts'],
+    ...tseslint.configs.disableTypeChecked,
+  },
+  {
+    ignores: [
+      '**/dist/**',
+      '**/build/**',
+      '**/.svelte-kit/**',
+      '**/node_modules/**',
+      '**/coverage/**',
+      '**/*.config.*',
+    ],
   },
 )
