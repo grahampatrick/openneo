@@ -1,0 +1,29 @@
+{
+  "name": "@neoark/reader",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "license": "AGPL-3.0",
+  "description": "NeoArk Reader CLI — read NeoOS, pay translators, publish use-proofs",
+  "bin": { "neoark-reader": "./src/cli.ts" },
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "exports": { ".": "./src/index.ts" },
+  "scripts": {
+    "reader": "tsx src/cli.ts",
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc -p tsconfig.json",
+    "test": "vitest run --coverage",
+    "clean": "rm -rf dist coverage"
+  },
+  "dependencies": {
+    "@neoark/manifest": "workspace:*",
+    "@neoark/payer": "workspace:*",
+    "@neoark/relay": "workspace:*"
+  },
+  "devDependencies": {
+    "@vitest/coverage-v8": "^1.6.0",
+    "tsx": "^4.16.0",
+    "vitest": "^1.6.0"
+  }
+}

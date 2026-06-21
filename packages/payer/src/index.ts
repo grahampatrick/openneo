@@ -5,7 +5,7 @@
  * SPDX-License-Identifier: AGPL-3.0
  */
 export { ArkPayer } from './payer'
-export type { ArkPayerOptions, ChargeResult } from './payer'
+export type { ArkPayerOptions, ChargeResult, InvoiceResolver } from './payer'
 
 export { computeSplits } from './splits'
 export { decodeBolt11 } from './bolt11'
