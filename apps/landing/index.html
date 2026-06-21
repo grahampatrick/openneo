@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<!--
+  NeoArk landing page. AGPL-3.0 — reskinned from the Odysseus landing
+  (github.com/pewdiepie-archdaemon/odysseus, AGPL-3.0).
+  SPDX-License-Identifier: AGPL-3.0
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="NeoArk — an open, peer-to-peer Bible translation system. The most accurate English Scripture, anchored to Bitcoin, with translators paid via Lightning. No gatekeeper owns the text.">
+<title>NeoArk — The Ark holds. The text endures.</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath d='M4 12 L16 5 L28 12 L28 26 L4 26 Z' fill='none' stroke='%236ee7ff' stroke-width='2' stroke-linejoin='round'/%3E%3Cpath d='M4 12 L28 12' stroke='%236ee7ff' stroke-width='2'/%3E%3C/svg%3E">
+<style>
+  :root {
+    --bg: #0a0a0a;
+    --bg2: #111417;
+    --panel: #121518;
+    --fg: #e6e6e6;
+    --muted: #8a949c;
+    --border: #1e2429;
+    --accent: #6ee7ff;
+    --accent-dim: #3aa6bd;
+    --gold: #f0ad4e;
+    --radius: 10px;
+    --mono: ui-monospace, "SF Mono", "JetBrains Mono", Menlo, monospace;
+    --sans: "Inter", "Open Sans", system-ui, sans-serif;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; scroll-padding-top: 64px; }
+  body {
+    margin: 0; background: var(--bg); color: var(--fg);
+    font-family: var(--sans); line-height: 1.6; -webkit-font-smoothing: antialiased;
+  }
+  h1, h2, h3, .mono { font-family: var(--mono); letter-spacing: -0.02em; }
+  a { color: var(--accent); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  .wrap { max-width: 1040px; margin: 0 auto; padding: 0 1.5rem; }
+
+  /* Nav */
+  nav {
+    position: sticky; top: 0; z-index: 10; backdrop-filter: blur(8px);
+    background: rgba(10,10,10,0.8); border-bottom: 1px solid var(--border);
+  }
+  nav .wrap { display: flex; align-items: center; justify-content: space-between; height: 64px; }
+  .brand { font-family: var(--mono); font-weight: 600; font-size: 1.1rem; color: var(--fg); }
+  .brand b { color: var(--accent); }
+  nav .links a { color: var(--muted); margin-left: 1.5rem; font-size: 0.92rem; }
+  nav .links a:hover { color: var(--fg); text-decoration: none; }
+
+  /* Hero */
+  .hero { text-align: center; padding: 6rem 0 4rem; }
+  .hero h1 { font-size: clamp(2rem, 5vw, 3.4rem); margin: 0 0 1rem; line-height: 1.1; }
+  .hero h1 .accent { color: var(--accent); }
+  .hero p.tagline { color: var(--muted); font-size: 1.15rem; max-width: 38rem; margin: 0 auto 2rem; }
+  .cta { display: inline-flex; gap: 1rem; flex-wrap: wrap; justify-content: center; }
+  .btn {
+    display: inline-block; padding: 0.7rem 1.4rem; border-radius: var(--radius);
+    font-family: var(--mono); font-size: 0.95rem; border: 1px solid var(--border);
+  }
+  .btn.primary { background: var(--accent); color: #06262e; font-weight: 600; border-color: var(--accent); }
+  .btn.primary:hover { background: #8af0ff; text-decoration: none; }
+  .btn.ghost { color: var(--fg); }
+  .btn.ghost:hover { border-color: var(--accent); text-decoration: none; }
+
+  /* Install block */
+  .install {
+    margin: 2.5rem auto 0; max-width: 30rem; background: var(--panel);
+    border: 1px solid var(--border); border-radius: var(--radius);
+    font-family: var(--mono); display: flex; align-items: center;
+    justify-content: space-between; padding: 0.85rem 1.1rem;
+  }
+  .install code { color: var(--accent); }
+  .install button {
+    background: none; border: 1px solid var(--border); color: var(--muted);
+    border-radius: 6px; padding: 0.25rem 0.6rem; cursor: pointer; font-family: var(--mono);
+  }
+  .install button:hover { color: var(--fg); border-color: var(--accent); }
+
+  /* Sections */
+  section { padding: 4rem 0; border-top: 1px solid var(--border); }
+  section h2 { font-size: 1.8rem; margin: 0 0 0.5rem; }
+  section .lead { color: var(--muted); margin: 0 0 2.5rem; max-width: 40rem; }
+
+  /* Feature grid */
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.25rem; }
+  .card {
+    background: var(--panel); border: 1px solid var(--border); border-radius: var(--radius);
+    padding: 1.5rem; transition: border-color 0.15s, transform 0.15s;
+  }
+  .card:hover { border-color: var(--accent-dim); transform: translateY(-2px); }
+  .card .clip {
+    height: 120px; border-radius: 8px; background: var(--bg2);
+    border: 1px solid var(--border); display: flex; align-items: center; justify-content: center;
+    color: var(--accent-dim); font-family: var(--mono); font-size: 0.8rem; margin-bottom: 1rem;
+  }
+  .card:hover .clip { color: var(--accent); }
+  .card h3 { font-size: 1.1rem; margin: 0 0 0.4rem; color: var(--fg); }
+  .card p { color: var(--muted); font-size: 0.92rem; margin: 0; }
+
+  /* Layers */
+  .layers { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem; }
+  .layer { border-left: 2px solid var(--accent-dim); padding: 0.25rem 0 0.25rem 1rem; }
+  .layer h3 { font-size: 1rem; margin: 0 0 0.25rem; color: var(--accent); }
+  .layer p { color: var(--muted); font-size: 0.9rem; margin: 0; }
+
+  /* Donation */
+  .donate { display: flex; gap: 2rem; align-items: center; flex-wrap: wrap; }
+  .qr {
+    width: 160px; height: 160px; flex: none; background: #fff; border-radius: var(--radius);
+    display: flex; align-items: center; justify-content: center;
+  }
+  .qr svg { width: 140px; height: 140px; }
+  .ln-addr { font-family: var(--mono); color: var(--accent); word-break: break-all; }
+
+  footer { border-top: 1px solid var(--border); padding: 2.5rem 0; color: var(--muted); font-size: 0.85rem; }
+  footer p { margin: 0.3rem 0; }
+  .tag { display: inline-block; font-family: var(--mono); font-size: 0.72rem; color: var(--accent-dim);
+    border: 1px solid var(--border); border-radius: 999px; padding: 0.1rem 0.6rem; margin-bottom: 1rem; }
+</style>
+</head>
+<body>
+<nav>
+  <div class="wrap">
+    <span class="brand">Neo<b>Ark</b></span>
+    <span class="links">
+      <a href="#features">Features</a>
+      <a href="#protocol">Protocol</a>
+      <a href="#install">Install</a>
+      <a href="#donate">Donate</a>
+      <a href="https://github.com/grahampatrick/openneo">GitHub</a>
+    </span>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="wrap">
+    <span class="tag">Anchored Reference Kernel · running on your hardware</span>
+    <h1>The Ark holds.<br>The text <span class="accent">endures.</span></h1>
+    <p class="tagline">An open, peer-to-peer Bible translation system. Read the most accurate English Scripture ever produced — every change immutably anchored to Bitcoin, every translator paid via Lightning, no gatekeeper over the text.</p>
+    <div class="cta">
+      <a class="btn primary" href="#install">Get started</a>
+      <a class="btn ghost" href="#features">See features</a>
+    </div>
+    <div class="install" id="install">
+      <code>npx @neoark/reader read</code>
+      <button onclick="navigator.clipboard&amp;&amp;navigator.clipboard.writeText('npx @neoark/reader read')">copy</button>
+    </div>
+  </div>
+</header>
+
+<section id="features">
+  <div class="wrap">
+    <h2>Features</h2>
+    <p class="lead">A reader built on a content-addressed, signed, relay-distributed corpus. Hover a card to preview.</p>
+    <div class="grid">
+      <div class="card">
+        <div class="clip">▶ parallel reading</div>
+        <h3>Parallel reading</h3>
+        <p>Compare NeoOS, KJV, and BSB side by side — Hebrew names and accuracy corrections in context.</p>
+      </div>
+      <div class="card">
+        <div class="clip">▶ translator merge</div>
+        <h3>Translator merge + Bitcoin anchor</h3>
+        <p>Propose a correction, peers review, a maintainer merges — and the change is timestamped to Bitcoin forever.</p>
+      </div>
+      <div class="card">
+        <div class="clip">▶ use-proof graph</div>
+        <h3>"Where is this verse used?"</h3>
+        <p>A live graph of signed use-proofs across the web. Verifiable adoption — no platform can fake the numbers.</p>
+      </div>
+      <div class="card">
+        <div class="clip">▶ reading plan</div>
+        <h3>Reading plans</h3>
+        <p>Community-published, forkable plans. Track progress with signed, private-by-default reading events.</p>
+      </div>
+      <div class="card">
+        <div class="clip">▶ offline mode</div>
+        <h3>Offline mode</h3>
+        <p>Local-first. The whole corpus lives on your device with full-text search; sync is opportunistic.</p>
+      </div>
+      <div class="card">
+        <div class="clip">▶ community notes</div>
+        <h3>Community notes</h3>
+        <p>Signed commentary and cross-references, toggleable per verse. Identity is a key, not an account.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="protocol">
+  <div class="wrap">
+    <h2>Four interlocking layers</h2>
+    <p class="lead">NeoArk is a specialization of Nostr for Scripture, with Bitcoin for permanence and Lightning for payments.</p>
+    <div class="layers">
+      <div class="layer"><h3>NeoOS Bible</h3><p>87-book corpus, Hebrew names, accuracy-first English — every verse content-addressed with BLAKE3.</p></div>
+      <div class="layer"><h3>ARK Protocol</h3><p>Content-addressed events on Nostr relays. Anyone runs a relay; clients pull from many, push to many.</p></div>
+      <div class="layer"><h3>Bitcoin Translation Protocol</h3><p>Immutable PR history anchored to Bitcoin via OpenTimestamps, with Lightning payouts and peer review.</p></div>
+      <div class="layer"><h3>NeoArk Reader</h3><p>PWA + CLI: read, compare, see change history and Bitcoin anchors, propose and vote on revisions.</p></div>
+    </div>
+  </div>
+</section>
+
+<section id="donate">
+  <div class="wrap">
+    <h2>Fund the protocol</h2>
+    <p class="lead">No custody, no middleman. Donations route to the translation pool over Lightning and pay translators on merge.</p>
+    <div class="donate">
+      <div class="qr" aria-label="Lightning address QR placeholder">
+        <svg viewBox="0 0 29 29" shape-rendering="crispEdges" xmlns="http://www.w3.org/2000/svg">
+          <rect width="29" height="29" fill="#fff"/>
+          <g fill="#0a0a0a">
+            <rect x="2" y="2" width="7" height="7"/><rect x="4" y="4" width="3" height="3" fill="#fff"/>
+            <rect x="20" y="2" width="7" height="7"/><rect x="22" y="4" width="3" height="3" fill="#fff"/>
+            <rect x="2" y="20" width="7" height="7"/><rect x="4" y="22" width="3" height="3" fill="#fff"/>
+            <rect x="12" y="2" width="2" height="2"/><rect x="16" y="6" width="2" height="2"/>
+            <rect x="12" y="12" width="5" height="5"/><rect x="20" y="14" width="2" height="2"/>
+            <rect x="12" y="20" width="2" height="2"/><rect x="22" y="20" width="3" height="3"/>
+            <rect x="20" y="24" width="2" height="2"/><rect x="14" y="24" width="2" height="2"/>
+          </g>
+        </svg>
+      </div>
+      <div>
+        <p>Lightning address</p>
+        <p class="ln-addr">donate@neoark.org</p>
+        <p style="color:var(--muted);font-size:0.88rem;margin-top:0.75rem">500 sats per merged verse correction · split transparently via a signed value manifest.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <p>NeoArk — protocol &amp; software <span class="mono">AGPL-3.0</span> · NeoOS text <span class="mono">CC-BY-SA 4.0</span>.</p>
+    <p>Based on the Berean Standard Bible (BSB), berean.bible — dedicated to the public domain, used under CC-BY 4.0.</p>
+    <p>Landing reskinned from the Odysseus project (AGPL-3.0). The Ark holds. The text endures.</p>
+  </div>
+</footer>
+</body>
+</html>
