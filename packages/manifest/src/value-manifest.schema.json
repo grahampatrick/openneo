@@ -1,0 +1,51 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://neoark.io/schemas/value-manifest-v1.json",
+  "title": "Ark Value Manifest v1",
+  "type": "object",
+  "required": ["version", "translation_id", "translation_blake3", "translator_pubkey", "issued_at", "stream_rates", "splits", "fork_policy", "signature"],
+  "properties": {
+    "version": { "const": "avm-1" },
+    "translation_id": { "type": "string", "pattern": "^[a-z0-9]+-[a-z]{2,3}-[0-9]{4}$" },
+    "translation_blake3": { "type": "string", "pattern": "^b3:[a-f0-9]{64}$" },
+    "translator_pubkey": { "type": "string", "pattern": "^(npub1[a-z0-9]+|[a-f0-9]{64})$" },
+    "issued_at": { "type": "string", "format": "date-time" },
+    "stream_rates": {
+      "type": "object",
+      "patternProperties": {
+        "^[a-z_]+$": {
+          "type": "object",
+          "required": ["sats", "trigger"],
+          "properties": {
+            "sats": { "type": "integer", "minimum": 1 },
+            "trigger": { "enum": ["80pct_visible_30s", "user_highlights_verse", "copy_or_share_with_attribution", "user_publishes_signed_use"] }
+          }
+        }
+      }
+    },
+    "splits": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["lightning_address", "weight", "role"],
+        "properties": {
+          "lightning_address": { "type": "string", "pattern": "^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$" },
+          "weight": { "type": "integer", "minimum": 1, "maximum": 100 },
+          "role": { "type": "string" }
+        }
+      }
+    },
+    "fork_policy": {
+      "type": "object",
+      "required": ["allowed"],
+      "properties": {
+        "allowed": { "type": "boolean" },
+        "min_translator_weight": { "type": "integer", "minimum": 0, "maximum": 100 },
+        "must_preserve_roles": { "type": "array", "items": { "type": "string" } },
+        "predecessor_blake3": { "type": ["string", "null"], "pattern": "^b3:[a-f0-9]{64}$" }
+      }
+    },
+    "signature": { "type": "string" }
+  }
+}

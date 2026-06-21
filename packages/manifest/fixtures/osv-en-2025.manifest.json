@@ -1,0 +1,56 @@
+{
+  "version": "avm-1",
+  "translation_id": "osv-en-2025",
+  "translation_blake3": "b3:7d3a9f2c1e8b4a6d5f0c2b1a9e8d7c6b5a4f3e2d1c0b9a8f7e6d5c4b3a2f1e0d",
+  "translator_pubkey": "1b84c5567b126440995d3ed5aaba0565d71e1834604819ff9c17f5e9d5dd078f",
+  "issued_at": "2025-01-01T00:00:00Z",
+  "stream_rates": {
+    "chapter_read": {
+      "sats": 10,
+      "trigger": "80pct_visible_30s"
+    },
+    "highlight": {
+      "sats": 5,
+      "trigger": "user_highlights_verse"
+    },
+    "citation": {
+      "sats": 50,
+      "trigger": "copy_or_share_with_attribution"
+    },
+    "use_proof": {
+      "sats": 100,
+      "trigger": "user_publishes_signed_use"
+    }
+  },
+  "splits": [
+    {
+      "lightning_address": "ruiz@strike.me",
+      "weight": 70,
+      "role": "translator"
+    },
+    {
+      "lightning_address": "review@gtu.edu",
+      "weight": 15,
+      "role": "scholarly_review"
+    },
+    {
+      "lightning_address": "relay@neoark.io",
+      "weight": 10,
+      "role": "relay"
+    },
+    {
+      "lightning_address": "dev@neoark.io",
+      "weight": 5,
+      "role": "protocol"
+    }
+  ],
+  "fork_policy": {
+    "allowed": true,
+    "min_translator_weight": 50,
+    "must_preserve_roles": [
+      "translator"
+    ],
+    "predecessor_blake3": null
+  },
+  "signature": "d125eb392453ea9f2315afda07a2dc84158009de1ce6631f1d6627ecfb19aa3780e3c2ab89d5c575dfb748014b703136099d32c96f50b3d9760ac2e45f585c76"
+}

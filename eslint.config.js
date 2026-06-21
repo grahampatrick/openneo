@@ -13,6 +13,13 @@ export default tseslint.config(
         tsconfigRootDir: import.meta.dirname,
       },
     },
+    rules: {
+      // Allow intentional omit-destructures and discards: `const { x: _x, ...rest }`.
+      '@typescript-eslint/no-unused-vars': [
+        'error',
+        { varsIgnorePattern: '^_', argsIgnorePattern: '^_', ignoreRestSiblings: true },
+      ],
+    },
   },
   {
     // Importer tool parses external source data; non-null assertions on
@@ -20,6 +27,15 @@ export default tseslint.config(
     files: ['tools/importer/**/*.ts'],
     rules: {
       '@typescript-eslint/no-non-null-assertion': 'off',
+    },
+  },
+  {
+    // Tests legitimately use non-null assertions on known-good fixtures and
+    // omit-destructures like `const { version: _v, ...rest }`.
+    files: ['**/test/**/*.ts', '**/*.test.ts'],
+    rules: {
+      '@typescript-eslint/no-non-null-assertion': 'off',
+      '@typescript-eslint/no-unused-vars': ['error', { varsIgnorePattern: '^_', argsIgnorePattern: '^_' }],
     },
   },
   {
