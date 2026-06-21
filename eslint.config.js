@@ -9,9 +9,17 @@ export default tseslint.config(
   {
     languageOptions: {
       parserOptions: {
-        projectService: true,
+        project: true,
         tsconfigRootDir: import.meta.dirname,
       },
+    },
+  },
+  {
+    // Importer tool parses external source data; non-null assertions on
+    // freshly-built maps and validated event shapes are intentional.
+    files: ['tools/importer/**/*.ts'],
+    rules: {
+      '@typescript-eslint/no-non-null-assertion': 'off',
     },
   },
   {

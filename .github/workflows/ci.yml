@@ -33,6 +33,10 @@ jobs:
       - name: Test
         run: pnpm test
 
-      - name: Check legal sources doc exists
+      - name: Verify NeoOS corpus (M1 BLAKE3 root)
+        run: pnpm --filter @neoark/importer run verify
+
+      - name: Check legal sources docs exist
         run: |
           test -f docs/legal/SOURCES.md
+          test -f docs/neoos/SOURCES.md
