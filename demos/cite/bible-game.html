@@ -1,0 +1,18 @@
+<!doctype html>
+<!-- NeoArkCite demo embed #2 — Bible memory game (rollup mode). SPDX-License-Identifier: AGPL-3.0 -->
+<html lang="en">
+<head><meta charset="utf-8"><title>Verse Memory</title></head>
+<body style="font-family:system-ui;max-width:40rem;margin:2rem auto">
+  <h1>Memorize the Renewed Covenant</h1>
+  <ul>
+    <li data-neoos-ref="neoos-en-2026:JHN:3:16">For Elohiym so loved the world…</li>
+    <li data-neoos-ref="neoos-en-2026:MAT:1:1">The genealogy of Yahusha HaMashiach…</li>
+    <li data-neoos-ref="neoos-en-2026:ROM:8:28">And we know that Elohiym works all things…</li>
+  </ul>
+  <script src="https://cdn.neoark.org/cite.min.js"></script>
+  <script>
+    // rollup:true → one aggregated daily use-proof instead of per-verse (privacy).
+    NeoArkCite.init({ relays: ["wss://nos.lol"], rollup: true, context: "verse-memory-game" }).scan()
+  </script>
+</body>
+</html>
