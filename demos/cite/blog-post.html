@@ -1,0 +1,16 @@
+<!doctype html>
+<!-- NeoArkCite demo embed #3 — blog with an injected ephemeral signer. SPDX-License-Identifier: AGPL-3.0 -->
+<html lang="en">
+<head><meta charset="utf-8"><title>On Sheol and Hades</title></head>
+<body style="font-family:Inter,sans-serif;max-width:40rem;margin:2rem auto">
+  <article>
+    <h1>Why "hell" is three different words</h1>
+    <p data-neoos-ref="neoos-en-2026:PSA:16:10">For You will not abandon my soul to Sheol…</p>
+  </article>
+  <!-- For sites without a NIP-07 wallet, import the SDK as a module and inject a signer. -->
+  <script type="module">
+    import { NeoArkCite, ephemeralSigner } from "https://cdn.neoark.org/cite.esm.js"
+    NeoArkCite.init({ relays: ["wss://relay.snort.social"], signer: ephemeralSigner(), context: "blog" }).scan()
+  </script>
+</body>
+</html>
