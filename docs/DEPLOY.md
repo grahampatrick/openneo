@@ -97,3 +97,24 @@ Checks `/health.json`, `/`, `/read/`, `/translate/` all return 200.
 | `openneo.org` domain + DNS records | the URLs |
 | A host for the relay (any VPS with Docker) | `relay.openneo.org` |
 | Repo secrets `CLOUDFLARE_API_TOKEN` / `CLOUDFLARE_ACCOUNT_ID` | un-gate the deploy workflow |
+
+---
+
+## Payout runner (M19) — operator setup
+
+The `@neoark/payout-runner` pays translators/reviewers when governed merges land.
+It needs an operator (you) to fund a wallet and run the service.
+
+1. **Fund an NWC wallet** (OQ-P3-1, default Alby Hub) — this is the donations-only
+   treasury. Get its NWC connection URI; keep it in an env/secret store, never git.
+2. **Wire the runner** — construct `PayoutRunner` with: an NWC-backed `Wallet`
+   (`payInvoice` over NWC), a real `fetchJson`, the payer key, `createTreasury(balance)`,
+   a `ProfileResolver` built from live kind:0 events (`profilesFromMetadata`), the
+   relay pool, and a `FilePaidStore('/var/lib/openneo/paid.json')`.
+3. **Run on a schedule** — call `processGovernedMerges('neoos-en-2026')` on a
+   worker/cron. It only pays governed merges and is idempotent + restart-safe, so
+   running it repeatedly is safe.
+4. **Verify** — each payout publishes a kind:30712 receipt to the relays; a
+   translator can confirm their payment by querying their receipts.
+
+Secrets (NWC URI, payer key) live in env/secret stores only.
