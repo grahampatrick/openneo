@@ -16,6 +16,18 @@
     {
       "source": "/read/service-worker.js",
       "headers": [{ "key": "Cache-Control", "value": "no-cache" }]
+    },
+    {
+      "source": "/(read|translate)",
+      "headers": [{ "key": "Cache-Control", "value": "public, max-age=0, must-revalidate, s-maxage=0" }]
+    },
+    {
+      "source": "/(read|translate)/",
+      "headers": [{ "key": "Cache-Control", "value": "public, max-age=0, must-revalidate, s-maxage=0" }]
+    },
+    {
+      "source": "/(read|translate)/index.html",
+      "headers": [{ "key": "Cache-Control", "value": "public, max-age=0, must-revalidate, s-maxage=0" }]
     }
   ]
 }
