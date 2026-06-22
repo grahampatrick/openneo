@@ -13,4 +13,7 @@ export type { PayoutComputation } from './treasury'
 
 export { MemoryProfileRegistry, profilesFromMetadata } from './profiles'
 
+export { computeMergeSplit, DEFAULT_SPLIT } from './split'
+export type { SplitPercents, MergeParticipants, SplitShare } from './split'
+
 export type { Treasury, ProfileResolver, PaidStore, PayoutOutcome, PaymentReceipt } from './types'
