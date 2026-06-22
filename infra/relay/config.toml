@@ -1,0 +1,33 @@
+# nostr-rs-relay config for relay.openneo.org — ARK-tuned.
+# Docs: https://github.com/scsibug/nostr-rs-relay
+# SPDX-License-Identifier: AGPL-3.0
+
+[info]
+relay_url = "wss://relay.openneo.org/"
+name = "OpenNeo ARK relay"
+description = "Anchored Reference Kernel relay for NeoOS — verses, proposals, reviews, use-proofs."
+# pubkey = "<operator npub-hex>"   # optional: relay operator identity
+contact = "relay@openneo.org"
+
+[database]
+data_directory = "/usr/src/app/db"
+
+[network]
+address = "0.0.0.0"
+port = 8080
+
+[limits]
+messages_per_sec = 20
+max_event_bytes = 131072        # 128 KB — comfortably over a chapter of verses
+max_ws_message_bytes = 262144
+max_ws_frame_bytes = 262144
+
+[authorization]
+# ARK kind allowlist: protocol kinds (30700–30799) + reused Nostr kinds.
+#   30700 verse · 30701 manifest · 30702 proposal · 30703 review/merge ·
+#   30704 notes · 30705 plan · 30706 reading-event · 30710/30712 use-proof/payout
+#   0 profile · 1 note · 22242 NIP-42 auth · 30078 app-specific use-proof
+event_kind_allowlist = [0, 1, 22242, 30078, 30700, 30701, 30702, 30703, 30704, 30705, 30706, 30710, 30712]
+
+[options]
+reject_future_seconds = 1800

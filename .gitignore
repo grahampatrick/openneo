@@ -13,3 +13,6 @@ tools/importer/sources/raw/*.zip
 # SvelteKit
 .svelte-kit/
 apps/*/build/
+
+# assembled deploy artifact
+/site/
