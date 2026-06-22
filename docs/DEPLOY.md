@@ -118,3 +118,23 @@ It needs an operator (you) to fund a wallet and run the service.
    translator can confirm their payment by querying their receipts.
 
 Secrets (NWC URI, payer key) live in env/secret stores only.
+
+### Manual payouts (pay from your own wallet, e.g. Phoenix)
+
+If you don't want to run an automated NWC bot, pay from your own Lightning wallet:
+
+```bash
+# 1. See who to pay for governed merges (a copy-paste sheet)
+NEOOS_PAYER_NSEC=nsec1… pnpm --filter @neoark/payout-runner run payouts plan
+
+# 2. Pay each line from your wallet (Phoenix etc.) — you approve every payment
+
+# 3. Record each one + publish its public receipt
+NEOOS_PAYER_NSEC=nsec1… pnpm --filter @neoark/payout-runner run payouts \
+  confirm <mergeEventId> <recipientPubkeyHex>
+```
+
+Only **governed** merges appear (council-maintainer-signed). Paid state persists
+in `NEOOS_PAID_FILE` (default `./payouts.paid.json`), so a recipient is never
+listed twice. Manual receipts are signed attestations (`ark_method=manual`) — a
+public record, not preimage-proven (you paid out of band). No custody.

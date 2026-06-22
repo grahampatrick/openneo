@@ -8,3 +8,7 @@
 export { PayoutRunner } from './runner'
 export type { PayoutRunnerOptions, MergePayout, RecipientPayout } from './runner'
 export { MemoryPaidStore, FilePaidStore } from './paid-store'
+export { collectGovernedPayouts } from './collect'
+export type { GovernedMergePayout, CollectOptions } from './collect'
+export { ManualPayouts } from './manual'
+export type { PlannedPayment, ManualPayoutsOptions } from './manual'
