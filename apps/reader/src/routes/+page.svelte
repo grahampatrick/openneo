@@ -1,5 +1,6 @@
 <script lang="ts">
   import { onMount } from 'svelte'
+  import { base } from '$app/paths'
   import { fetchCorpus, type Corpus, type Verse, type BookMeta } from '$lib/corpus'
   import { formatReference } from '$lib/reference'
   import { currentRef, showNotes, showParallel } from '$lib/stores'
@@ -19,7 +20,7 @@
 
   onMount(async () => {
     try {
-      corpus = await fetchCorpus('.')
+      corpus = await fetchCorpus(base)
       books = corpus.loadedBooks()
       load()
     } catch (e) {
