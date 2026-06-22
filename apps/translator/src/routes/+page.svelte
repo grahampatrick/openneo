@@ -17,6 +17,7 @@
   import { fetchReviewQueue, castVote, maybeMerge, type ReviewableProposal } from '@neoark/review'
   import { statusBadge } from '$lib/status'
   import { fetchCorpus, type Corpus, type BookMeta } from '$lib/corpus'
+  import { fetchProfile, publishProfile, isLightningAddress, type Profile } from '$lib/profile'
   import type { RelayPool } from '@neoark/relay'
   import type { SessionClaims } from '@neoark/auth'
 
@@ -29,8 +30,14 @@
   let showImport = false
   let nsecInput = ''
 
-  type Tab = 'propose' | 'mine' | 'review'
+  type Tab = 'propose' | 'mine' | 'review' | 'profile'
   let tab: Tab = 'propose'
+
+  // Profile (kind:0 lud16) — the payout target.
+  let profile: Profile | null = null
+  let profileName = ''
+  let profileLud16 = ''
+  let profileSaved = false
 
   // The verse being worked on — chosen via the picker over the full 85-book corpus.
   const translationId = 'neoos-en-2026'
@@ -90,8 +97,47 @@
     if (session) {
       void refresh()
       void ensureCorpus()
+      void loadProfile()
     }
   })
+
+  async function loadProfile() {
+    if (!session) return
+    try {
+      profile = await fetchProfile(pool, session.pubkey)
+      profileName = profile?.name ?? ''
+      profileLud16 = profile?.lud16 ?? ''
+    } catch {
+      /* relays unreachable — leave editable */
+    }
+  }
+
+  async function saveProfile() {
+    notice = ''
+    if (profileLud16.trim() && !isLightningAddress(profileLud16)) {
+      notice = 'Lightning address must look like name@domain.'
+      return
+    }
+    const signer = activeSigner(store)
+    if (!signer) {
+      notice = 'Your signer is unavailable — please sign in again.'
+      return
+    }
+    busy = 'Publishing your profile…'
+    try {
+      const next: Profile = {}
+      if (profileName.trim()) next.name = profileName.trim()
+      if (profileLud16.trim()) next.lud16 = profileLud16.trim()
+      await publishProfile(next, signer, pool, now())
+      profile = next
+      profileSaved = true
+    } catch (e) {
+      notice = 'Save failed: ' + (e instanceof Error ? e.message : String(e))
+    }
+    busy = ''
+  }
+
+  $: hasPayoutAddress = !!profile?.lud16
 
   function localKey(): string {
     let k = store.get('neoark.translator.localsecret')
@@ -230,6 +276,7 @@
     { id: 'propose' as Tab, label: 'Propose' },
     { id: 'mine' as Tab, label: mine.length ? `My proposals (${mine.length})` : 'My proposals' },
     { id: 'review' as Tab, label: reviewable.length ? `Review (${reviewable.length})` : 'Review' },
+    { id: 'profile' as Tab, label: hasPayoutAddress ? 'Profile' : 'Profile ⚠' },
   ]
   $: diff = wordDiff(currentText, newText)
   $: changed = hasChange(currentText, newText)
@@ -278,6 +325,13 @@
     {/each}
     <button on:click={refresh} class="ml-auto text-muted text-xs">↻ refresh</button>
   </div>
+
+  {#if !hasPayoutAddress && tab !== 'profile'}
+    <div class="border border-gold rounded-lg bg-panel p-3 mb-3 flex items-center justify-between gap-3">
+      <span class="text-gold font-mono text-xs">⚠ Set a Lightning address to get paid when your work is merged.</span>
+      <button on:click={() => (tab = 'profile')} class="px-3 py-1 rounded border border-border font-mono text-xs text-accent whitespace-nowrap">Set it up</button>
+    </div>
+  {/if}
 
   {#if busy}<p class="text-accent font-mono text-xs mb-3">{busy}</p>{/if}
   {#if notice}<p class="font-mono text-xs mb-3 text-muted">{notice}</p>{/if}
@@ -340,7 +394,7 @@
         </div>
       {/each}
     {/if}
-  {:else}
+  {:else if tab === 'review'}
     {#if reviewable.length === 0}
       <p class="text-muted text-sm">No proposals from other translators to review right now. (You can't review your own.)</p>
     {:else}
@@ -362,5 +416,15 @@
         </div>
       {/each}
     {/if}
+  {:else}
+    <h2 class="font-mono text-accent mb-1">Your profile</h2>
+    <p class="text-muted text-sm mb-4">Set a Lightning address to receive payouts when your work is merged. Published as a signed Nostr profile (kind:0) — no email, no account.</p>
+    <label for="pName" class="block font-mono text-xs text-muted mb-1">Display name (optional)</label>
+    <input id="pName" bind:value={profileName} placeholder="Sha'ul" class="w-full bg-panel border border-border rounded p-2 mb-4 font-sans" />
+    <label for="pLud16" class="block font-mono text-xs text-muted mb-1">Lightning address (where you get paid)</label>
+    <input id="pLud16" bind:value={profileLud16} placeholder="you@walletofsatoshi.com" class="w-full bg-panel border border-border rounded p-2 mb-2 font-mono" />
+    <p class="text-muted text-xs mb-4">A Lightning Address looks like <code>name@domain</code> (from Alby, Wallet of Satoshi, Strike, etc.).</p>
+    <button disabled={!!busy} on:click={saveProfile} class="px-5 py-2 rounded bg-accent text-bg font-mono font-bold disabled:opacity-40">Sign &amp; publish profile</button>
+    {#if profileSaved}<p class="text-green font-mono text-sm mt-3">✓ Profile published. You'll be paid at {profileLud16} when your merges land.</p>{/if}
   {/if}
 {/if}
