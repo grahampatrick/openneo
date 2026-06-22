@@ -48,7 +48,7 @@ export const EXTRA_SOURCES: readonly ExtraSource[] = [
   { bookId: 'ENO', source: 'R.H.Charles-PD' },
   { bookId: 'JUB', source: 'R.H.Charles-PD' },
   { bookId: '2BA', source: 'R.H.Charles-PD' },
-  { bookId: 'JSR', source: 'Parry-1887-PD' },
+  { bookId: 'JSR', source: 'Jasher-1840-Wikisource-PD' },
   { bookId: 'PSL', source: 'PD' },
 ]
 
