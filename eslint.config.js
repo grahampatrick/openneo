@@ -42,8 +42,14 @@ export default tseslint.config(
     // The SvelteKit PWA is type-checked by svelte-check; ESLint's type-aware
     // rules fight UI idioms (numbers in templates) and the $service-worker
     // virtual module, so disable the type-checked layer for the app.
-    files: ['apps/reader/**/*.ts'],
+    files: ['apps/reader/**/*.ts', 'apps/translator/**/*.ts'],
     ...tseslint.configs.disableTypeChecked,
+    rules: {
+      ...tseslint.configs.disableTypeChecked.rules,
+      // Apps are type-checked by svelte-check; allow non-null assertions in
+      // self-contained algorithms (e.g. a freshly-filled LCS matrix).
+      '@typescript-eslint/no-non-null-assertion': 'off',
+    },
   },
   {
     ignores: [
