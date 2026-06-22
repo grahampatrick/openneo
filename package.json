@@ -17,7 +17,7 @@
     "lint:fix": "eslint 'packages/**/*.ts' 'apps/**/*.ts' 'tools/**/*.ts' --fix --no-error-on-unmatched-pattern",
     "format": "prettier --write .",
     "clean": "pnpm -r run clean && rm -rf node_modules",
-    "build:apps": "pnpm --filter @neoark/landing build && pnpm --filter @neoark/reader-pwa build && pnpm --filter translator build",
+    "build:apps": "pnpm --filter @neoark/landing build && BASE_PATH=/read pnpm --filter @neoark/reader-pwa build && BASE_PATH=/translate pnpm --filter translator build",
     "build:site": "pnpm run build:apps && node scripts/build-site.mjs"
   },
   "devDependencies": {
