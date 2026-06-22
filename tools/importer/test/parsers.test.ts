@@ -66,4 +66,21 @@ describe('parseUsfm', () => {
     const verses = parseUsfm('\\v 1 orphan verse with no chapter', 'TOB', 'PD')
     expect(verses).toHaveLength(0)
   })
+
+  it('drops section headings / refs / descriptions, not just their markers', () => {
+    const withHeadings = String.raw`\c 1
+\s1 The story begins
+\p
+\v 1 The first verse.
+\s The next section
+\r (see elsewhere)
+\v 2 The second verse.
+\c 2
+\d A psalm description
+\v 1 Another verse.`
+    const verses = parseUsfm(withHeadings, 'TOB', 'PD')
+    expect(verses.map((v) => v.text)).toEqual(['The first verse.', 'The second verse.', 'Another verse.'])
+    // heading text must not leak into any verse
+    expect(verses.some((v) => /story begins|next section|see elsewhere|psalm description/.test(v.text))).toBe(false)
+  })
 })
