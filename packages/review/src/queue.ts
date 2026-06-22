@@ -17,6 +17,14 @@ import type { RelayPool } from '@neoark/relay'
 import type { NostrEvent } from '@neoark/manifest'
 import type { Proposal, QuorumConfig, Review, ReviewableProposal, GovernanceContext } from './types'
 
+/** NIP-09 deletion event kind — an author withdrawing their own proposal. */
+export const KIND_DELETION = 5
+
+/** Build the unsigned NIP-09 deletion that withdraws a proposal (sign with the author's signer). */
+export function buildWithdrawal(proposalId: string, createdAt: number): { kind: number; created_at: number; tags: string[][]; content: string } {
+  return { kind: KIND_DELETION, created_at: createdAt, tags: [['e', proposalId]], content: 'withdrawn by author' }
+}
+
 /** Compute the reviewable state of one proposal from its reviews + merge flag. */
 export function reviewState(
   proposal: Proposal,
@@ -54,16 +62,25 @@ export async function fetchReviewQueue(
   quorum: QuorumConfig = DEFAULT_QUORUM,
   gov: GovernanceContext = {},
 ): Promise<ReviewableProposal[]> {
-  const [proposalEvents, reviewEvents] = await Promise.all([
+  const [proposalEvents, reviewEvents, deletionEvents] = await Promise.all([
     pool.query({ kinds: [KIND_PROPOSAL] }),
     pool.query({ kinds: [KIND_REVIEW] }),
+    pool.query({ kinds: [KIND_DELETION] }),
   ])
+
+  // NIP-09: a proposal is withdrawn if its author published a kind:5 deleting it.
+  const withdrawn = new Set<string>()
+  for (const e of deletionEvents) {
+    for (const t of e.tags) if (t[0] === 'e' && t[1]) withdrawn.add(`${e.pubkey}:${t[1]}`)
+  }
 
   const proposals: Proposal[] = []
   for (const e of proposalEvents) {
     try {
       const p = parseProposal(e)
-      if (p.ref.translationId === translationId) proposals.push(p)
+      if (p.ref.translationId !== translationId) continue
+      if (withdrawn.has(`${p.author}:${p.id}`)) continue // author withdrew it
+      proposals.push(p)
     } catch {
       /* skip */
     }

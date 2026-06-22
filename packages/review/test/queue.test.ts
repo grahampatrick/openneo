@@ -1,8 +1,9 @@
 import { describe, it, expect } from 'vitest'
-import { reviewState, fetchReviewQueue, pendingOnly } from '../src/queue'
+import { reviewState, fetchReviewQueue, pendingOnly, buildWithdrawal } from '../src/queue'
 import { castVote } from '../src/vote'
 import { RelayPool, MockRelay } from '@neoark/relay'
 import { parseProposal, submitReview, parseReview, mergeProposal } from '@neoark/translation-protocol'
+import { signEvent } from '@neoark/manifest'
 import { author, reviewers, maintainer, keySigner, proposalEvent } from './helpers'
 
 const proposal = parseProposal(proposalEvent())
@@ -84,5 +85,20 @@ describe('fetchReviewQueue', () => {
     const pool = new RelayPool([new MockRelay()])
     await pool.publish(proposalEvent())
     expect(await fetchReviewQueue(pool, 'web-en-2020')).toHaveLength(0)
+  })
+
+  it('drops a proposal its author withdrew (NIP-09 kind:5)', async () => {
+    const pool = await seed()
+    expect(await fetchReviewQueue(pool, 'neoos-en-2026')).toHaveLength(1)
+    const withdrawal = signEvent(buildWithdrawal(proposal.id, 500), author.seckey)
+    await pool.publish(withdrawal)
+    expect(await fetchReviewQueue(pool, 'neoos-en-2026')).toHaveLength(0)
+  })
+
+  it('ignores a withdrawal signed by someone other than the author', async () => {
+    const pool = await seed()
+    const notAuthor = signEvent(buildWithdrawal(proposal.id, 500), reviewers[0]!.seckey)
+    await pool.publish(notAuthor)
+    expect(await fetchReviewQueue(pool, 'neoos-en-2026')).toHaveLength(1) // still there
   })
 })

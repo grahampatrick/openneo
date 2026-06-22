@@ -14,7 +14,7 @@
   } from '$lib/identity'
   import { createRelayPool } from '$lib/relays'
   import { activeSigner, activeSeckey, recordAuthSource } from '$lib/active-signer'
-  import { fetchReviewQueue, castVote, maybeMerge, type ReviewableProposal } from '@neoark/review'
+  import { fetchReviewQueue, castVote, maybeMerge, buildWithdrawal, type ReviewableProposal } from '@neoark/review'
   import { statusBadge } from '$lib/status'
   import { fetchBookList, fetchBook, chaptersOf, versesOf, verseText, type BookMeta, type BookData } from '$lib/corpus'
   import { fetchProfile, publishProfile, isLightningAddress, type Profile } from '$lib/profile'
@@ -326,6 +326,25 @@
     busy = ''
   }
 
+  /** Withdraw your own proposal (NIP-09 deletion). It leaves the review queue. */
+  async function withdraw(q: ReviewableProposal) {
+    const signer = activeSigner(store)
+    if (!signer) {
+      notice = 'Your signer is unavailable — please sign in again.'
+      return
+    }
+    busy = 'Withdrawing…'
+    try {
+      const event = await signer.signEvent(buildWithdrawal(q.proposal.id, now()))
+      await pool.publish(event)
+      notice = `✓ Withdrew ${q.proposal.id.slice(0, 12)}… — it will drop from the review queue.`
+      await refresh()
+    } catch (e) {
+      notice = 'Withdraw failed: ' + (e instanceof Error ? e.message : String(e))
+    }
+    busy = ''
+  }
+
   async function merge(q: ReviewableProposal) {
     if (governed && !isMaintainer) {
       notice = 'Only a council maintainer can merge this translation.'
@@ -351,7 +370,13 @@
 
   $: pubkey = session?.pubkey ?? ''
   $: mine = queue.filter((q) => q.proposal.author === pubkey)
-  $: reviewable = queue.filter((q) => q.proposal.author !== pubkey && !q.merged)
+  const myVoteOn = (q: ReviewableProposal): 'approve' | 'reject' | null =>
+    q.reviews.find((r) => r.reviewer === pubkey)?.vote ?? null
+  // To review: others' proposals, not merged, and not ones I've already voted on
+  // (unless I approved and it's now ready for me to merge).
+  $: reviewable = queue.filter(
+    (q) => q.proposal.author !== pubkey && !q.merged && (myVoteOn(q) === null || (myVoteOn(q) === 'approve' && q.mergeReady)),
+  )
   $: tabs = [
     { id: 'propose' as Tab, label: 'Propose' },
     { id: 'mine' as Tab, label: mine.length ? `My proposals (${mine.length})` : 'My proposals' },
@@ -497,7 +522,10 @@
             <span class="font-mono text-xs" style="color:{badge.color}">● {badge.text}</span>
           </div>
           <p class="text-sm mb-1">{q.proposal.newText}</p>
-          <p class="text-muted text-xs">{q.proposal.rationale}</p>
+          <p class="text-muted text-xs mb-2">{q.proposal.rationale}</p>
+          {#if !q.merged}
+            <button disabled={!!busy} on:click={() => withdraw(q)} class="px-3 py-1 rounded border border-border font-mono text-xs text-muted">Withdraw</button>
+          {/if}
         </div>
       {/each}
     {/if}
