@@ -144,6 +144,8 @@
   }
 
   $: hasPayoutAddress = !!profile?.lud16
+  // Safety net: ensure the corpus loads whenever a signed-in user views Propose.
+  $: if (session && tab === 'propose' && !corpus && !corpusError) void ensureCorpus()
 
   function localKey(): string {
     let k = store.get('neoark.translator.localsecret')
@@ -155,11 +157,18 @@
   }
 
   // --- auth ---
+  /** Side effects to run after any successful sign-in. */
+  async function afterLogin() {
+    void ensureCorpus()
+    void loadProfile()
+    await refresh()
+  }
+
   async function signInWith(hex: string, source: 'extension' | 'local') {
     recordAuthSource(store, source)
     const s = await auth.loginWithNip07(signerFor(hex))
     session = s.claims
-    await refresh()
+    await afterLogin()
   }
   async function createKeyAndSignIn() {
     loginError = ''
@@ -196,7 +205,7 @@
       recordAuthSource(store, 'extension')
       const s = await auth.loginWithNip07(signer)
       session = s.claims
-      await refresh()
+      await afterLogin()
     } catch (e) {
       loginError = e instanceof Error ? e.message : String(e)
     }
