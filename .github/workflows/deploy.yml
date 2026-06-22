@@ -1,0 +1,57 @@
+# Deploy the openneo.org static site (landing + reader + translator) to
+# Cloudflare Pages. Gated on secrets: it no-ops until CLOUDFLARE_API_TOKEN and
+# CLOUDFLARE_ACCOUNT_ID are set in the repo, so it's safe to merge before the
+# account exists. Trigger: push to main, or manually.
+# SPDX-License-Identifier: AGPL-3.0
+name: Deploy
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check deploy is configured
+        id: gate
+        run: |
+          if [ -n "${{ secrets.CLOUDFLARE_API_TOKEN }}" ] && [ -n "${{ secrets.CLOUDFLARE_ACCOUNT_ID }}" ]; then
+            echo "configured=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "configured=false" >> "$GITHUB_OUTPUT"
+            echo "::notice::Deploy secrets not set — skipping. See docs/DEPLOY.md."
+          fi
+
+      - uses: pnpm/action-setup@v3
+        if: steps.gate.outputs.configured == 'true'
+        with:
+          version: 9
+      - uses: actions/setup-node@v4
+        if: steps.gate.outputs.configured == 'true'
+        with:
+          node-version: "20"
+          cache: "pnpm"
+
+      - name: Install
+        if: steps.gate.outputs.configured == 'true'
+        run: pnpm install --frozen-lockfile
+
+      - name: Build site (landing + reader + translator → ./site)
+        if: steps.gate.outputs.configured == 'true'
+        run: pnpm run build:site
+
+      - name: Deploy to Cloudflare Pages
+        if: steps.gate.outputs.configured == 'true'
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: pages deploy site --project-name=openneo
+
+      - name: Health check
+        if: steps.gate.outputs.configured == 'true'
+        run: node scripts/healthcheck.mjs https://openneo.org
