@@ -23,6 +23,7 @@ All events use the Nostr NIP-01 envelope and BIP-340 Schnorr signatures
 | **30703** | Review | reviewer comment | `e`(proposalId), `ark_action=review`, `ark_vote`(approve\|reject) |
 | **30703** | Merge | — | `e`(proposalId), `ark_action=merge`, `ark_ref`, `ark_quorum`(approvals,reviewers) |
 | **30712** | Payout record | — | `e`(mergeId), `ark_action=payout`, `amount_sat`, `bolt11_hash`, `recipient` |
+| **30750** | Governance config | — | `d`(translationId), `maintainer`×N, content=`{quorum}` — the council that gates merges (ADR-009) |
 
 ## Lifecycle
 

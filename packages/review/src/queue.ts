@@ -15,7 +15,7 @@ import {
 } from '@neoark/translation-protocol'
 import type { RelayPool } from '@neoark/relay'
 import type { NostrEvent } from '@neoark/manifest'
-import type { Proposal, QuorumConfig, Review, ReviewableProposal } from './types'
+import type { Proposal, QuorumConfig, Review, ReviewableProposal, GovernanceContext } from './types'
 
 /** Compute the reviewable state of one proposal from its reviews + merge flag. */
 export function reviewState(
@@ -23,10 +23,11 @@ export function reviewState(
   reviews: Review[],
   merged: boolean,
   quorum: QuorumConfig = DEFAULT_QUORUM,
+  gov: GovernanceContext = {},
 ): ReviewableProposal {
   // Drop the author's self-reviews (no self-approval).
   const eligible = reviews.filter((r) => r.proposalId === proposal.id && r.reviewer !== proposal.author)
-  const tally = tallyReviews(eligible, quorum)
+  const tally = tallyReviews(eligible, quorum, gov.maintainers ? { maintainers: gov.maintainers } : {})
   const needed = Math.max(0, quorum.minReviewers - tally.reviewers)
   return {
     proposal,
@@ -37,6 +38,8 @@ export function reviewState(
     needed: tally.meetsQuorum ? 0 : needed,
     mergeReady: !merged && tally.meetsQuorum,
     merged,
+    communityApprovals: tally.communityApprovals,
+    governed: tally.governed,
   }
 }
 
@@ -49,6 +52,7 @@ export async function fetchReviewQueue(
   pool: RelayPool,
   translationId: string,
   quorum: QuorumConfig = DEFAULT_QUORUM,
+  gov: GovernanceContext = {},
 ): Promise<ReviewableProposal[]> {
   const [proposalEvents, reviewEvents] = await Promise.all([
     pool.query({ kinds: [KIND_PROPOSAL] }),
@@ -83,7 +87,7 @@ export async function fetchReviewQueue(
   }
 
   return proposals
-    .map((p) => reviewState(p, reviewsById.get(p.id) ?? [], mergedIds.has(p.id), quorum))
+    .map((p) => reviewState(p, reviewsById.get(p.id) ?? [], mergedIds.has(p.id), quorum, gov))
     .sort((a, b) => b.proposal.event.created_at - a.proposal.event.created_at)
 }
 

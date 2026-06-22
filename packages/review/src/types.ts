@@ -11,6 +11,7 @@ export type { Proposal, Review, QuorumConfig }
 export interface ReviewableProposal {
   proposal: Proposal
   reviews: Review[]
+  /** Approvals counted toward quorum (maintainers only, when a council is set). */
   approvals: number
   rejections: number
   reviewers: number
@@ -19,6 +20,16 @@ export interface ReviewableProposal {
   /** Quorum reached and not yet merged. */
   mergeReady: boolean
   merged: boolean
+  /** Non-maintainer approvals — public community signal that does NOT merge. */
+  communityApprovals: number
+  /** Whether a maintainer council gated this proposal. */
+  governed: boolean
+}
+
+/** Optional council scoping for review/merge (anti-Sybil). */
+export interface GovernanceContext {
+  /** Maintainer pubkeys (hex). When set, only their votes count toward quorum. */
+  maintainers?: readonly string[]
 }
 
 /** Signer abstraction (NIP-07 in browser, key-backed in tests/CLI). */

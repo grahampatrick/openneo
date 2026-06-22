@@ -29,21 +29,50 @@ export interface MergeResult {
  * approval ratio threshold. A reviewer sharing the proposal author's pubkey is
  * dropped (no self-approval).
  */
+export class NotAMaintainerError extends Error {
+  constructor(message: string) {
+    super(message)
+    this.name = 'NotAMaintainerError'
+  }
+}
+
+export interface MergeOptions {
+  quorum?: QuorumConfig
+  /** Maintainer council (hex pubkeys). When set, votes are council-scoped and the merger must be a maintainer. */
+  maintainers?: readonly string[]
+  /** The merger's own pubkey (hex) — required when `maintainers` is set, to gate the merge action. */
+  mergerPubkey?: string
+}
+
 export function mergeProposal(
   proposal: Proposal,
   reviews: Review[],
   maintainerPrivKey: string,
   createdAt: number,
-  quorum: QuorumConfig = DEFAULT_QUORUM,
+  options: MergeOptions | QuorumConfig = DEFAULT_QUORUM,
 ): MergeResult {
+  // Back-compat: a bare QuorumConfig is still accepted as the 5th arg.
+  const isBareQuorum = 'minReviewers' in options && 'approvalThreshold' in options
+  const opts: MergeOptions = isBareQuorum ? { quorum: options } : options
+  const quorum = opts.quorum ?? DEFAULT_QUORUM
+
+  // When a council is set, the merger must be a maintainer (no rogue merges).
+  if (opts.maintainers && opts.maintainers.length > 0) {
+    const council = new Set(opts.maintainers.map((m) => m.toLowerCase()))
+    const merger = opts.mergerPubkey?.toLowerCase()
+    if (!merger || !council.has(merger)) {
+      throw new NotAMaintainerError('Only a council maintainer may merge a governed translation')
+    }
+  }
+
   const eligible = reviews.filter(
     (r) => r.proposalId === proposal.id && r.reviewer !== proposal.author,
   )
-  const tally = tallyReviews(eligible, quorum)
+  const tally = tallyReviews(eligible, quorum, opts.maintainers ? { maintainers: opts.maintainers } : {})
   if (!tally.meetsQuorum) {
     throw new QuorumNotMetError(
-      `Quorum not met: ${String(tally.approvals)}/${String(tally.reviewers)} approvals ` +
-        `(need ≥${String(quorum.minReviewers)} reviewers at ≥${String(quorum.approvalThreshold)})`,
+      `Quorum not met: ${String(tally.approvals)}/${String(tally.reviewers)} maintainer approvals ` +
+        `(need ≥${String(quorum.minReviewers)} at ≥${String(quorum.approvalThreshold)})`,
     )
   }
   const tags: string[][] = [

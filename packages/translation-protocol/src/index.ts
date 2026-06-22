@@ -11,12 +11,21 @@ export type { SubmitProposalInput } from './proposals'
 export { submitReview, parseReview, tallyReviews } from './reviews'
 export type { SubmitReviewInput } from './reviews'
 
-export { mergeProposal, parseMerge, QuorumNotMetError } from './merge'
-export type { MergeResult } from './merge'
+export { mergeProposal, parseMerge, QuorumNotMetError, NotAMaintainerError } from './merge'
+export type { MergeResult, MergeOptions } from './merge'
 
 export { merkleRoot, inclusionProof, verifyInclusion } from './merkle'
 export { anchorBatch, inclusionProofFor, verifyAnchor, MockCalendar } from './anchor'
 export type { AnchorVerification } from './anchor'
+
+export {
+  KIND_GOVERNANCE,
+  buildGovernanceEvent,
+  parseGovernance,
+  resolveGovernance,
+  signGovernance,
+} from './governance'
+export type { Governance, BuildGovernanceInput } from './governance'
 
 export { KIND_PROPOSAL, KIND_REVIEW, DEFAULT_QUORUM } from './types'
 export type {
@@ -28,6 +37,7 @@ export type {
   MergeRecord,
   QuorumConfig,
   Tally,
+  TallyOptions,
   Attestation,
   BatchAnchor,
   MerkleStep,

@@ -7,6 +7,6 @@
  */
 export { reviewState, fetchReviewQueue, pendingOnly } from './queue'
 export { castVote, maybeMerge } from './vote'
-export type { Vote, CastVoteInput, CastVoteResult, MaybeMergeResult } from './vote'
-export type { ReviewableProposal, Proposal, Review, QuorumConfig, Signer } from './types'
+export type { Vote, CastVoteInput, CastVoteResult, MaybeMergeResult, MaybeMergeOptions } from './vote'
+export type { ReviewableProposal, Proposal, Review, QuorumConfig, Signer, GovernanceContext } from './types'
 export { DEFAULT_QUORUM } from '@neoark/translation-protocol'

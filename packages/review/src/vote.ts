@@ -54,6 +54,13 @@ export interface MaybeMergeResult {
  * `maintainerKey` is a raw secret (merges are a maintainer action, typically
  * server-side / CLI, not a browser extension).
  */
+export interface MaybeMergeOptions {
+  /** Maintainer council (hex). When set, votes are council-scoped and the merger must be a maintainer. */
+  maintainers?: readonly string[]
+  /** The merger's pubkey (hex) — required when `maintainers` is set. */
+  mergerPubkey?: string
+}
+
 export async function maybeMerge(
   proposal: Proposal,
   reviews: Review[],
@@ -61,13 +68,23 @@ export async function maybeMerge(
   createdAt: number,
   pool: RelayPool,
   quorum: QuorumConfig = DEFAULT_QUORUM,
+  gov: MaybeMergeOptions = {},
 ): Promise<MaybeMergeResult> {
-  const state = reviewState(proposal, reviews, false, quorum)
+  const state = reviewState(proposal, reviews, false, quorum, gov.maintainers ? { maintainers: gov.maintainers } : {})
   if (state.merged) return { merged: false, reason: 'already merged' }
-  if (!state.mergeReady) {
-    return { merged: false, reason: `quorum not met (${String(state.approvals)}/${String(state.reviewers)}, need ${String(state.needed)} more)` }
+  if (gov.maintainers && gov.maintainers.length > 0) {
+    const council = new Set(gov.maintainers.map((m) => m.toLowerCase()))
+    if (!gov.mergerPubkey || !council.has(gov.mergerPubkey.toLowerCase())) {
+      return { merged: false, reason: 'only a council maintainer may merge this translation' }
+    }
   }
-  const result = mergeProposal(proposal, state.reviews, maintainerKey, createdAt, quorum)
+  if (!state.mergeReady) {
+    return { merged: false, reason: `quorum not met (${String(state.approvals)}/${String(state.reviewers)} maintainer approvals, need ${String(state.needed)} more)` }
+  }
+  const result = mergeProposal(proposal, state.reviews, maintainerKey, createdAt, {
+    quorum,
+    ...(gov.maintainers ? { maintainers: gov.maintainers, mergerPubkey: gov.mergerPubkey } : {}),
+  })
   const acks = await pool.publish(result.event)
   return { merged: true, reason: 'quorum met', event: result.event, relaysAccepted: acks.filter((a) => a.ok).length }
 }

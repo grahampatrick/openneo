@@ -18,6 +18,8 @@
   import { statusBadge } from '$lib/status'
   import { fetchCorpus, type Corpus, type BookMeta } from '$lib/corpus'
   import { fetchProfile, publishProfile, isLightningAddress, type Profile } from '$lib/profile'
+  import { fetchGovernance, publishGovernance } from '$lib/governance'
+  import type { Governance } from '@neoark/translation-protocol'
   import type { RelayPool } from '@neoark/relay'
   import type { SessionClaims } from '@neoark/auth'
 
@@ -86,8 +88,12 @@
   let busy = ''
   let notice = ''
   let queue: ReviewableProposal[] = []
+  let governance: Governance | null = null
 
   const now = () => Math.floor(Date.now() / 1000)
+  $: maintainers = governance?.maintainers ?? []
+  $: isMaintainer = !!session && maintainers.includes(session.pubkey.toLowerCase())
+  $: governed = maintainers.length > 0
 
   onMount(() => {
     store = browserStore()
@@ -208,9 +214,27 @@
   async function refresh() {
     busy = 'Loading from relays…'
     try {
-      queue = await fetchReviewQueue(pool, ref.translationId)
+      governance = await fetchGovernance(pool, ref.translationId)
+      const gov = governance ? { maintainers: governance.maintainers } : {}
+      queue = await fetchReviewQueue(pool, ref.translationId, governance?.quorum, gov)
     } catch (e) {
       notice = 'Could not reach relays: ' + (e instanceof Error ? e.message : String(e))
+    }
+    busy = ''
+  }
+
+  /** Bootstrap: the signed-in user claims the founding council (their key only). */
+  async function becomeFoundingMaintainer() {
+    if (!session) return
+    busy = 'Publishing the founding council…'
+    try {
+      const signer = activeSigner(store)
+      if (!signer) throw new Error('signer unavailable')
+      await publishGovernance(pool, signer, ref.translationId, [session.pubkey], now())
+      await refresh()
+      notice = '✓ You are the founding maintainer. Only your votes now gate merges.'
+    } catch (e) {
+      notice = 'Could not set governance: ' + (e instanceof Error ? e.message : String(e))
     }
     busy = ''
   }
@@ -253,6 +277,10 @@
   }
 
   async function merge(q: ReviewableProposal) {
+    if (governed && !isMaintainer) {
+      notice = 'Only a council maintainer can merge this translation.'
+      return
+    }
     const key = activeSeckey(store)
     if (!key) {
       notice = 'Merging signs a maintainer event — available when you hold a local key (Create a key). NIP-07 merge support is coming.'
@@ -260,7 +288,8 @@
     }
     busy = 'Merging…'
     try {
-      const r = await maybeMerge(q.proposal, q.reviews, key, now(), pool)
+      const gov = governed ? { maintainers, mergerPubkey: session?.pubkey } : {}
+      const r = await maybeMerge(q.proposal, q.reviews, key, now(), pool, governance?.quorum, gov)
       notice = r.merged ? `✓ Merged — anchored to the day’s Bitcoin batch.` : `Not merged: ${r.reason}`
       await refresh()
     } catch (e) {
@@ -333,6 +362,17 @@
     </div>
   {/if}
 
+  {#if tab === 'review'}
+    {#if governed}
+      <p class="font-mono text-xs text-muted mb-3">Governed by a council of {maintainers.length} maintainer(s){isMaintainer ? ' · you are a maintainer' : ' · your votes are a community signal'}. Only council approvals reach quorum.</p>
+    {:else}
+      <div class="border border-gold rounded-lg bg-panel p-3 mb-3 flex items-center justify-between gap-3">
+        <span class="text-gold font-mono text-xs">⚠ No council set — anyone's votes can merge (ungoverned). Establish a council to gate merges.</span>
+        <button disabled={!!busy} on:click={becomeFoundingMaintainer} class="px-3 py-1 rounded border border-border font-mono text-xs text-accent whitespace-nowrap">Become founding maintainer</button>
+      </div>
+    {/if}
+  {/if}
+
   {#if busy}<p class="text-accent font-mono text-xs mb-3">{busy}</p>{/if}
   {#if notice}<p class="font-mono text-xs mb-3 text-muted">{notice}</p>{/if}
 
@@ -402,15 +442,17 @@
         <div class="border border-border rounded-lg bg-panel p-4 mb-3">
           <div class="flex justify-between items-center mb-1">
             <span class="font-mono text-accent text-sm">{q.proposal.ref.book} {q.proposal.ref.chapter}:{q.proposal.ref.verse}</span>
-            <span class="font-mono text-xs text-muted">by {q.proposal.author.slice(0, 10)}… · {q.approvals}/{q.reviewers} approvals, {q.needed} more needed</span>
+            <span class="font-mono text-xs text-muted">by {q.proposal.author.slice(0, 10)}… · {q.governed ? 'council' : ''} {q.approvals}/{q.reviewers} approvals{q.needed ? `, ${q.needed} more` : ''}{q.governed && q.communityApprovals ? ` · +${q.communityApprovals} community` : ''}</span>
           </div>
           <p class="text-sm mb-1">{q.proposal.newText}</p>
           <p class="text-muted text-xs mb-3">{q.proposal.rationale}</p>
           <div class="flex gap-2">
             <button disabled={!!busy} on:click={() => vote(q, 'approve')} class="px-3 py-1.5 rounded border border-border font-mono text-xs text-green">Approve</button>
             <button disabled={!!busy} on:click={() => vote(q, 'reject')} class="px-3 py-1.5 rounded border border-border font-mono text-xs text-red">Reject</button>
-            {#if q.mergeReady}
+            {#if q.mergeReady && (!governed || isMaintainer)}
               <button disabled={!!busy} on:click={() => merge(q)} class="px-3 py-1.5 rounded bg-accent text-bg font-mono text-xs font-bold ml-auto">Merge (quorum met)</button>
+            {:else if q.mergeReady && governed}
+              <span class="ml-auto font-mono text-xs text-muted">awaiting a maintainer to merge</span>
             {/if}
           </div>
         </div>
