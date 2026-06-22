@@ -26,7 +26,27 @@ node scripts/healthcheck.mjs http://localhost:4180   # after serving ./site
 `apps/reader/build` → `/read`, `apps/translator/build` → `/translate`, plus a
 `/health.json` probe. (Verified: all four endpoints return 200.)
 
-## 2. Deploy the site (Cloudflare Pages)
+## 2. Deploy the site (Vercel — recommended)
+
+`vercel.json` at the repo root makes this turnkey (build → `pnpm run build:site`,
+output → `site/`, static; no server adapter needed):
+
+1. **Import the repo** at vercel.com → New Project → import `grahampatrick/openneo`.
+   Vercel reads `vercel.json` — leave the build/output settings as detected.
+2. **Deploy.** First build runs the three app builds + assembles `./site`
+   (~30–60 s). The 24 MB reader corpus ships as a static asset (cached immutable
+   via the header rule).
+3. **Add your domain:** Project → Settings → Domains → add `openneo.org`
+   (and `www`). Vercel gives you the DNS records (an `A`/`ALIAS` or `CNAME`);
+   set them at your registrar. TLS is automatic.
+4. **Verify:** `node scripts/healthcheck.mjs https://openneo.org` → `/`, `/read/`,
+   `/translate/`, `/health.json` all 200.
+
+That's it — landing at `openneo.org`, reader at `/read`, translator at `/translate`.
+
+> CLI alternative: `npm i -g vercel && vercel --prod` from the repo root.
+
+## 2b. Deploy the site (Cloudflare Pages)
 
 A gated workflow is ready at `.github/workflows/deploy.yml`. It **no-ops until**
 you set two repo secrets, so it's safe already:
