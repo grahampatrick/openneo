@@ -272,6 +272,28 @@ importers:
         specifier: ^1.6.0
         version: 1.6.1(@types/node@20.19.43)(jsdom@24.1.3)
 
+  packages/review:
+    dependencies:
+      '@neoark/manifest':
+        specifier: workspace:*
+        version: link:../manifest
+      '@neoark/relay':
+        specifier: workspace:*
+        version: link:../relay
+      '@neoark/translation-protocol':
+        specifier: workspace:*
+        version: link:../translation-protocol
+    devDependencies:
+      '@vitest/coverage-v8':
+        specifier: ^1.6.0
+        version: 1.6.1(vitest@1.6.1(@types/node@20.19.43)(jsdom@24.1.3))
+      tsx:
+        specifier: ^4.16.0
+        version: 4.22.4
+      vitest:
+        specifier: ^1.6.0
+        version: 1.6.1(@types/node@20.19.43)(jsdom@24.1.3)
+
   packages/translation-protocol:
     dependencies:
       '@neoark/manifest':
