@@ -16,6 +16,7 @@
   import { activeSigner, activeSeckey, recordAuthSource } from '$lib/active-signer'
   import { fetchReviewQueue, castVote, maybeMerge, type ReviewableProposal } from '@neoark/review'
   import { statusBadge } from '$lib/status'
+  import { fetchCorpus, type Corpus, type BookMeta } from '$lib/corpus'
   import type { RelayPool } from '@neoark/relay'
   import type { SessionClaims } from '@neoark/auth'
 
@@ -31,11 +32,49 @@
   type Tab = 'propose' | 'mine' | 'review'
   let tab: Tab = 'propose'
 
-  // The verse being worked on (demo: GEN 1:6; a corpus picker is a later add).
-  const ref = { translationId: 'neoos-en-2026', book: 'GEN', chapter: 1, verse: 6 }
-  const currentText = 'And Elohiym said, “Let there be an expanse between the waters.”'
-  let newText = currentText
+  // The verse being worked on — chosen via the picker over the full 85-book corpus.
+  const translationId = 'neoos-en-2026'
+  let pickBook = 'GEN'
+  let pickChapter = 1
+  let pickVerse = 6
+  $: ref = { translationId, book: pickBook, chapter: pickChapter, verse: pickVerse }
+
+  let corpus: Corpus | null = null
+  let corpusError = ''
+  let currentText = ''
+  let newText = ''
   let rationale = ''
+
+  async function ensureCorpus() {
+    if (corpus || corpusError) return
+    try {
+      corpus = await fetchCorpus()
+      // default selection → load its text
+      if (!corpus.chapters(pickBook).includes(pickChapter)) pickBook = corpus.loadedBooks()[0]?.id ?? 'GEN'
+      loadVerse()
+    } catch (e) {
+      corpusError = e instanceof Error ? e.message : String(e)
+    }
+  }
+  function loadVerse() {
+    if (!corpus) return
+    currentText = corpus.verseText(pickBook, pickChapter, pickVerse)
+    newText = currentText
+  }
+  function onBook() {
+    if (!corpus) return
+    pickChapter = corpus.chapters(pickBook)[0] ?? 1
+    pickVerse = corpus.verses(pickBook, pickChapter)[0]?.verse ?? 1
+    loadVerse()
+  }
+  function onChapter() {
+    if (!corpus) return
+    pickVerse = corpus.verses(pickBook, pickChapter)[0]?.verse ?? 1
+    loadVerse()
+  }
+  $: books = (corpus?.loadedBooks() ?? []) as BookMeta[]
+  $: chapterOpts = corpus?.chapters(pickBook) ?? []
+  $: verseOpts = corpus?.verses(pickBook, pickChapter).map((v) => v.verse) ?? []
 
   let busy = ''
   let notice = ''
@@ -48,7 +87,10 @@
     auth = PortalAuth.create({ jwtSecret: localKey(), store })
     session = auth.currentSession()
     pool = createRelayPool()
-    if (session) void refresh()
+    if (session) {
+      void refresh()
+      void ensureCorpus()
+    }
   })
 
   function localKey(): string {
@@ -241,7 +283,35 @@
   {#if notice}<p class="font-mono text-xs mb-3 text-muted">{notice}</p>{/if}
 
   {#if tab === 'propose'}
+    {#if corpusError}
+      <p class="text-red font-mono text-xs mb-3">Couldn't load the corpus ({corpusError}). You can still type a reference + text manually below.</p>
+    {:else if !corpus}
+      <p class="text-muted font-mono text-xs mb-3">Loading the corpus…</p>
+    {/if}
+
+    <div class="flex flex-wrap gap-2 mb-3 items-end">
+      <div>
+        <label for="pBook" class="block font-mono text-xs text-muted mb-1">Book</label>
+        <select id="pBook" bind:value={pickBook} on:change={onBook} disabled={!corpus} class="bg-panel border border-border rounded px-2 py-1 font-mono text-sm">
+          {#each books as b (b.id)}<option value={b.id}>{b.hebrew} — {b.english}</option>{/each}
+        </select>
+      </div>
+      <div>
+        <label for="pChap" class="block font-mono text-xs text-muted mb-1">Chapter</label>
+        <select id="pChap" bind:value={pickChapter} on:change={onChapter} disabled={!corpus} class="bg-panel border border-border rounded px-2 py-1 font-mono text-sm">
+          {#each chapterOpts as c (c)}<option value={c}>{c}</option>{/each}
+        </select>
+      </div>
+      <div>
+        <label for="pVerse" class="block font-mono text-xs text-muted mb-1">Verse</label>
+        <select id="pVerse" bind:value={pickVerse} on:change={loadVerse} disabled={!corpus} class="bg-panel border border-border rounded px-2 py-1 font-mono text-sm">
+          {#each verseOpts as v (v)}<option value={v}>{v}</option>{/each}
+        </select>
+      </div>
+    </div>
+
     <h2 class="font-mono text-accent mb-1">{ref.book} {ref.chapter}:{ref.verse}</h2>
+    {#if currentText}<p class="text-muted text-sm mb-1 italic">Current: {currentText}</p>{/if}
     <p class="text-muted text-sm mb-4">Edit the verse, give a rationale, and publish a signed proposal to the relays.</p>
     <label for="newText" class="block font-mono text-xs text-muted mb-1">Proposed text</label>
     <textarea id="newText" bind:value={newText} rows="3" class="w-full bg-panel border border-border rounded p-2 mb-4 font-sans"></textarea>
