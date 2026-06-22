@@ -83,7 +83,7 @@ no third-party Bible APIs):**
 
 | # | Book | id | Source | Status |
 |---|---|---|---|---|
-| 56 | 1 Enoch (Chanok) | ENO | R.H. Charles translation, 1913 (Oxford) — public domain | ⏳ pending |
+| 56 | 1 Enoch (Chanok) | ENO | R.H. Charles translation, via Project Gutenberg #77935 — public domain | ✅ ingested (877 v) |
 | 57 | Jubilees (Yovheliym) | JUB | R.H. Charles translation, 1913 (Oxford) — public domain | ⏳ pending |
 | 58 | Jasher (Sefer haYashar) | JSR | J.H. Parry & Co. 1887 edition — public domain | ⏳ pending |
 | 59 | Psalm 151 | PSL | 2012 LXX (eBible.org `eng-lxx2012`), Public Domain | ✅ ingested |
@@ -114,15 +114,14 @@ Philemon · Hebrews · James · 1–2 Peter · 1–3 John · Jude · Revelation
 
 | Metric | Value |
 |---|---|
-| Books ingested | **83 / 87** |
-| Verses ingested | **37,419** |
+| Books ingested | **84 / 87** |
+| Verses ingested | **38,296** |
 | Naming map | `neoos-naming-1` (applied to all books) |
 | Hash algorithm | BLAKE3 (verse → chapter → book → canon root) |
 | Translation id | `neoos-en-2026` |
 
 Ingested: 66 BSB canonical + 17 deuterocanonical/apocryphal books (16 KJV-CPB /
-LXX2012 + Psalm 151). The 4 remaining pseudepigrapha (1 Enoch, Jubilees, Jasher,
-2 Baruch) are wired into the canon (`book-order.json`), the importer registry
+LXX2012 + Psalm 151). The 3 remaining pseudepigrapha (Jubilees, Jasher, 2 Baruch) are wired into the canon (`book-order.json`), the importer registry
 (`src/parse-extra.ts`), and the parser; they ingest automatically once their
 public-domain text is placed in `tools/importer/sources/raw/extra/`.
 
