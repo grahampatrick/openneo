@@ -317,8 +317,10 @@
     }
     busy = 'Publishing your review…'
     try {
-      await castVote({ proposalId: q.proposal.id, vote: v, comment: '', createdAt: now() }, signer, pool)
-      notice = `✓ ${v === 'approve' ? 'Approved' : 'Rejected'} ${q.proposal.id.slice(0, 12)}…`
+      const r = await castVote({ proposalId: q.proposal.id, vote: v, comment: '', createdAt: now() }, signer, pool)
+      notice = r.relaysAccepted
+        ? `✓ ${v === 'approve' ? 'Approved' : 'Rejected'} — published to ${r.relaysAccepted} relay(s).`
+        : `⚠ Your ${v} was signed but NO relay accepted it. Check your connection and try again.`
       await refresh()
     } catch (e) {
       notice = 'Review failed: ' + (e instanceof Error ? e.message : String(e))
@@ -336,8 +338,11 @@
     busy = 'Withdrawing…'
     try {
       const event = await signer.signEvent(buildWithdrawal(q.proposal.id, now()))
-      await pool.publish(event)
-      notice = `✓ Withdrew ${q.proposal.id.slice(0, 12)}… — it will drop from the review queue.`
+      const acks = await pool.publish(event)
+      const ok = acks.filter((a) => a.ok).length
+      notice = ok
+        ? `✓ Withdrew ${q.proposal.id.slice(0, 12)}… (${ok} relay(s)) — it drops from the review queue.`
+        : `⚠ Withdrawal signed but NO relay accepted it — try again.`
       await refresh()
     } catch (e) {
       notice = 'Withdraw failed: ' + (e instanceof Error ? e.message : String(e))
@@ -360,7 +365,13 @@
     try {
       const gov = governed ? { maintainers, mergerPubkey: session?.pubkey } : {}
       const r = await maybeMerge(q.proposal, q.reviews, merger, now(), pool, governance?.quorum, gov)
-      notice = r.merged ? `✓ Merged — anchored to the day’s Bitcoin batch.` : `Not merged: ${r.reason}`
+      if (!r.merged) {
+        notice = `Not merged: ${r.reason}`
+      } else if (!r.relaysAccepted) {
+        notice = `⚠ Merge was signed but NO relay accepted it — nothing persisted. Check your connection and try Merge again.`
+      } else {
+        notice = `✓ Merged — published to ${r.relaysAccepted} relay(s), anchored to the day’s Bitcoin batch.`
+      }
       await refresh()
     } catch (e) {
       notice = 'Merge failed: ' + (e instanceof Error ? e.message : String(e))
