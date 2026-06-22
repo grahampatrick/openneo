@@ -50,40 +50,49 @@ Psalms · Proverbs · Ecclesiastes · Song of Solomon · Isaiah · Jeremiah ·
 Lamentations · Ezekiel · Daniel · Hosea · Joel · Amos · Obadiah · Jonah · Micah ·
 Nahum · Habakkuk · Zephaniah · Haggai · Zechariah · Malachi
 
-## Books 40–55 — Deuterocanon / Apocrypha
+## Books 40–55 — Deuterocanon / Apocrypha — ✅ ingested
 
-**Source:** KJV Apocrypha (1611) + other public-domain translations ·
-**License:** Public domain · **Status:** ⏳ pending (drop USFM in `sources/raw/extra/`)
+**Sources (first-party static USFM from eBible.org, cached in `sources/raw/extra/`,
+no third-party Bible APIs):**
+- **`KJV-CPB-PD`** — King James Version, **Cambridge Paragraph Bible** (F.H.A.
+  Scrivener), eBible.org `engkjvcpb`. Public Domain (KJV is PD in the US).
+- **`LXX2012-PD`** — the **2012 LXX** translation, eBible.org `eng-lxx2012`.
+  Public Domain. Used for Baruch + the Letter of Jeremiah (cleanly separated) and
+  3–4 Maccabees, which the KJV lacks.
 
 | # | Book | id | Source tag |
 |---|---|---|---|
-| 40 | Tobit | TOB | KJV-Apocrypha-PD |
-| 41 | Judith | JDT | KJV-Apocrypha-PD |
-| 42 | 1 Esdras | 1ES | KJV-Apocrypha-PD |
-| 43 | 2 Esdras | 2ES | KJV-Apocrypha-PD |
-| 44 | Wisdom of Solomon | WIS | KJV-Apocrypha-PD |
-| 45 | Sirach | SIR | KJV-Apocrypha-PD |
-| 46 | Baruch | BAR | KJV-Apocrypha-PD |
-| 47 | Letter of Jeremiah | LJE | KJV-Apocrypha-PD |
-| 48 | Prayer of Azariah | S3Y | KJV-Apocrypha-PD |
-| 49 | Susanna | SUS | KJV-Apocrypha-PD |
-| 50 | Bel and the Dragon | BEL | KJV-Apocrypha-PD |
-| 51 | 1 Maccabees | 1MA | KJV-Apocrypha-PD |
-| 52 | 2 Maccabees | 2MA | KJV-Apocrypha-PD |
-| 53 | 3 Maccabees | 3MA | PD |
-| 54 | 4 Maccabees | 4MA | PD |
-| 55 | Prayer of Manasseh | MAN | KJV-Apocrypha-PD |
+| 40 | Tobit | TOB | KJV-CPB-PD |
+| 41 | Judith | JDT | KJV-CPB-PD |
+| 42 | 1 Esdras | 1ES | KJV-CPB-PD |
+| 43 | 2 Esdras | 2ES | KJV-CPB-PD |
+| 44 | Wisdom of Solomon | WIS | KJV-CPB-PD |
+| 45 | Sirach | SIR | KJV-CPB-PD |
+| 46 | Baruch | BAR | LXX2012-PD |
+| 47 | Letter of Jeremiah | LJE | LXX2012-PD |
+| 48 | Prayer of Azariah | S3Y | KJV-CPB-PD |
+| 49 | Susanna | SUS | KJV-CPB-PD |
+| 50 | Bel and the Dragon | BEL | KJV-CPB-PD |
+| 51 | 1 Maccabees | 1MA | KJV-CPB-PD |
+| 52 | 2 Maccabees | 2MA | KJV-CPB-PD |
+| 53 | 3 Maccabees | 3MA | LXX2012-PD |
+| 54 | 4 Maccabees | 4MA | LXX2012-PD |
+| 55 | Prayer of Manasseh | MAN | KJV-CPB-PD |
 
 ## Books 56–59 — Pseudepigrapha (Hebrew Scriptures era)
 
-**License:** Public domain · **Status:** ⏳ pending
+| # | Book | id | Source | Status |
+|---|---|---|---|---|
+| 56 | 1 Enoch (Chanok) | ENO | R.H. Charles translation, 1913 (Oxford) — public domain | ⏳ pending |
+| 57 | Jubilees (Yovheliym) | JUB | R.H. Charles translation, 1913 (Oxford) — public domain | ⏳ pending |
+| 58 | Jasher (Sefer haYashar) | JSR | J.H. Parry & Co. 1887 edition — public domain | ⏳ pending |
+| 59 | Psalm 151 | PSL | 2012 LXX (eBible.org `eng-lxx2012`), Public Domain | ✅ ingested |
 
-| # | Book | id | Source |
-|---|---|---|---|
-| 56 | 1 Enoch (Chanok) | ENO | R.H. Charles translation, 1913 (Oxford) — public domain |
-| 57 | Jubilees (Yovheliym) | JUB | R.H. Charles translation, 1913 (Oxford) — public domain |
-| 58 | Jasher (Sefer haYashar) | JSR | J.H. Parry & Co. 1887 edition — public domain |
-| 59 | Psalm 151 | PSL | Public-domain translation |
+**Pending note:** Enoch, Jubilees, Jasher, and 2 Baruch (below) exist only as
+prose transcriptions of 1887/1913 public-domain translations (no USFM). They need
+careful verse-segmentation parsing and are a focused follow-up; the importer
+registry + parser already reserve their book ids, so they ingest the moment clean
+text is placed in `sources/raw/extra/`.
 
 ## Books 60–86 — Renewed Covenant (Brit Chadashah)
 
@@ -97,7 +106,7 @@ Philemon · Hebrews · James · 1–2 Peter · 1–3 John · Jude · Revelation
 ## Book 87 — 2 Baruch
 
 **Source:** R.H. Charles translation, 1913 · **License:** Public domain ·
-**Status:** ⏳ pending
+**Status:** ⏳ pending (see pseudepigrapha note above)
 
 ---
 
@@ -105,17 +114,17 @@ Philemon · Hebrews · James · 1–2 Peter · 1–3 John · Jude · Revelation
 
 | Metric | Value |
 |---|---|
-| Books ingested | 66 / 87 (all 66 BSB canonical) |
-| Verses ingested | 31,086 |
-| Naming map | `neoos-naming-1` |
+| Books ingested | **83 / 87** |
+| Verses ingested | **37,419** |
+| Naming map | `neoos-naming-1` (applied to all books) |
 | Hash algorithm | BLAKE3 (verse → chapter → book → canon root) |
 | Translation id | `neoos-en-2026` |
 
-The 21 deuterocanonical / pseudepigraphal books are wired into the canon
-(`book-order.json`), the importer registry (`src/parse-extra.ts`), and the USFM
-parser. They ingest automatically once their public-domain USFM files are placed
-in `tools/importer/sources/raw/extra/`. The build, hashes, and DoD do not depend
-on them being present.
+Ingested: 66 BSB canonical + 17 deuterocanonical/apocryphal books (16 KJV-CPB /
+LXX2012 + Psalm 151). The 4 remaining pseudepigrapha (1 Enoch, Jubilees, Jasher,
+2 Baruch) are wired into the canon (`book-order.json`), the importer registry
+(`src/parse-extra.ts`), and the parser; they ingest automatically once their
+public-domain text is placed in `tools/importer/sources/raw/extra/`.
 
 ---
 

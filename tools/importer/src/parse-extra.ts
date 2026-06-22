@@ -26,21 +26,30 @@ export interface ExtraSource {
  * matches book-order.json. Files live at sources/raw/extra/<bookId>.usfm.
  */
 export const EXTRA_SOURCES: readonly ExtraSource[] = [
-  { bookId: 'TOB', source: 'KJV-Apocrypha-PD' },
-  { bookId: 'JDT', source: 'KJV-Apocrypha-PD' },
-  { bookId: '1ES', source: 'KJV-Apocrypha-PD' },
-  { bookId: '2ES', source: 'KJV-Apocrypha-PD' },
-  { bookId: 'WIS', source: 'KJV-Apocrypha-PD' },
-  { bookId: 'SIR', source: 'KJV-Apocrypha-PD' },
-  { bookId: 'BAR', source: 'KJV-Apocrypha-PD' },
-  { bookId: 'S3Y', source: 'KJV-Apocrypha-PD' },
-  { bookId: 'SUS', source: 'KJV-Apocrypha-PD' },
-  { bookId: 'BEL', source: 'KJV-Apocrypha-PD' },
-  { bookId: '1MA', source: 'KJV-Apocrypha-PD' },
-  { bookId: '2MA', source: 'KJV-Apocrypha-PD' },
-  { bookId: 'MAN', source: 'KJV-Apocrypha-PD' },
+  // KJV deuterocanon — Cambridge Paragraph Bible (F.H.A. Scrivener), Public Domain.
+  { bookId: 'TOB', source: 'KJV-CPB-PD' },
+  { bookId: 'JDT', source: 'KJV-CPB-PD' },
+  { bookId: '1ES', source: 'KJV-CPB-PD' },
+  { bookId: '2ES', source: 'KJV-CPB-PD' },
+  { bookId: 'WIS', source: 'KJV-CPB-PD' },
+  { bookId: 'SIR', source: 'KJV-CPB-PD' },
+  { bookId: 'S3Y', source: 'KJV-CPB-PD' },
+  { bookId: 'SUS', source: 'KJV-CPB-PD' },
+  { bookId: 'BEL', source: 'KJV-CPB-PD' },
+  { bookId: '1MA', source: 'KJV-CPB-PD' },
+  { bookId: '2MA', source: 'KJV-CPB-PD' },
+  { bookId: 'MAN', source: 'KJV-CPB-PD' },
+  // Baruch + Letter of Jeremiah + 3–4 Maccabees — LXX2012 (eBible.org), Public Domain.
+  { bookId: 'BAR', source: 'LXX2012-PD' },
+  { bookId: 'LJE', source: 'LXX2012-PD' },
+  { bookId: '3MA', source: 'LXX2012-PD' },
+  { bookId: '4MA', source: 'LXX2012-PD' },
+  // Pseudepigrapha — ingested once their public-domain text is placed in extra/.
   { bookId: 'ENO', source: 'R.H.Charles-PD' },
   { bookId: 'JUB', source: 'R.H.Charles-PD' },
+  { bookId: '2BA', source: 'R.H.Charles-PD' },
+  { bookId: 'JSR', source: 'Parry-1887-PD' },
+  { bookId: 'PSL', source: 'PD' },
 ]
 
 export function extraDir(): string {

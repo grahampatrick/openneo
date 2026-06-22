@@ -20,6 +20,17 @@ function stripNotes(s: string): string {
     .replace(/\\fe\b.*?\\fe\*/gs, '')
 }
 
+/**
+ * Drop non-verse paragraph markers AND their text: section headings (\s \s1..),
+ * cross-ref lines (\r), psalm descriptions (\d), major titles (\ms \mt \mte),
+ * speaker (\sp), intro/remarks (\ip \is \iot \io \rem \cl \cp). These appear
+ * between verses inside a verse token; keeping their text would pollute the
+ * verse. Removes the marker through the end of its line.
+ */
+function stripHeadings(s: string): string {
+  return s.replace(/\\(?:s\d*|r|d|ms\d*|mt\d*|mte|sp|ip|is\d*|iot|io\d*|imt\d*|rem|cl|cp|qa|sr)\b[^\n\\]*/gi, '')
+}
+
 /** Strip inline character markers, keeping the visible word of \w tokens. */
 function stripInline(s: string): string {
   return s
@@ -31,7 +42,7 @@ function stripInline(s: string): string {
 }
 
 function clean(s: string): string {
-  return stripInline(stripNotes(s)).replace(/\s+/g, ' ').trim()
+  return stripInline(stripHeadings(stripNotes(s))).replace(/\s+/g, ' ').trim()
 }
 
 export function parseUsfm(content: string, bookId: string, source: string): Verse[] {
