@@ -11,8 +11,8 @@ export type { SubmitProposalInput } from './proposals'
 export { submitReview, parseReview, tallyReviews } from './reviews'
 export type { SubmitReviewInput } from './reviews'
 
-export { mergeProposal, parseMerge, QuorumNotMetError, NotAMaintainerError } from './merge'
-export type { MergeResult, MergeOptions } from './merge'
+export { mergeProposal, buildMerge, signMerge, parseMerge, QuorumNotMetError, NotAMaintainerError } from './merge'
+export type { MergeResult, MergeOptions, UnsignedMerge, MergeSigner } from './merge'
 
 export { merkleRoot, inclusionProof, verifyInclusion } from './merkle'
 export { anchorBatch, inclusionProofFor, verifyAnchor, MockCalendar } from './anchor'

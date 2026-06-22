@@ -44,14 +44,23 @@ export interface MergeOptions {
   mergerPubkey?: string
 }
 
-export function mergeProposal(
+/** The unsigned merge event + the corpus update, before signing. */
+export interface UnsignedMerge {
+  unsigned: { created_at: number; kind: number; tags: string[][]; content: string }
+  update: MergeResult['update']
+}
+
+/**
+ * Validate quorum + council gating and build the unsigned merge event. Throws
+ * QuorumNotMetError / NotAMaintainerError. The caller signs it — with a raw key
+ * (`mergeProposal`) or a Signer / NIP-07 extension (`signMerge`).
+ */
+export function buildMerge(
   proposal: Proposal,
   reviews: Review[],
-  maintainerPrivKey: string,
   createdAt: number,
   options: MergeOptions | QuorumConfig = DEFAULT_QUORUM,
-): MergeResult {
-  // Back-compat: a bare QuorumConfig is still accepted as the 5th arg.
+): UnsignedMerge {
   const isBareQuorum = 'minReviewers' in options && 'approvalThreshold' in options
   const opts: MergeOptions = isBareQuorum ? { quorum: options } : options
   const quorum = opts.quorum ?? DEFAULT_QUORUM
@@ -82,11 +91,40 @@ export function mergeProposal(
     ['ark_translation', proposal.ref.translationId],
     ['ark_quorum', String(tally.approvals), String(tally.reviewers)],
   ]
-  const event = signEvent(
-    { created_at: createdAt, kind: KIND_REVIEW, tags, content: '' },
-    maintainerPrivKey,
-  )
-  return { event, update: { ref: proposal.ref, newText: proposal.newText, proposalId: proposal.id } }
+  return {
+    unsigned: { created_at: createdAt, kind: KIND_REVIEW, tags, content: '' },
+    update: { ref: proposal.ref, newText: proposal.newText, proposalId: proposal.id },
+  }
+}
+
+/** A NIP-07-shaped signer (also what a key-backed signer implements). */
+export interface MergeSigner {
+  signEvent(event: { created_at: number; kind: number; tags: string[][]; content: string }): NostrEvent | Promise<NostrEvent>
+}
+
+/** Build + sign a merge with a Signer (NIP-07 extension or key-backed). */
+export async function signMerge(
+  proposal: Proposal,
+  reviews: Review[],
+  signer: MergeSigner,
+  createdAt: number,
+  options: MergeOptions | QuorumConfig = DEFAULT_QUORUM,
+): Promise<MergeResult> {
+  const { unsigned, update } = buildMerge(proposal, reviews, createdAt, options)
+  const event = await signer.signEvent(unsigned)
+  return { event, update }
+}
+
+/** Build + sign a merge with a raw maintainer key (CLI / server / runner). */
+export function mergeProposal(
+  proposal: Proposal,
+  reviews: Review[],
+  maintainerPrivKey: string,
+  createdAt: number,
+  options: MergeOptions | QuorumConfig = DEFAULT_QUORUM,
+): MergeResult {
+  const { unsigned, update } = buildMerge(proposal, reviews, createdAt, options)
+  return { event: signEvent(unsigned, maintainerPrivKey), update }
 }
 
 function tagValue(e: NostrEvent, name: string): string | undefined {
