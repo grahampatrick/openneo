@@ -6,7 +6,7 @@
 import { signEvent, verifyEventSignature } from '@neoark/manifest'
 import type { NostrEvent } from '@neoark/manifest'
 import { KIND_REVIEW } from './types'
-import type { Review, Vote, QuorumConfig, Tally } from './types'
+import type { Review, Vote, QuorumConfig, Tally, TallyOptions } from './types'
 
 export interface SubmitReviewInput {
   proposalId: string
@@ -48,18 +48,29 @@ export function parseReview(event: NostrEvent): Review {
  * (a reviewer may change their vote), and a reviewer cannot review with the
  * same key as... (self-review prevention is the caller's concern via pubkeys).
  */
-export function tallyReviews(reviews: Review[], quorum: QuorumConfig): Tally {
+export function tallyReviews(reviews: Review[], quorum: QuorumConfig, opts: TallyOptions = {}): Tally {
+  const council = opts.maintainers ? new Set(opts.maintainers.map((m) => m.toLowerCase())) : null
+
   // Last vote per reviewer wins.
   const latest = new Map<string, Vote>()
   for (const r of reviews) latest.set(r.reviewer, r.vote)
+
   let approvals = 0
   let rejections = 0
-  for (const vote of latest.values()) {
+  let communityApprovals = 0
+  for (const [reviewer, vote] of latest) {
+    // When a council is set, only its members count toward quorum; others are
+    // a public community signal that never merges (anti-Sybil).
+    if (council && !council.has(reviewer.toLowerCase())) {
+      if (vote === 'approve') communityApprovals++
+      continue
+    }
     if (vote === 'approve') approvals++
     else rejections++
   }
-  const reviewers = latest.size
+
+  const reviewers = approvals + rejections
   const approvalRatio = reviewers === 0 ? 0 : approvals / reviewers
   const meetsQuorum = reviewers >= quorum.minReviewers && approvalRatio >= quorum.approvalThreshold
-  return { approvals, rejections, reviewers, approvalRatio, meetsQuorum }
+  return { approvals, rejections, reviewers, approvalRatio, meetsQuorum, communityApprovals, governed: council !== null }
 }

@@ -62,11 +62,23 @@ export interface QuorumConfig {
 export const DEFAULT_QUORUM: QuorumConfig = { minReviewers: 3, approvalThreshold: 0.67 }
 
 export interface Tally {
+  /** Approvals counted toward quorum (maintainers only, when a council is set). */
   approvals: number
   rejections: number
+  /** Distinct reviewers counted toward quorum. */
   reviewers: number
   approvalRatio: number
   meetsQuorum: boolean
+  /** Approvals from non-maintainers — a public signal that does NOT merge. 0 when no council is set. */
+  communityApprovals: number
+  /** Whether a maintainer council was applied to this tally. */
+  governed: boolean
+}
+
+/** Options for tallyReviews — an optional council allowlist (anti-Sybil). */
+export interface TallyOptions {
+  /** Maintainer pubkeys (hex). When set, ONLY these votes count toward quorum. */
+  maintainers?: readonly string[]
 }
 
 // --- Bitcoin anchoring (OpenTimestamps-style) ---

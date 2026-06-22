@@ -27,7 +27,7 @@ max_ws_frame_bytes = 262144
 #   30700 verse · 30701 manifest · 30702 proposal · 30703 review/merge ·
 #   30704 notes · 30705 plan · 30706 reading-event · 30710/30712 use-proof/payout
 #   0 profile · 1 note · 22242 NIP-42 auth · 30078 app-specific use-proof
-event_kind_allowlist = [0, 1, 22242, 30078, 30700, 30701, 30702, 30703, 30704, 30705, 30706, 30710, 30712]
+event_kind_allowlist = [0, 1, 22242, 30078, 30700, 30701, 30702, 30703, 30704, 30705, 30706, 30710, 30712, 30750]
 
 [options]
 reject_future_seconds = 1800
