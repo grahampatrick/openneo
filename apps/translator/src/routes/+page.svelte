@@ -18,7 +18,7 @@
   import { statusBadge } from '$lib/status'
   import { fetchCorpus, type Corpus, type BookMeta } from '$lib/corpus'
   import { fetchProfile, publishProfile, isLightningAddress, type Profile } from '$lib/profile'
-  import { fetchGovernance, publishGovernance } from '$lib/governance'
+  import { fetchGovernance, publishGovernance, defaultQuorumFor } from '$lib/governance'
   import type { Governance } from '@neoark/translation-protocol'
   import type { RelayPool } from '@neoark/relay'
   import type { SessionClaims } from '@neoark/auth'
@@ -223,16 +223,47 @@
     busy = ''
   }
 
-  /** Bootstrap: the signed-in user claims the founding council (their key only). */
+  // Council editor (founding bootstrap + amendments). One pubkey per line.
+  let councilText = ''
+  let councilQuorum = 1
+
+  function openCouncilEditor() {
+    councilText = (maintainers.length ? maintainers : session ? [session.pubkey] : []).join('\n')
+    councilQuorum = governance?.quorum.minReviewers ?? 1
+  }
+
+  /** Publish/amend the council + quorum. Bootstraps to the signed-in user if empty. */
+  async function saveCouncil() {
+    if (!session) return
+    const list = councilText
+      .split('\n')
+      .map((s) => s.trim().toLowerCase())
+      .filter((s) => /^[0-9a-f]{64}$/.test(s))
+    if (list.length === 0) list.push(session.pubkey.toLowerCase())
+    const q = Math.max(1, Math.min(councilQuorum || 1, list.length))
+    busy = 'Publishing the council…'
+    try {
+      const signer = activeSigner(store)
+      if (!signer) throw new Error('signer unavailable')
+      await publishGovernance(pool, signer, ref.translationId, list, now(), { minReviewers: q, approvalThreshold: 0.67 })
+      await refresh()
+      notice = `✓ Council of ${list.length} published — quorum ${q}. Only these maintainers' votes merge.`
+    } catch (e) {
+      notice = 'Could not set governance: ' + (e instanceof Error ? e.message : String(e))
+    }
+    busy = ''
+  }
+
+  /** One-click bootstrap: just the signed-in user, quorum 1. */
   async function becomeFoundingMaintainer() {
     if (!session) return
     busy = 'Publishing the founding council…'
     try {
       const signer = activeSigner(store)
       if (!signer) throw new Error('signer unavailable')
-      await publishGovernance(pool, signer, ref.translationId, [session.pubkey], now())
+      await publishGovernance(pool, signer, ref.translationId, [session.pubkey], now(), defaultQuorumFor(1))
       await refresh()
-      notice = '✓ You are the founding maintainer. Only your votes now gate merges.'
+      notice = '✓ You are the founding maintainer (quorum 1). Add more maintainers anytime via "Edit council".'
     } catch (e) {
       notice = 'Could not set governance: ' + (e instanceof Error ? e.message : String(e))
     }
@@ -364,12 +395,28 @@
 
   {#if tab === 'review'}
     {#if governed}
-      <p class="font-mono text-xs text-muted mb-3">Governed by a council of {maintainers.length} maintainer(s){isMaintainer ? ' · you are a maintainer' : ' · your votes are a community signal'}. Only council approvals reach quorum.</p>
+      <div class="flex items-center justify-between gap-3 mb-3">
+        <p class="font-mono text-xs text-muted">Council of {maintainers.length} · quorum {governance?.quorum.minReviewers}{isMaintainer ? ' · you are a maintainer' : ' · your votes are a community signal'}.</p>
+        {#if isMaintainer}<button on:click={openCouncilEditor} class="px-3 py-1 rounded border border-border font-mono text-xs text-accent whitespace-nowrap">Edit council</button>{/if}
+      </div>
     {:else}
       <div class="border border-gold rounded-lg bg-panel p-3 mb-3 flex items-center justify-between gap-3">
         <span class="text-gold font-mono text-xs">⚠ No council set — anyone's votes can merge (ungoverned). Establish a council to gate merges.</span>
         <button disabled={!!busy} on:click={becomeFoundingMaintainer} class="px-3 py-1 rounded border border-border font-mono text-xs text-accent whitespace-nowrap">Become founding maintainer</button>
       </div>
+    {/if}
+
+    {#if councilText !== '' || (governed && isMaintainer)}
+      <details class="border border-border rounded-lg bg-panel p-3 mb-3" open={councilText !== ''}>
+        <!-- svelte-ignore a11y-no-redundant-roles -->
+        <summary class="font-mono text-xs text-muted cursor-pointer" on:click={openCouncilEditor}>Edit council &amp; quorum</summary>
+        <label for="councilText" class="block font-mono text-xs text-muted mt-3 mb-1">Maintainer pubkeys (hex, one per line)</label>
+        <textarea id="councilText" bind:value={councilText} rows="3" class="w-full bg-bg border border-border rounded p-2 mb-2 font-mono text-xs"></textarea>
+        <label for="councilQ" class="block font-mono text-xs text-muted mb-1">Quorum (maintainer approvals needed to merge)</label>
+        <input id="councilQ" type="number" min="1" bind:value={councilQuorum} class="w-24 bg-bg border border-border rounded p-2 mb-3 font-mono text-xs" />
+        <div><button disabled={!!busy} on:click={saveCouncil} class="px-4 py-1.5 rounded bg-accent text-bg font-mono text-xs font-bold">Publish council</button></div>
+        <p class="text-muted text-xs mt-2">Tip: to merge solo, keep quorum 1 and have a second identity propose (you can't approve your own proposal).</p>
+      </details>
     {/if}
   {/if}
 

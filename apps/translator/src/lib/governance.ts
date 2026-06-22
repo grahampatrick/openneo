@@ -10,6 +10,7 @@ import {
   buildGovernanceEvent,
   resolveGovernance,
   type Governance,
+  type QuorumConfig,
 } from '@neoark/translation-protocol'
 import type { RelayPool } from '@neoark/relay'
 import type { Signer } from './signer'
@@ -31,8 +32,16 @@ export async function publishGovernance(
   translationId: string,
   maintainers: string[],
   createdAt: number,
+  quorum?: QuorumConfig,
 ): Promise<{ relaysAccepted: number }> {
-  const event = await signer.signEvent(buildGovernanceEvent({ translationId, maintainers, createdAt }))
+  const event = await signer.signEvent(
+    buildGovernanceEvent({ translationId, maintainers, createdAt, ...(quorum ? { quorum } : {}) }),
+  )
   const acks = await pool.publish(event)
   return { relaysAccepted: acks.filter((a) => a.ok).length }
+}
+
+/** Sensible default quorum for a council of N: require all up to 3, then 67%. */
+export function defaultQuorumFor(councilSize: number): QuorumConfig {
+  return { minReviewers: Math.max(1, Math.min(councilSize, 3)), approvalThreshold: 0.67 }
 }
