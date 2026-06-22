@@ -16,7 +16,8 @@
     "@neoark/auth": "workspace:*",
     "@neoark/manifest": "workspace:*",
     "@neoark/relay": "workspace:*",
-    "@neoark/translation-protocol": "workspace:*"
+    "@neoark/translation-protocol": "workspace:*",
+    "@scure/base": "^1.1.9"
   },
   "devDependencies": {
     "@sveltejs/adapter-static": "^3.0.0",

@@ -99,6 +99,9 @@ importers:
       '@neoark/translation-protocol':
         specifier: workspace:*
         version: link:../../packages/translation-protocol
+      '@scure/base':
+        specifier: ^1.1.9
+        version: 1.2.6
     devDependencies:
       '@sveltejs/adapter-static':
         specifier: ^3.0.0
