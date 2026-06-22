@@ -5,7 +5,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0
  */
-export { reviewState, fetchReviewQueue, pendingOnly } from './queue'
+export { reviewState, fetchReviewQueue, pendingOnly, buildWithdrawal, KIND_DELETION } from './queue'
 export { castVote, maybeMerge } from './vote'
 export type { Vote, CastVoteInput, CastVoteResult, MaybeMergeResult, MaybeMergeOptions } from './vote'
 export type { ReviewableProposal, Proposal, Review, QuorumConfig, Signer, GovernanceContext } from './types'
