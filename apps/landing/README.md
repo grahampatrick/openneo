@@ -3,8 +3,7 @@
 # @neoark/landing
 
 The neoark.org landing page — a single, self-contained static HTML file in the
-dark terminal aesthetic (`#0a0a0a` / `#e6e6e6` / `#6ee7ff`), reskinned from the
-Odysseus landing (AGPL-3.0).
+dark terminal aesthetic (`#0a0a0a` / `#e6e6e6` / `#6ee7ff`)
 
 - **Hero:** *"The Ark holds. The text endures. — running on your hardware."*
 - **Feature grid** (hover-to-play clip placeholders): parallel reading, translator
