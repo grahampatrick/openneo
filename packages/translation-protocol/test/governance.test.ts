@@ -116,3 +116,22 @@ describe('mergeProposal — council gating', () => {
     expect(() => mergeProposal(proposal, communityReviews, founder.seckey, 10, { maintainers: council, mergerPubkey: founder.pubkey })).toThrow(QuorumNotMetError)
   })
 })
+
+describe('signMerge — Signer-based merge (NIP-07)', () => {
+  const author = keypairFromSeed('a1'.repeat(32))
+  const proposal = parseProposal(
+    submitProposal({ ref: { translationId: TID, book: 'GEN', chapter: 1, verse: 6 }, newText: 'a firmament', rationale: 'r', createdAt: 1 }, author.seckey),
+  )
+  const m3 = keypairFromSeed('f3'.repeat(32))
+  const approvals = [founder, m2, m3].map((k, i) => parseReview(submitReview({ proposalId: proposal.id, vote: 'approve', comment: '', createdAt: i + 1 }, k.seckey)))
+
+  it('a Signer produces a merge byte-equivalent to the raw-key path', async () => {
+    const { signMerge, mergeProposal } = await import('../src/merge')
+    const { signEvent, getPublicKey } = await import('@neoark/manifest')
+    const signer = { signEvent: (e: { created_at: number; kind: number; tags: string[][]; content: string }) => signEvent(e, founder.seckey) }
+    const viaSigner = await signMerge(proposal, approvals, signer, 10, { maintainers: council, mergerPubkey: founder.pubkey })
+    const viaKey = mergeProposal(proposal, approvals, founder.seckey, 10, { maintainers: council, mergerPubkey: founder.pubkey })
+    expect(viaSigner.event.id).toBe(viaKey.event.id) // same content, same id
+    expect(getPublicKey(founder.seckey)).toBe(viaSigner.event.pubkey)
+  })
+})

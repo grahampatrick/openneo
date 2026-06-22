@@ -7,7 +7,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0
  */
-import { KIND_REVIEW, DEFAULT_QUORUM, mergeProposal, parseReview } from '@neoark/translation-protocol'
+import { KIND_REVIEW, DEFAULT_QUORUM, mergeProposal, signMerge, parseReview } from '@neoark/translation-protocol'
 import type { RelayPool } from '@neoark/relay'
 import type { NostrEvent } from '@neoark/manifest'
 import type { Proposal, QuorumConfig, Review, Signer } from './types'
@@ -61,10 +61,14 @@ export interface MaybeMergeOptions {
   mergerPubkey?: string
 }
 
+/**
+ * Merge if quorum is met. `merger` is a raw maintainer key (string) OR a Signer
+ * (NIP-07 extension / key-backed) — so extension-only maintainers can merge.
+ */
 export async function maybeMerge(
   proposal: Proposal,
   reviews: Review[],
-  maintainerKey: string,
+  merger: string | Signer,
   createdAt: number,
   pool: RelayPool,
   quorum: QuorumConfig = DEFAULT_QUORUM,
@@ -81,10 +85,14 @@ export async function maybeMerge(
   if (!state.mergeReady) {
     return { merged: false, reason: `quorum not met (${String(state.approvals)}/${String(state.reviewers)} maintainer approvals, need ${String(state.needed)} more)` }
   }
-  const result = mergeProposal(proposal, state.reviews, maintainerKey, createdAt, {
+  const options = {
     quorum,
     ...(gov.maintainers ? { maintainers: gov.maintainers, mergerPubkey: gov.mergerPubkey } : {}),
-  })
+  }
+  const result =
+    typeof merger === 'string'
+      ? mergeProposal(proposal, state.reviews, merger, createdAt, options)
+      : await signMerge(proposal, state.reviews, merger, createdAt, options)
   const acks = await pool.publish(result.event)
   return { merged: true, reason: 'quorum met', event: result.event, relaysAccepted: acks.filter((a) => a.ok).length }
 }

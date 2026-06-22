@@ -312,15 +312,16 @@
       notice = 'Only a council maintainer can merge this translation.'
       return
     }
-    const key = activeSeckey(store)
-    if (!key) {
-      notice = 'Merging signs a maintainer event — available when you hold a local key (Create a key). NIP-07 merge support is coming.'
+    // A raw local key OR the NIP-07 extension can sign the merge.
+    const merger = activeSeckey(store) ?? activeSigner(store)
+    if (!merger) {
+      notice = 'Your signer is unavailable — please sign in again.'
       return
     }
     busy = 'Merging…'
     try {
       const gov = governed ? { maintainers, mergerPubkey: session?.pubkey } : {}
-      const r = await maybeMerge(q.proposal, q.reviews, key, now(), pool, governance?.quorum, gov)
+      const r = await maybeMerge(q.proposal, q.reviews, merger, now(), pool, governance?.quorum, gov)
       notice = r.merged ? `✓ Merged — anchored to the day’s Bitcoin batch.` : `Not merged: ${r.reason}`
       await refresh()
     } catch (e) {
