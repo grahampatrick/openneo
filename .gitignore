@@ -16,3 +16,7 @@ apps/*/build/
 
 # assembled deploy artifact
 /site/
+
+# Generated per-book corpus split (build:apps)
+apps/reader/static/corpus/books/
+apps/reader/static/corpus/available-books.json

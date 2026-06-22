@@ -1,16 +1,11 @@
 /**
- * Corpus access for the portal's verse picker. Fetches the same content the
- * reader serves (no duplication), lazily — only when the translator opens the
- * picker. Indexed by book → chapter → verse for fast navigation.
+ * Corpus access for the portal's verse picker — lazy, per-book. Instead of
+ * downloading the whole 28.5 MB corpus, fetch the small book list (~KBs) up
+ * front, then one book file (tens–hundreds of KB) when the translator selects
+ * it. Files are the per-book split the reader serves at /read/corpus/books/.
  *
  * SPDX-License-Identifier: AGPL-3.0
  */
-export interface Verse {
-  bookId: string
-  chapter: number
-  verse: number
-  text: string
-}
 export interface BookMeta {
   index: number
   id: string
@@ -18,72 +13,51 @@ export interface BookMeta {
   hebrew: string
 }
 
-export class Corpus {
-  private readonly byBook = new Map<string, Map<number, Verse[]>>()
-  readonly books: readonly BookMeta[]
+/** One book: chapter → verse → text. */
+export type BookData = Record<number, Record<number, string>>
 
-  constructor(verses: Verse[], books: BookMeta[]) {
-    this.books = books
-    for (const v of verses) {
-      let chapters = this.byBook.get(v.bookId)
-      if (!chapters) {
-        chapters = new Map()
-        this.byBook.set(v.bookId, chapters)
-      }
-      const list = chapters.get(v.chapter)
-      if (list) list.push(v)
-      else chapters.set(v.chapter, [v])
-    }
-    for (const chapters of this.byBook.values())
-      for (const list of chapters.values()) list.sort((a, b) => a.verse - b.verse)
-  }
+const DEFAULT_BASE = '/read/corpus'
 
-  /** Books that actually have verses, in canon order. */
-  loadedBooks(): BookMeta[] {
-    return this.books.filter((b) => this.byBook.has(b.id))
-  }
-  bookMeta(bookId: string): BookMeta | undefined {
-    return this.books.find((b) => b.id === bookId)
-  }
-  chapters(bookId: string): number[] {
-    return [...(this.byBook.get(bookId)?.keys() ?? [])].sort((a, b) => a - b)
-  }
-  verses(bookId: string, chapter: number): Verse[] {
-    return this.byBook.get(bookId)?.get(chapter) ?? []
-  }
-  verseText(bookId: string, chapter: number, verse: number): string {
-    return this.verses(bookId, chapter).find((v) => v.verse === verse)?.text ?? ''
-  }
+/** Fetch the list of available books (with names), small. */
+export async function fetchBookList(base = DEFAULT_BASE): Promise<BookMeta[]> {
+  const [order, available] = await Promise.all([
+    fetch(`${base}/book-order.json`).then((r) => {
+      if (!r.ok) throw new Error(`book-order ${String(r.status)}`)
+      return r.json() as Promise<{ books: BookMeta[] }>
+    }),
+    fetch(`${base}/available-books.json`)
+      .then((r) => (r.ok ? (r.json() as Promise<string[]>) : null))
+      .catch(() => null),
+  ])
+  const avail = available ? new Set(available) : null
+  return order.books.filter((b) => !avail || avail.has(b.id))
 }
 
-/** Parse verses.jsonl (kind:30700 events) into Verse[]. */
-export function parseVersesJsonl(jsonl: string): Verse[] {
-  const out: Verse[] = []
-  for (const line of jsonl.split('\n')) {
-    if (!line.trim()) continue
-    const event = JSON.parse(line) as { content: string; tags: string[][] }
-    const ref = event.tags.find((t) => t[0] === 'ref')
-    if (!ref) continue
-    const bookId = ref[1]
-    const ch = ref[2]
-    const vs = ref[3]
-    if (bookId === undefined || ch === undefined || vs === undefined) continue
-    out.push({ bookId, chapter: Number(ch), verse: Number(vs), text: event.content })
+/** Fetch a single book's verses (chapter → verse → text). */
+export async function fetchBook(bookId: string, base = DEFAULT_BASE): Promise<BookData> {
+  const raw = await fetch(`${base}/books/${bookId}.json`).then((r) => {
+    if (!r.ok) throw new Error(`book ${bookId} ${String(r.status)}`)
+    return r.json() as Promise<Record<string, Record<string, string>>>
+  })
+  const out: BookData = {}
+  for (const [ch, verses] of Object.entries(raw)) {
+    const chapter: Record<number, string> = {}
+    for (const [v, text] of Object.entries(verses)) chapter[Number(v)] = text
+    out[Number(ch)] = chapter
   }
   return out
 }
 
-/**
- * Fetch + build the corpus. Defaults to the reader's deployed path
- * (`/read/corpus`, same origin) so the portal doesn't ship its own 25 MB copy.
- */
-export async function fetchCorpus(base = '/read/corpus'): Promise<Corpus> {
-  const [versesText, order] = await Promise.all([
-    fetch(`${base}/verses.jsonl`).then((r) => {
-      if (!r.ok) throw new Error(`corpus ${String(r.status)}`)
-      return r.text()
-    }),
-    fetch(`${base}/book-order.json`).then((r) => r.json() as Promise<{ books: BookMeta[] }>),
-  ])
-  return new Corpus(parseVersesJsonl(versesText), order.books)
+export function chaptersOf(book: BookData): number[] {
+  return Object.keys(book)
+    .map(Number)
+    .sort((a, b) => a - b)
+}
+export function versesOf(book: BookData, chapter: number): number[] {
+  return Object.keys(book[chapter] ?? {})
+    .map(Number)
+    .sort((a, b) => a - b)
+}
+export function verseText(book: BookData, chapter: number, verse: number): string {
+  return book[chapter]?.[verse] ?? ''
 }

@@ -1,45 +1,61 @@
-import { describe, it, expect } from 'vitest'
-import { Corpus, parseVersesJsonl, type Verse, type BookMeta } from '../src/lib/corpus'
+import { describe, it, expect, vi, afterEach } from 'vitest'
+import { fetchBookList, fetchBook, chaptersOf, versesOf, verseText, type BookData } from '../src/lib/corpus'
 
-const BOOKS: BookMeta[] = [
-  { index: 1, id: 'GEN', english: 'Genesis', hebrew: "Bere'shiyth" },
-  { index: 6, id: 'JHN', english: 'John', hebrew: 'Yahuchanon' },
-]
-const VERSES: Verse[] = [
-  { bookId: 'GEN', chapter: 1, verse: 1, text: 'In the beginning…' },
-  { bookId: 'GEN', chapter: 1, verse: 6, text: 'Let there be a firmament.' },
-  { bookId: 'GEN', chapter: 2, verse: 1, text: 'Thus the heavens…' },
-  { bookId: 'JHN', chapter: 3, verse: 16, text: 'For Elohiym so loved…' },
-]
+const BOOK_ORDER = {
+  books: [
+    { index: 1, id: 'GEN', english: 'Genesis', hebrew: "Bere'shiyth" },
+    { index: 6, id: 'JHN', english: 'John', hebrew: 'Yahuchanon' },
+    { index: 99, id: 'XXX', english: 'NotLoaded', hebrew: '—' },
+  ],
+}
+const GEN: Record<string, Record<string, string>> = {
+  '1': { '1': 'In the beginning…', '6': 'Let there be a firmament.' },
+  '2': { '1': 'Thus the heavens…' },
+}
 
-describe('Corpus (verse picker)', () => {
-  const c = new Corpus(VERSES, BOOKS)
+function mockFetch(map: Record<string, unknown>) {
+  return vi.fn((url: string) => {
+    const key = Object.keys(map).find((k) => url.endsWith(k))
+    if (!key) return Promise.resolve({ ok: false, status: 404 } as Response)
+    return Promise.resolve({ ok: true, status: 200, json: () => Promise.resolve(map[key]) } as Response)
+  })
+}
 
-  it('lists loaded books in canon order', () => {
-    expect(c.loadedBooks().map((b) => b.id)).toEqual(['GEN', 'JHN'])
+afterEach(() => {
+  vi.unstubAllGlobals()
+})
+
+describe('fetchBookList', () => {
+  it('returns only available books, with names', async () => {
+    vi.stubGlobal('fetch', mockFetch({ 'book-order.json': BOOK_ORDER, 'available-books.json': ['GEN', 'JHN'] }))
+    const books = await fetchBookList()
+    expect(books.map((b) => b.id)).toEqual(['GEN', 'JHN']) // XXX filtered out
+    expect(books[0]).toMatchObject({ id: 'GEN', english: 'Genesis' })
   })
 
-  it('navigates book → chapter → verse', () => {
-    expect(c.chapters('GEN')).toEqual([1, 2])
-    expect(c.verses('GEN', 1).map((v) => v.verse)).toEqual([1, 6])
-    expect(c.verseText('GEN', 1, 6)).toBe('Let there be a firmament.')
-    expect(c.verseText('JHN', 3, 16)).toBe('For Elohiym so loved…')
+  it('falls back to all books if available-books.json is missing', async () => {
+    vi.stubGlobal('fetch', mockFetch({ 'book-order.json': BOOK_ORDER }))
+    expect((await fetchBookList()).map((b) => b.id)).toEqual(['GEN', 'JHN', 'XXX'])
   })
 
-  it('returns empties for unknown refs', () => {
-    expect(c.chapters('ZZZ')).toEqual([])
-    expect(c.verses('GEN', 99)).toEqual([])
-    expect(c.verseText('GEN', 1, 99)).toBe('')
+  it('throws if book-order is unreachable', async () => {
+    vi.stubGlobal('fetch', mockFetch({}))
+    await expect(fetchBookList()).rejects.toThrow(/book-order/)
   })
 })
 
-describe('parseVersesJsonl', () => {
-  it('parses kind:30700 events, skipping malformed lines', () => {
-    const jsonl = [
-      JSON.stringify({ content: 'hi', tags: [['ref', 'GEN', '1', '6']] }),
-      '',
-      JSON.stringify({ content: 'x', tags: [['d', 'no-ref']] }),
-    ].join('\n')
-    expect(parseVersesJsonl(jsonl)).toEqual([{ bookId: 'GEN', chapter: 1, verse: 6, text: 'hi' }])
+describe('fetchBook + navigation', () => {
+  it('fetches a single book and navigates chapter → verse → text', async () => {
+    vi.stubGlobal('fetch', mockFetch({ 'books/GEN.json': GEN }))
+    const book: BookData = await fetchBook('GEN')
+    expect(chaptersOf(book)).toEqual([1, 2])
+    expect(versesOf(book, 1)).toEqual([1, 6])
+    expect(verseText(book, 1, 6)).toBe('Let there be a firmament.')
+    expect(verseText(book, 1, 99)).toBe('') // unknown verse
+  })
+
+  it('throws on a missing book file', async () => {
+    vi.stubGlobal('fetch', mockFetch({}))
+    await expect(fetchBook('ZZZ')).rejects.toThrow(/ZZZ/)
   })
 })

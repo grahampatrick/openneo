@@ -16,7 +16,7 @@
   import { activeSigner, activeSeckey, recordAuthSource } from '$lib/active-signer'
   import { fetchReviewQueue, castVote, maybeMerge, type ReviewableProposal } from '@neoark/review'
   import { statusBadge } from '$lib/status'
-  import { fetchCorpus, type Corpus, type BookMeta } from '$lib/corpus'
+  import { fetchBookList, fetchBook, chaptersOf, versesOf, verseText, type BookMeta, type BookData } from '$lib/corpus'
   import { fetchProfile, publishProfile, isLightningAddress, type Profile } from '$lib/profile'
   import { fetchGovernance, publishGovernance, defaultQuorumFor } from '$lib/governance'
   import type { Governance } from '@neoark/translation-protocol'
@@ -48,42 +48,52 @@
   let pickVerse = 6
   $: ref = { translationId, book: pickBook, chapter: pickChapter, verse: pickVerse }
 
-  let corpus: Corpus | null = null
+  let books: BookMeta[] = []
+  let book: BookData | null = null // the currently-selected book's verses
   let corpusError = ''
   let currentText = ''
   let newText = ''
   let rationale = ''
 
+  // Load the small book list, then the default book.
   async function ensureCorpus() {
-    if (corpus || corpusError) return
+    if (books.length || corpusError) return
     try {
-      corpus = await fetchCorpus()
-      // default selection → load its text
-      if (!corpus.chapters(pickBook).includes(pickChapter)) pickBook = corpus.loadedBooks()[0]?.id ?? 'GEN'
+      books = await fetchBookList()
+      if (!books.some((b) => b.id === pickBook)) pickBook = books[0]?.id ?? 'GEN'
+      await loadBook()
+    } catch (e) {
+      corpusError = e instanceof Error ? e.message : String(e)
+    }
+  }
+  async function loadBook() {
+    corpusError = ''
+    try {
+      book = await fetchBook(pickBook)
+      const chs = chaptersOf(book)
+      if (!chs.includes(pickChapter)) pickChapter = chs[0] ?? 1
+      const vs = versesOf(book, pickChapter)
+      if (!vs.includes(pickVerse)) pickVerse = vs[0] ?? 1
       loadVerse()
     } catch (e) {
       corpusError = e instanceof Error ? e.message : String(e)
     }
   }
   function loadVerse() {
-    if (!corpus) return
-    currentText = corpus.verseText(pickBook, pickChapter, pickVerse)
+    if (!book) return
+    currentText = verseText(book, pickChapter, pickVerse)
     newText = currentText
   }
-  function onBook() {
-    if (!corpus) return
-    pickChapter = corpus.chapters(pickBook)[0] ?? 1
-    pickVerse = corpus.verses(pickBook, pickChapter)[0]?.verse ?? 1
-    loadVerse()
+  async function onBook() {
+    await loadBook()
   }
   function onChapter() {
-    if (!corpus) return
-    pickVerse = corpus.verses(pickBook, pickChapter)[0]?.verse ?? 1
+    if (!book) return
+    pickVerse = versesOf(book, pickChapter)[0] ?? 1
     loadVerse()
   }
-  $: books = (corpus?.loadedBooks() ?? []) as BookMeta[]
-  $: chapterOpts = corpus?.chapters(pickBook) ?? []
-  $: verseOpts = corpus?.verses(pickBook, pickChapter).map((v) => v.verse) ?? []
+  $: chapterOpts = book ? chaptersOf(book) : []
+  $: verseOpts = book ? versesOf(book, pickChapter) : []
 
   let busy = ''
   let notice = ''
@@ -145,7 +155,7 @@
 
   $: hasPayoutAddress = !!profile?.lud16
   // Safety net: ensure the corpus loads whenever a signed-in user views Propose.
-  $: if (session && tab === 'propose' && !corpus && !corpusError) void ensureCorpus()
+  $: if (session && tab === 'propose' && books.length === 0 && !corpusError) void ensureCorpus()
 
   function localKey(): string {
     let k = store.get('neoark.translator.localsecret')
@@ -435,27 +445,27 @@
 
   {#if tab === 'propose'}
     {#if corpusError}
-      <p class="text-red font-mono text-xs mb-3">Couldn't load the corpus ({corpusError}). You can still type a reference + text manually below.</p>
-    {:else if !corpus}
-      <p class="text-muted font-mono text-xs mb-3">Loading the corpus…</p>
+      <p class="text-red font-mono text-xs mb-2">Couldn't load the book list ({corpusError}). <button class="underline text-accent" on:click={ensureCorpus}>Retry</button> — or pick a book once it loads.</p>
+    {:else if books.length === 0}
+      <p class="text-muted font-mono text-xs mb-3">Loading books…</p>
     {/if}
 
     <div class="flex flex-wrap gap-2 mb-3 items-end">
       <div>
         <label for="pBook" class="block font-mono text-xs text-muted mb-1">Book</label>
-        <select id="pBook" bind:value={pickBook} on:change={onBook} disabled={!corpus} class="bg-panel border border-border rounded px-2 py-1 font-mono text-sm">
+        <select id="pBook" bind:value={pickBook} on:change={onBook} disabled={books.length === 0} class="bg-panel border border-border rounded px-2 py-1 font-mono text-sm">
           {#each books as b (b.id)}<option value={b.id}>{b.hebrew} — {b.english}</option>{/each}
         </select>
       </div>
       <div>
         <label for="pChap" class="block font-mono text-xs text-muted mb-1">Chapter</label>
-        <select id="pChap" bind:value={pickChapter} on:change={onChapter} disabled={!corpus} class="bg-panel border border-border rounded px-2 py-1 font-mono text-sm">
+        <select id="pChap" bind:value={pickChapter} on:change={onChapter} disabled={!book} class="bg-panel border border-border rounded px-2 py-1 font-mono text-sm">
           {#each chapterOpts as c (c)}<option value={c}>{c}</option>{/each}
         </select>
       </div>
       <div>
         <label for="pVerse" class="block font-mono text-xs text-muted mb-1">Verse</label>
-        <select id="pVerse" bind:value={pickVerse} on:change={loadVerse} disabled={!corpus} class="bg-panel border border-border rounded px-2 py-1 font-mono text-sm">
+        <select id="pVerse" bind:value={pickVerse} on:change={loadVerse} disabled={!book} class="bg-panel border border-border rounded px-2 py-1 font-mono text-sm">
           {#each verseOpts as v (v)}<option value={v}>{v}</option>{/each}
         </select>
       </div>
