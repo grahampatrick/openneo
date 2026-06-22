@@ -96,6 +96,9 @@ importers:
       '@neoark/relay':
         specifier: workspace:*
         version: link:../../packages/relay
+      '@neoark/review':
+        specifier: workspace:*
+        version: link:../../packages/review
       '@neoark/translation-protocol':
         specifier: workspace:*
         version: link:../../packages/translation-protocol
