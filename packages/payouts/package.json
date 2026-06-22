@@ -1,0 +1,32 @@
+{
+  "name": "@neoark/payouts",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "license": "AGPL-3.0",
+  "description": "Lightning payouts — pay translators on merge from the treasury, emit receipts",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "demo": "tsx demo.ts",
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc -p tsconfig.json",
+    "test": "vitest run --coverage",
+    "clean": "rm -rf dist coverage"
+  },
+  "dependencies": {
+    "@neoark/manifest": "workspace:*",
+    "@neoark/payer": "workspace:*",
+    "@neoark/relay": "workspace:*",
+    "@neoark/translation-protocol": "workspace:*",
+    "@neoark/translator-payments": "workspace:*"
+  },
+  "devDependencies": {
+    "@vitest/coverage-v8": "^1.6.0",
+    "tsx": "^4.16.0",
+    "vitest": "^1.6.0"
+  }
+}
