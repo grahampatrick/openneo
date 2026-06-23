@@ -84,12 +84,22 @@ export function buildMerge(
         `(need ≥${String(quorum.minReviewers)} at ≥${String(quorum.approvalThreshold)})`,
     )
   }
+  // Record the approving reviewers (council-scoped) so payouts don't re-fetch
+  // review events (which may be missing from a relay's response).
+  const council = opts.maintainers ? new Set(opts.maintainers.map((m) => m.toLowerCase())) : null
+  const latest = new Map<string, string>()
+  for (const r of eligible) latest.set(r.reviewer.toLowerCase(), r.vote)
+  const approvers = [...latest]
+    .filter(([k, v]) => v === 'approve' && (!council || council.has(k)))
+    .map(([k]) => k)
+
   const tags: string[][] = [
     ['e', proposal.id],
     ['ark_action', 'merge'],
     ['ark_ref', proposal.ref.book, String(proposal.ref.chapter), String(proposal.ref.verse)],
     ['ark_translation', proposal.ref.translationId],
     ['ark_quorum', String(tally.approvals), String(tally.reviewers)],
+    ...approvers.map((a) => ['approver', a]),
   ]
   return {
     unsigned: { created_at: createdAt, kind: KIND_REVIEW, tags, content: '' },
@@ -139,6 +149,9 @@ export function parseMerge(event: NostrEvent): MergeRecord {
   const proposalId = tagValue(event, 'e')
   const quorumTag = event.tags.find((t) => t[0] === 'ark_quorum')
   if (!proposalId || !quorumTag || quorumTag.length < 3) throw new Error('Merge missing tags')
+  const approvers = event.tags
+    .filter((t): t is [string, string, ...string[]] => t[0] === 'approver' && typeof t[1] === 'string')
+    .map((t) => t[1].toLowerCase())
   return {
     event,
     id: event.id,
@@ -146,5 +159,6 @@ export function parseMerge(event: NostrEvent): MergeRecord {
     proposalId,
     approvals: Number(quorumTag[1]),
     reviewers: Number(quorumTag[2]),
+    approvers,
   }
 }
