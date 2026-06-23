@@ -124,9 +124,10 @@
   <div class="wrap">
     <span class="brand">Neo<b>Ark</b></span>
     <span class="links">
+      <a href="/read">Read</a>
+      <a href="/translate">Translate</a>
       <a href="#features">Features</a>
       <a href="#protocol">Protocol</a>
-      <a href="#install">Install</a>
       <a href="#donate">Donate</a>
       <a href="https://github.com/grahampatrick/openneo">GitHub</a>
     </span>
@@ -135,16 +136,15 @@
 
 <header class="hero">
   <div class="wrap">
-    <span class="tag">Anchored Reference Kernel · running on your hardware</span>
+    <span class="tag">NeoOS — Neo Ontology Scripture · open source</span>
     <h1>The Ark holds.<br>The text <span class="accent">endures.</span></h1>
-    <p class="tagline">An open, peer-to-peer Bible translation system. Read the most accurate English Scripture ever produced — every change immutably anchored to Bitcoin, every translator paid via Lightning, no gatekeeper over the text.</p>
+    <p class="tagline">An open, peer-to-peer Bible translation system. Read NeoOS — an accuracy-first English Scripture — then propose corrections that peers review, a council merges, Bitcoin timestamps, and Lightning pays. No account, no gatekeeper over the text.</p>
     <div class="cta">
-      <a class="btn primary" href="#install">Get started</a>
-      <a class="btn ghost" href="#features">See features</a>
+      <a class="btn primary" href="/read">Read now</a>
+      <a class="btn ghost" href="/translate">Propose a correction</a>
     </div>
     <div class="install" id="install">
-      <code>npx @neoark/reader read</code>
-      <button onclick="navigator.clipboard&amp;&amp;navigator.clipboard.writeText('npx @neoark/reader read')">copy</button>
+      <code>openneo.org/read</code> — 85 books, offline, in your browser. CLI coming to npm.
     </div>
   </div>
 </header>
@@ -152,37 +152,37 @@
 <section id="features">
   <div class="wrap">
     <h2>Features</h2>
-    <p class="lead">A reader built on a content-addressed, signed, relay-distributed corpus. Hover a card to preview.</p>
+    <p class="lead">A reader and a translator portal built on a content-addressed, signed, relay-distributed corpus. Live today.</p>
     <div class="grid">
       <div class="card">
-        <div class="clip">▶ parallel reading</div>
-        <h3>Parallel reading</h3>
-        <p>Compare NeoOS, KJV, and BSB side by side — Hebrew names and accuracy corrections in context.</p>
+        <div class="clip">▶ read 85 books</div>
+        <h3>Read NeoOS — 85 books</h3>
+        <p>The accuracy-first English corpus with Hebrew names, every verse content-addressed with BLAKE3. Runs offline in your browser.</p>
       </div>
       <div class="card">
-        <div class="clip">▶ translator merge</div>
-        <h3>Translator merge + Bitcoin anchor</h3>
-        <p>Propose a correction, peers review, a maintainer merges — and the change is timestamped to Bitcoin forever.</p>
+        <div class="clip">▶ propose → merge</div>
+        <h3>Propose, review, merge + Bitcoin anchor</h3>
+        <p>Propose a correction, a council reviews and votes, a maintainer merges — and the change is timestamped to Bitcoin forever. Live in the translator portal.</p>
       </div>
       <div class="card">
-        <div class="clip">▶ use-proof graph</div>
-        <h3>"Where is this verse used?"</h3>
-        <p>A live graph of signed use-proofs across the web. Verifiable adoption — no platform can fake the numbers.</p>
+        <div class="clip">▶ Lightning payouts</div>
+        <h3>Translators paid in Lightning</h3>
+        <p>On merge, the work is split — translator, reviewers, submitter — and paid over Lightning. No custody, signed receipts.</p>
       </div>
       <div class="card">
-        <div class="clip">▶ reading plan</div>
-        <h3>Reading plans</h3>
-        <p>Community-published, forkable plans. Track progress with signed, private-by-default reading events.</p>
+        <div class="clip">▶ key, not account</div>
+        <h3>Identity is a key</h3>
+        <p>Sign in with one click — a Nostr key generated in your browser, or your own extension. No email, no account, no vendor.</p>
       </div>
       <div class="card">
-        <div class="clip">▶ offline mode</div>
-        <h3>Offline mode</h3>
-        <p>Local-first. The whole corpus lives on your device with full-text search; sync is opportunistic.</p>
+        <div class="clip">▶ council governance</div>
+        <h3>Council governance</h3>
+        <p>A known council of maintainers reviews and merges. Only their votes reach quorum — Sybil-resistant, with a signed, public, forkable maintainer set.</p>
       </div>
       <div class="card">
-        <div class="clip">▶ community notes</div>
-        <h3>Community notes</h3>
-        <p>Signed commentary and cross-references, toggleable per verse. Identity is a key, not an account.</p>
+        <div class="clip">▶ open &amp; verifiable</div>
+        <h3>Open &amp; verifiable</h3>
+        <p>Every count comes from public signed events — no backend to trust. Protocol AGPL-3.0, text CC-BY-SA 4.0. Fork the whole thing.</p>
       </div>
     </div>
   </div>
@@ -193,7 +193,7 @@
     <h2>Four interlocking layers</h2>
     <p class="lead">NeoArk is a specialization of Nostr for Scripture, with Bitcoin for permanence and Lightning for payments.</p>
     <div class="layers">
-      <div class="layer"><h3>NeoOS Bible</h3><p>87-book corpus, Hebrew names, accuracy-first English — every verse content-addressed with BLAKE3.</p></div>
+      <div class="layer"><h3>NeoOS</h3><p>Neo Ontology Scripture — an open-source, accuracy-first English corpus (85 of 87 books today), Hebrew names, every verse content-addressed with BLAKE3.</p></div>
       <div class="layer"><h3>ARK Protocol</h3><p>Content-addressed events on Nostr relays. Anyone runs a relay; clients pull from many, push to many.</p></div>
       <div class="layer"><h3>Bitcoin Translation Protocol</h3><p>Immutable PR history anchored to Bitcoin via OpenTimestamps, with Lightning payouts and peer review.</p></div>
       <div class="layer"><h3>NeoArk Reader</h3><p>PWA + CLI: read, compare, see change history and Bitcoin anchors, propose and vote on revisions.</p></div>

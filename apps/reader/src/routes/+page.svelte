@@ -3,7 +3,7 @@
   import { base } from '$app/paths'
   import { fetchCorpus, type Corpus, type Verse, type BookMeta } from '$lib/corpus'
   import { formatReference } from '$lib/reference'
-  import { currentRef, showNotes, showParallel } from '$lib/stores'
+  import { currentRef, showNotes } from '$lib/stores'
   import { anchorLabel, sortRevisions, type Revision } from '$lib/history'
   import { notesForVerse, groupByVerse, type CommunityNote } from '$lib/notes'
 
@@ -45,18 +45,11 @@
   }
   function openVerse(v: Verse) {
     selected = v
-    // Demo: a single anchored revision + sample usage; replace with relay queries.
-    revisions = sortRevisions([
-      {
-        mergeEventId: 'demo-merge',
-        text: v.text,
-        rationale: 'Accuracy correction merged via the Bitcoin Translation Protocol.',
-        maintainer: 'maintainer',
-        mergedAt: 1717545600,
-        anchor: { state: 'bitcoin', blockHeight: 840000 },
-      },
-    ])
-    usageCount = notes.size // placeholder until relay query wires in
+    // Live revision history, use-proofs, and notes are queried from relays in the
+    // translator portal; wiring them into the reader is in progress. Until then
+    // this panel shows honest empty state rather than placeholder data.
+    revisions = sortRevisions([])
+    usageCount = 0
   }
 
   $: chapters = corpus?.chapters($currentRef.bookId) ?? []
@@ -86,35 +79,22 @@
       {/each}
     </div>
     <label class="ml-auto text-sm font-mono flex items-center gap-1">
-      <input type="checkbox" bind:checked={$showParallel} /> parallel
-    </label>
-    <label class="text-sm font-mono flex items-center gap-1">
       <input type="checkbox" bind:checked={$showNotes} /> notes
     </label>
   </div>
 
   <h1 class="font-mono text-xl mb-3 text-accent">{refLabel}</h1>
 
-  <div class="grid gap-2" class:grid-cols-2={$showParallel}>
-    <div>
-      {#each verses as v (v.verse)}
-        <p class="mb-1 leading-relaxed">
-          <button class="text-muted font-mono text-xs mr-1 align-top" on:click={() => openVerse(v)}>{v.verse}</button>
-          <span>{v.text}</span>
-          {#if $showNotes && notesForVerse(notes, v.bookId, v.chapter, v.verse).length}
-            <span class="text-accent text-xs">({notesForVerse(notes, v.bookId, v.chapter, v.verse).length} notes)</span>
-          {/if}
-        </p>
-      {/each}
-    </div>
-    {#if $showParallel}
-      <div class="border-l border-border pl-3 text-muted">
-        <p class="font-mono text-xs mb-2">BSB (parallel)</p>
-        {#each verses as v (v.verse)}
-          <p class="mb-1 leading-relaxed"><span class="font-mono text-xs mr-1">{v.verse}</span>{v.text}</p>
-        {/each}
-      </div>
-    {/if}
+  <div>
+    {#each verses as v (v.verse)}
+      <p class="mb-1 leading-relaxed">
+        <button class="text-muted font-mono text-xs mr-1 align-top" on:click={() => openVerse(v)}>{v.verse}</button>
+        <span>{v.text}</span>
+        {#if $showNotes && notesForVerse(notes, v.bookId, v.chapter, v.verse).length}
+          <span class="text-accent text-xs">({notesForVerse(notes, v.bookId, v.chapter, v.verse).length} notes)</span>
+        {/if}
+      </p>
+    {/each}
   </div>
 
   {#if selected}
@@ -126,14 +106,18 @@
 
       <section class="mb-4">
         <h3 class="font-mono text-sm text-muted mb-2">Change history</h3>
-        {#each revisions as rev (rev.mergeEventId)}
-          {@const label = anchorLabel(rev.anchor)}
-          <div class="text-sm mb-2">
-            <span class="inline-block w-2 h-2 rounded-full mr-2" style="background:{label.color}"></span>
-            <span class="font-mono text-xs" style="color:{label.color}">{label.text}</span>
-            <p class="text-muted text-xs mt-1">{rev.rationale}</p>
-          </div>
-        {/each}
+        {#if revisions.length}
+          {#each revisions as rev (rev.mergeEventId)}
+            {@const label = anchorLabel(rev.anchor)}
+            <div class="text-sm mb-2">
+              <span class="inline-block w-2 h-2 rounded-full mr-2" style="background:{label.color}"></span>
+              <span class="font-mono text-xs" style="color:{label.color}">{label.text}</span>
+              <p class="text-muted text-xs mt-1">{rev.rationale}</p>
+            </div>
+          {/each}
+        {:else}
+          <p class="text-muted text-sm">No merged revisions indexed for this verse yet. Propose one in the <a class="text-accent underline" href="/translate">translator</a>.</p>
+        {/if}
       </section>
 
       <section class="mb-4">
