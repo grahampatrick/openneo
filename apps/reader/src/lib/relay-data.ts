@@ -1,51 +1,27 @@
 /**
- * Live verse data from the relays — the change history (merges), community notes
- * (kind:30704), and use-proof count behind the verse pop-up. Read-only; queries
- * the same relays the translator portal publishes to.
+ * Live verse data from the relays — the change history (merges) and the free
+ * citation count behind the verse pop-up. Read-only; queries the same relays the
+ * translator portal publishes to.
  *
  * SPDX-License-Identifier: AGPL-3.0
  */
 import { RelayPool, WebSocketRelay, DEFAULT_RELAYS } from '@neoark/relay'
 import type { WebSocketFactory } from '@neoark/relay'
 import { parseMerge, parseProposal } from '@neoark/translation-protocol'
-import { parseNote, type CommunityNote } from './notes'
-import { signWith } from './identity'
 import type { Revision } from './history'
 
 export const TRANSLATION_ID = 'neoos-en-2026'
 const KIND_PROPOSAL = 30702
 const KIND_REVIEW = 30703
-const KIND_NOTE = 30704
 
 export function createReaderPool(): RelayPool {
   const factory = ((u: string) => new WebSocket(u)) as unknown as WebSocketFactory
   return new RelayPool(DEFAULT_RELAYS.map((u) => new WebSocketRelay(u, factory, { timeoutMs: 8000 })))
 }
 
-/** Sign + publish a community note (kind:30704) for a verse. Returns relays accepted. */
-export async function publishNote(
-  pool: RelayPool,
-  seckey: string,
-  ref: { bookId: string; chapter: number; verse: number },
-  content: string,
-  createdAt: number,
-): Promise<number> {
-  const event = signWith(seckey, {
-    kind: KIND_NOTE,
-    created_at: createdAt,
-    tags: [
-      ['ark_ref', ref.bookId, String(ref.chapter), String(ref.verse)],
-      ['ark_translation', TRANSLATION_ID],
-    ],
-    content: content.trim(),
-  })
-  const acks = await pool.publish(event)
-  return acks.filter((a) => a.ok).length
-}
-
 // The cite SDK's free, on-render citation (NO payment), distinct from the
 // payment-tied UP-1 use-proof (kind:30078). This is what "Where is this verse
-// used?" should count — real embeds across the web, while reading stays free.
+// used?" counts — real embeds across the web, while reading stays free.
 const KIND_CITATION = 30710
 
 export interface Citation {
@@ -56,7 +32,6 @@ export interface Citation {
 
 export interface VerseData {
   revisions: Revision[]
-  notes: CommunityNote[]
   citations: Citation
 }
 
@@ -93,15 +68,14 @@ export async function fetchCitations(pool: RelayPool, ref: { bookId: string; cha
   return { count, sources: [...sources] }
 }
 
-/** Fetch the live change history, notes, and citation count for one verse. */
+/** Fetch the live change history + citation count for one verse. */
 export async function fetchVerseData(
   pool: RelayPool,
   ref: { bookId: string; chapter: number; verse: number },
 ): Promise<VerseData> {
-  const [proposalEvents, reviewEvents, noteEvents, citations] = await Promise.all([
+  const [proposalEvents, reviewEvents, citations] = await Promise.all([
     pool.query({ kinds: [KIND_PROPOSAL], limit: 500 }),
     pool.query({ kinds: [KIND_REVIEW], limit: 1000 }),
-    pool.query({ kinds: [KIND_NOTE], limit: 500 }),
     fetchCitations(pool, ref),
   ])
 
@@ -133,13 +107,5 @@ export async function fetchVerseData(
   }
   revisions.sort((a, b) => b.mergedAt - a.mergedAt)
 
-  // Notes for this verse.
-  const notes: CommunityNote[] = []
-  for (const e of noteEvents) {
-    const n = parseNote(e)
-    if (n && n.bookId === ref.bookId && n.chapter === ref.chapter && n.verse === ref.verse) notes.push(n)
-  }
-  notes.sort((a, b) => b.createdAt - a.createdAt)
-
-  return { revisions, notes, citations }
+  return { revisions, citations }
 }

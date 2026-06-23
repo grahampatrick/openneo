@@ -1,5 +1,5 @@
 /**
- * App stores: current reference, community-notes toggle, online status.
+ * App stores: current reference, online status.
  *
  * SPDX-License-Identifier: AGPL-3.0
  */
@@ -7,8 +7,6 @@ import { writable, type Writable } from 'svelte/store'
 import type { Reference } from './reference'
 
 export const currentRef: Writable<Reference> = writable({ bookId: 'GEN', chapter: 1 })
-export const showNotes: Writable<boolean> = writable(false)
-export const showParallel: Writable<boolean> = writable(false)
 export const online: Writable<boolean> = writable(true)
 
 /** Wire the online store to the browser's connectivity events. */
