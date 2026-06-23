@@ -9,6 +9,10 @@ export type { NostrEvent }
 
 /** Default public Nostr relays (used by the WebSocket pool; tests use mocks). */
 export const DEFAULT_RELAYS = [
+  // The project's own relay first (durable + ARK-tuned); public relays as
+  // redundancy. A relay that's down/absent just contributes nothing (the pool
+  // takes whatever resolves), so this is safe before relay.openneo.org is live.
+  'wss://relay.openneo.org',
   'wss://relay.damus.io',
   'wss://nos.lol',
   'wss://relay.snort.social',

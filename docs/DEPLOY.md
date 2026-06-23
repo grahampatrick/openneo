@@ -138,3 +138,35 @@ Only **governed** merges appear (council-maintainer-signed). Paid state persists
 in `NEOOS_PAID_FILE` (default `./payouts.paid.json`), so a recipient is never
 listed twice. Manual receipts are signed attestations (`ark_method=manual`) — a
 public record, not preimage-proven (you paid out of band). No custody.
+
+---
+
+## Public relay (M20) — relay.openneo.org
+
+A relay the project controls makes propose/review/merge/payout durable instead of
+depending on busy public relays. `infra/relay/` has the image + ARK-tuned config
+(kind allowlist incl. 0/1/5/22242/30078/30700–30750). Clients already list
+`wss://relay.openneo.org` first in `DEFAULT_RELAYS` (a down/absent relay is safely
+skipped), so this is flip-the-switch once deployed.
+
+**Deploy (operator step — needs a small VPS + DNS):**
+1. **DNS**: add an A/AAAA record `relay.openneo.org → <vps-ip>`.
+2. **Run the relay** on the VPS:
+   ```bash
+   cd infra/relay && docker compose up -d   # nostr-rs-relay on :8080 (ws)
+   ```
+3. **TLS**: put Caddy (or nginx) in front to terminate TLS and proxy to :8080:
+   ```
+   relay.openneo.org {
+     reverse_proxy 127.0.0.1:8080
+   }
+   ```
+   (Caddy auto-provisions the cert.) The relay is then `wss://relay.openneo.org`.
+4. **Verify**:
+   ```bash
+   node scripts/relay-probe.mjs wss://relay.openneo.org   # NIP-11 + REQ/EOSE
+   ```
+   Then publish a proposal from the portal and confirm it lands on the relay.
+
+Persist the DB volume (see `docker-compose.yml`); keep public relays as redundancy
+in the client list.
