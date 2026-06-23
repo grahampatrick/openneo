@@ -19,21 +19,32 @@ describe('NeoArk landing content', () => {
     }
   })
 
-  it('shows the one-line install block', () => {
-    expect(html).toContain('npx @neoark/reader')
+  it('links to the live reader and translator', () => {
+    expect(html).toContain('href="/read"')
+    expect(html).toContain('href="/translate"')
   })
 
-  it('lists all six features', () => {
+  it('defines NeoOS (Neo Ontology Scripture, open source)', () => {
+    expect(html).toContain('Neo Ontology Scripture')
+    expect(html.toLowerCase()).toContain('open source')
+  })
+
+  it('lists features that are actually built', () => {
     for (const f of [
-      'Parallel reading',
-      'Translator merge + Bitcoin anchor',
-      'Where is this verse used?',
-      'Reading plans',
-      'Offline mode',
-      'Community notes',
+      'Read NeoOS — 85 books',
+      'Propose, review, merge + Bitcoin anchor',
+      'Translators paid in Lightning',
+      'Council governance',
+      'Open &amp; verifiable',
     ]) {
       expect(html).toContain(f)
     }
+  })
+
+  it('does not claim unbuilt features', () => {
+    expect(html).not.toContain('Reading plans') // not built
+    expect(html).not.toMatch(/Compare NeoOS, KJV/) // no KJV/BSB parallel data
+    expect(html).not.toContain('npx @neoark/reader read') // not published to npm
   })
 
   it('has a donation section with a Lightning address and QR', () => {
