@@ -48,6 +48,22 @@ describe('ManualPayouts', () => {
     expect(plan.every((p) => !p.paid)).toBe(true)
   })
 
+  it('pays reviewers from the merge-recorded approvers even when review events are missing', async () => {
+    // Publish governance + proposal + merge, but NOT the review events (simulating
+    // a relay that dropped them). The split must still include the reviewer.
+    const pool = new RelayPool([new MockRelay()])
+    await pool.publish(signGovernance({ translationId: TID, maintainers: council, quorum: { minReviewers: 1, approvalThreshold: 0.67 }, createdAt: 1 }, m1.seckey))
+    const pe = submitProposal({ ref: { translationId: TID, book: 'GEN', chapter: 1, verse: 6 }, newText: 'a firmament', rationale: 'r', createdAt: 10 }, translator.seckey)
+    await pool.publish(pe)
+    const proposal = parseProposal(pe)
+    const reviews = [parseReview(submitReview({ proposalId: proposal.id, vote: 'approve', comment: '', createdAt: 20 }, m1.seckey))]
+    const merge = mergeProposal(proposal, reviews, m1.seckey, 100, { maintainers: council, mergerPubkey: m1.pubkey, quorum: { minReviewers: 1, approvalThreshold: 0.67 } })
+    await pool.publish(merge.event) // reviews intentionally not published
+    const plan = await manual(pool, profilesAll()).plan(TID)
+    expect(plan.find((p) => p.role === 'translator')?.sats).toBe(400) // 70% + folded submitter
+    expect(plan.find((p) => p.role === 'reviewer' && p.pubkey === m1.pubkey.toLowerCase())?.sats).toBe(100) // 20%
+  })
+
   it('plans nothing for an ungoverned translation', async () => {
     const pool = new RelayPool([new MockRelay()])
     const pe = submitProposal({ ref: { translationId: TID, book: 'GEN', chapter: 1, verse: 6 }, newText: 'x', rationale: 'r', createdAt: 10 }, translator.seckey)

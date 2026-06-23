@@ -50,6 +50,8 @@ export interface MergeRecord {
   proposalId: string
   approvals: number
   reviewers: number
+  /** Pubkeys of the reviewers whose approvals counted — recorded so payouts don't re-fetch reviews. */
+  approvers: string[]
 }
 
 /** Per-translation review quorum. */

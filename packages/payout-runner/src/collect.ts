@@ -88,14 +88,18 @@ export async function collectGovernedPayouts(
     if (!proposal) continue
     if (!council.has(m.maintainer.toLowerCase())) continue // not a governed merge
 
-    // Approving maintainers (latest vote per reviewer, council-scoped, not the author).
-    const latest = new Map<string, 'approve' | 'reject'>()
-    for (const r of reviewsByProposal.get(proposal.id) ?? []) {
-      if (r.proposalId !== proposal.id || r.reviewer === proposal.author) continue
-      if (!council.has(r.reviewer.toLowerCase())) continue
-      latest.set(r.reviewer.toLowerCase(), r.vote)
+    // Prefer the approvers recorded in the merge event (reliable — no re-fetch).
+    // Fall back to re-deriving from review events if an older merge omitted them.
+    let approvers = m.approvers.filter((a) => council.has(a) && a !== proposal.author.toLowerCase())
+    if (approvers.length === 0) {
+      const latest = new Map<string, 'approve' | 'reject'>()
+      for (const r of reviewsByProposal.get(proposal.id) ?? []) {
+        if (r.proposalId !== proposal.id || r.reviewer === proposal.author) continue
+        if (!council.has(r.reviewer.toLowerCase())) continue
+        latest.set(r.reviewer.toLowerCase(), r.vote)
+      }
+      approvers = [...latest].filter(([, v]) => v === 'approve').map(([k]) => k)
     }
-    const approvers = [...latest].filter(([, v]) => v === 'approve').map(([k]) => k)
 
     const shares = computeMergeSplit({ translator: proposal.author, reviewers: approvers }, opts.perMergeSats, opts.percents)
     out.push({ mergeEventId: m.id, proposalId: proposal.id, ref: proposal.ref, shares })
