@@ -78,8 +78,8 @@
     ? books.filter((b) => isCanon66(b.id)).sort((a, b) => canon66Rank(a.id) - canon66Rank(b.id))
     : books
 
-  function toggle66() {
-    only66 = !only66
+  function set66(value: boolean) {
+    only66 = value
     // If the current book isn't in the 66, jump to Genesis.
     if (only66 && !isCanon66($currentRef.bookId)) {
       currentRef.set({ bookId: 'GEN', chapter: 1 })
@@ -112,11 +112,15 @@
           class:bg-accent={c === $currentRef.chapter} class:text-bg={c === $currentRef.chapter}>{c}</button>
       {/each}
     </div>
-    <button on:click={toggle66} title="Toggle between the 66-book Protestant canon and the full 87-book set"
-      class="ml-auto px-3 py-1 rounded text-sm font-mono border border-border"
-      class:bg-accent={only66} class:text-bg={only66}>
-      {only66 ? '66 books' : 'All 87'}
-    </button>
+    <div class="ml-auto flex items-center gap-2" title="Show the 66-book Protestant canon or the full 87-book set">
+      <span class="text-xs text-muted font-mono">canon</span>
+      <div class="inline-flex rounded-md border border-border overflow-hidden font-mono text-sm">
+        <button on:click={() => set66(true)} class="px-3 py-1"
+          class:bg-accent={only66} class:text-bg={only66} class:text-muted={!only66}>66</button>
+        <button on:click={() => set66(false)} class="px-3 py-1 border-l border-border"
+          class:bg-accent={!only66} class:text-bg={!only66} class:text-muted={only66}>87</button>
+      </div>
+    </div>
   </div>
 
   <h1 class="font-mono text-xl mb-3 text-accent">{refLabel}</h1>
