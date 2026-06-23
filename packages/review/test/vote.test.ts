@@ -57,4 +57,32 @@ describe('maybeMerge', () => {
     const r = await maybeMerge(proposal, reviewObjs(['reject']), maintainer.seckey, 10, pool)
     expect(r.merged).toBe(false)
   })
+
+  it('merges via a Signer (NIP-07 path), not just a raw key', async () => {
+    const pool = new RelayPool([new MockRelay()])
+    const r = await maybeMerge(proposal, reviewObjs(['approve', 'approve', 'approve']), keySigner(maintainer.seckey), 10, pool)
+    expect(r.merged).toBe(true)
+    expect(parseMerge(r.event!).maintainer).toBe(maintainer.pubkey)
+  })
+
+  it('refuses a merger who is not a council maintainer', async () => {
+    const pool = new RelayPool([new MockRelay()])
+    const council = reviewers.slice(0, 3).map((k) => k.pubkey)
+    const r = await maybeMerge(proposal, reviewObjs(['approve', 'approve', 'approve']), maintainer.seckey, 10, pool, undefined, {
+      maintainers: council,
+      mergerPubkey: maintainer.pubkey, // maintainer is NOT in the council
+    })
+    expect(r.merged).toBe(false)
+    expect(r.reason).toMatch(/council maintainer/)
+  })
+
+  it('lets a council maintainer merge a council-scoped proposal', async () => {
+    const pool = new RelayPool([new MockRelay()])
+    const council = reviewers.slice(0, 3).map((k) => k.pubkey)
+    const r = await maybeMerge(proposal, reviewObjs(['approve', 'approve', 'approve']), reviewers[0]!.seckey, 10, pool, undefined, {
+      maintainers: council,
+      mergerPubkey: reviewers[0]!.pubkey,
+    })
+    expect(r.merged).toBe(true)
+  })
 })
