@@ -47,10 +47,11 @@ describe('OpenNeo landing content', () => {
     expect(html).not.toContain('npx @neoark/reader read') // not published to npm
   })
 
-  it('has a donation section with a Lightning address and QR', () => {
-    expect(html).toContain('donate@neoark.org')
-    expect(html).toContain('Lightning address')
-    expect(html).toMatch(/<svg[^>]*viewBox="0 0 29 29"/) // QR placeholder
+  it('has a donation section with the real Bitcoin address + QR (no placeholder)', () => {
+    expect(html).toContain('bc1qj2qfrzfp27na8q2s0mz603z2a9zak9aclnrejt')
+    expect(html).not.toContain('donate@neoark.org') // old placeholder removed
+    expect(html).toContain('Bitcoin address')
+    expect(html).toMatch(/<svg[^>]*viewBox="0 0 35 35"/) // real generated QR, not the 29x29 placeholder
   })
 
   it('uses the dark terminal palette', () => {

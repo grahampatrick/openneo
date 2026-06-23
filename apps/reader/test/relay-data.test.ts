@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { fetchVerseData, TRANSLATION_ID } from '../src/lib/relay-data'
+import { fetchVerseData, publishNote, TRANSLATION_ID } from '../src/lib/relay-data'
 import { RelayPool, MockRelay } from '@neoark/relay'
 import { keypairFromSeed, signEvent } from '@neoark/manifest'
 import { submitProposal, parseProposal, submitReview, parseReview, mergeProposal } from '@neoark/translation-protocol'
@@ -46,6 +46,16 @@ describe('fetchVerseData', () => {
     const data = await fetchVerseData(pool, { bookId: 'JHN', chapter: 3, verse: 16 })
     expect(data.revisions).toEqual([])
     expect(data.notes).toEqual([])
+  })
+
+  it('publishNote signs a kind:30704 note that fetchVerseData then returns', async () => {
+    const pool = new RelayPool([new MockRelay()])
+    const ok = await publishNote(pool, noteAuthor.seckey, ref, 'raqia = a solid dome', 50)
+    expect(ok).toBe(1)
+    const data = await fetchVerseData(pool, ref)
+    expect(data.notes).toHaveLength(1)
+    expect(data.notes[0]!.content).toBe('raqia = a solid dome')
+    expect(data.notes[0]!.author).toBe(noteAuthor.pubkey)
   })
 
   it('ignores merges whose proposal is for another verse', async () => {
