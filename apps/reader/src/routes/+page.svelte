@@ -6,6 +6,7 @@
   import { currentRef } from '$lib/stores'
   import { anchorLabel, type Revision } from '$lib/history'
   import { createReaderPool, fetchVerseData } from '$lib/relay-data'
+  import { isCanon66, canon66Rank } from '$lib/canon'
   import type { RelayPool } from '@neoark/relay'
 
   let corpus: Corpus | null = null
@@ -14,6 +15,7 @@
   let books: BookMeta[] = []
   let selected: Verse | null = null
   let pool: RelayPool | null = null
+  let only66 = false // one-click revert to the Protestant 66
 
   // Live verse data from the relays (queried when a verse is opened).
   let revisions: Revision[] = []
@@ -71,6 +73,20 @@
     selected = null
   }
 
+  // The book list shown in the picker: all 87, or the Protestant 66 (in standard order).
+  $: visibleBooks = only66
+    ? books.filter((b) => isCanon66(b.id)).sort((a, b) => canon66Rank(a.id) - canon66Rank(b.id))
+    : books
+
+  function toggle66() {
+    only66 = !only66
+    // If the current book isn't in the 66, jump to Genesis.
+    if (only66 && !isCanon66($currentRef.bookId)) {
+      currentRef.set({ bookId: 'GEN', chapter: 1 })
+      load()
+    }
+  }
+
   $: chapters = corpus?.chapters($currentRef.bookId) ?? []
   $: refLabel = corpus ? formatReference($currentRef, corpus) : ''
 </script>
@@ -85,7 +101,7 @@
   <div class="flex flex-wrap items-center gap-3 mb-4">
     <select on:change={pickBook} value={$currentRef.bookId}
       class="bg-panel border border-border rounded px-2 py-1 font-mono text-sm">
-      {#each books as b (b.id)}
+      {#each visibleBooks as b (b.id)}
         <option value={b.id}>{b.hebrew} — {b.english}</option>
       {/each}
     </select>
@@ -96,6 +112,11 @@
           class:bg-accent={c === $currentRef.chapter} class:text-bg={c === $currentRef.chapter}>{c}</button>
       {/each}
     </div>
+    <button on:click={toggle66} title="Toggle between the 66-book Protestant canon and the full 87-book set"
+      class="ml-auto px-3 py-1 rounded text-sm font-mono border border-border"
+      class:bg-accent={only66} class:text-bg={only66}>
+      {only66 ? '66 books' : 'All 87'}
+    </button>
   </div>
 
   <h1 class="font-mono text-xl mb-3 text-accent">{refLabel}</h1>
