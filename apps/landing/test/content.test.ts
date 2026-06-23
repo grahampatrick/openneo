@@ -10,13 +10,16 @@ describe('OpenNeo landing content', () => {
     expect(html).toContain('Open<b>Neo</b>') // nav brand
     expect(html).not.toMatch(/Neo<b>Ark<\/b>/)
     expect(html).not.toContain('The Ark holds') // ark copy removed
-    // Title and brand must be OpenNeo; Odysseus appears only as AGPL attribution
-    // (the SPDX header comment + the footer credit), never as branding.
     expect(html).not.toContain('<title>Odysseus')
     expect(html).not.toMatch(/class="brand"[^>]*>[^<]*Odysseus/)
-    for (const mention of html.match(/.{0,40}Odysseus.{0,40}/g) ?? []) {
-      expect(mention).toMatch(/reskinned|AGPL/)
-    }
+  })
+
+  it('has no "reskin" wording, but keeps AGPL attribution in the source (compliance)', () => {
+    const visible = html.replace(/<!--[\s\S]*?-->/g, '') // strip HTML comments (source-only)
+    expect(visible).not.toMatch(/reskin/i) // no reskinning wording anywhere on the page
+    expect(visible).not.toContain('Odysseus') // no visible Odysseus credit
+    // The required AGPL attribution lives in the source header comment, not the page.
+    expect(html).toMatch(/Odysseus[\s\S]{0,80}AGPL-3\.0/) // credit + license preserved in source
   })
 
   it('links to the live reader and translator', () => {
