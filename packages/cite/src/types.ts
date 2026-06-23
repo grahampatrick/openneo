@@ -46,6 +46,8 @@ export interface CiteOptions {
   signer?: Signer
   /** Free-form context tag, e.g. the host page URL or app name. */
   context?: string
+  /** Source host shown in readers' "where is this verse used?" (e.g. the page hostname). */
+  source?: string
   /** Accumulate proofs and emit one aggregated event per flush (privacy). */
   rollup?: boolean
   /** Clock injection (unix seconds). */
