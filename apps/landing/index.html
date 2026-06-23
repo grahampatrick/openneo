@@ -201,6 +201,20 @@
   </div>
 </section>
 
+<section id="stats">
+  <div class="wrap">
+    <h2>Live network</h2>
+    <p class="lead">Verifiable from public Nostr events — no backend, no dashboard you have to trust. Anyone can recount these from the relays.</p>
+    <div class="layers">
+      <div class="layer"><h3><span id="stat-proposals">—</span></h3><p>correction proposals published</p></div>
+      <div class="layer"><h3><span id="stat-merges">—</span></h3><p>merged into canon, anchored to Bitcoin</p></div>
+      <div class="layer"><h3><span id="stat-sats">—</span></h3><p>sats paid to translators (from receipts)</p></div>
+      <div class="layer"><h3><span id="stat-maintainers">—</span></h3><p>council maintainers gating merges</p></div>
+    </div>
+    <p style="color:var(--muted);font-size:0.82rem;margin-top:1rem">Counts query public relays live; a number stays “—” if the relays are slow or unreachable.</p>
+  </div>
+</section>
+
 <section id="donate">
   <div class="wrap">
     <h2>Fund the protocol</h2>
@@ -236,5 +250,6 @@
     <p>Landing reskinned from the Odysseus project (AGPL-3.0). The Ark holds. The text endures.</p>
   </div>
 </footer>
+<script src="stats.js" defer></script>
 </body>
 </html>
