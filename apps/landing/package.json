@@ -6,7 +6,7 @@
   "license": "AGPL-3.0",
   "description": "NeoArk landing page (neoark.org) — static, dark terminal aesthetic",
   "scripts": {
-    "build": "rm -rf dist && mkdir -p dist && cp index.html dist/index.html",
+    "build": "rm -rf dist && mkdir -p dist && cp index.html dist/index.html && cp stats.js dist/stats.js",
     "serve": "node serve.mjs",
     "test": "vitest run",
     "clean": "rm -rf dist"
