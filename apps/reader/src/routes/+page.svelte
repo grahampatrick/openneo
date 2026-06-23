@@ -5,9 +5,7 @@
   import { formatReference } from '$lib/reference'
   import { currentRef } from '$lib/stores'
   import { anchorLabel, type Revision } from '$lib/history'
-  import { type CommunityNote } from '$lib/notes'
-  import { createReaderPool, fetchVerseData, publishNote } from '$lib/relay-data'
-  import { ensureSeckey } from '$lib/identity'
+  import { createReaderPool, fetchVerseData } from '$lib/relay-data'
   import type { RelayPool } from '@neoark/relay'
 
   let corpus: Corpus | null = null
@@ -19,15 +17,9 @@
 
   // Live verse data from the relays (queried when a verse is opened).
   let revisions: Revision[] = []
-  let verseNotes: CommunityNote[] = []
   let citationCount = 0
   let citationSources: string[] = []
   let loadingVerse = false
-
-  // Note composer.
-  let noteDraft = ''
-  let postingNote = false
-  let noteNotice = ''
 
   onMount(async () => {
     try {
@@ -58,11 +50,8 @@
   async function openVerse(v: Verse) {
     selected = v
     revisions = []
-    verseNotes = []
     citationCount = 0
     citationSources = []
-    noteDraft = ''
-    noteNotice = ''
     if (!pool) return
     loadingVerse = true
     try {
@@ -70,7 +59,6 @@
       // Guard against a race if the user opened a different verse meanwhile.
       if (selected === v) {
         revisions = data.revisions
-        verseNotes = data.notes
         citationCount = data.citations.count
         citationSources = data.citations.sources
       }
@@ -81,27 +69,6 @@
   }
   function closeVerse() {
     selected = null
-  }
-
-  async function addNote() {
-    if (!pool || !selected || !noteDraft.trim()) return
-    postingNote = true
-    noteNotice = ''
-    try {
-      const seckey = ensureSeckey() // one-click: generates + stores a key on first note
-      const ok = await publishNote(pool, seckey, { bookId: selected.bookId, chapter: selected.chapter, verse: selected.verse }, noteDraft, Math.floor(Date.now() / 1000))
-      if (ok) {
-        noteDraft = ''
-        noteNotice = `✓ Published to ${String(ok)} relay(s).`
-        const data = await fetchVerseData(pool, { bookId: selected.bookId, chapter: selected.chapter, verse: selected.verse })
-        verseNotes = data.notes
-      } else {
-        noteNotice = '⚠ No relay accepted it — try again.'
-      }
-    } catch (e) {
-      noteNotice = 'Failed: ' + (e instanceof Error ? e.message : String(e))
-    }
-    postingNote = false
   }
 
   $: chapters = corpus?.chapters($currentRef.bookId) ?? []
@@ -170,23 +137,6 @@
           {:else}
             <p class="text-muted text-sm">No merged revisions for this verse yet. Propose one in the <a class="text-accent underline" href="/translate">translator</a>.</p>
           {/if}
-        </section>
-
-        <section class="mb-4">
-          <h3 class="font-mono text-sm text-muted mb-2">Community notes</h3>
-          {#if verseNotes.length}
-            {#each verseNotes as n (n.id)}
-              <p class="text-sm mb-1"><span class="font-mono text-xs text-muted">{n.author.slice(0, 8)}…</span> {n.content}</p>
-            {/each}
-          {:else}
-            <p class="text-muted text-sm mb-2">No notes yet. Be the first to sign one.</p>
-          {/if}
-          <textarea bind:value={noteDraft} rows="2" placeholder="Add a signed note (commentary, cross-reference)…" class="w-full bg-bg border border-border rounded p-2 mt-2 text-sm font-sans"></textarea>
-          <div class="flex items-center gap-2 mt-1">
-            <button disabled={!noteDraft.trim() || postingNote} on:click={addNote} class="px-3 py-1 rounded bg-accent text-bg font-mono text-xs font-bold disabled:opacity-40">Sign &amp; publish note</button>
-            {#if noteNotice}<span class="font-mono text-xs text-muted">{noteNotice}</span>{/if}
-          </div>
-          <p class="text-muted text-xs mt-1">Signed with a key generated in your browser — no account.</p>
         </section>
 
         <section>
