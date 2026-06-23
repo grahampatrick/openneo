@@ -5,7 +5,7 @@
 <div class="min-h-screen flex flex-col">
   <header class="sticky top-0 z-10 border-b border-border bg-bg/80 backdrop-blur">
     <div class="mx-auto max-w-4xl flex items-center justify-between px-4 h-14">
-      <a href="./" class="font-mono text-lg">Neo<span class="text-accent font-bold">Ark</span> <span class="text-muted text-sm">· Translator</span></a>
+      <a href="./" class="font-mono text-lg">Open<span class="text-accent font-bold">Neo</span> <span class="text-muted text-sm">· Translator</span></a>
       <a href="https://github.com/grahampatrick/openneo" class="text-muted text-xs font-mono">docs</a>
     </div>
   </header>

@@ -4,13 +4,13 @@ import { resolve } from 'node:path'
 
 const html = readFileSync(resolve(__dirname, '..', 'index.html'), 'utf8')
 
-describe('NeoArk landing content', () => {
-  it('carries the NeoArk hero, not Odysseus branding', () => {
-    expect(html).toContain('<title>NeoArk')
-    expect(html).toContain('The Ark holds')
-    expect(html).toContain('The text')
-    expect(html).toContain('endures')
-    // Title and hero must be NeoArk; Odysseus appears only as AGPL attribution
+describe('OpenNeo landing content', () => {
+  it('carries the OpenNeo brand, not Odysseus or NeoArk', () => {
+    expect(html).toContain('<title>OpenNeo')
+    expect(html).toContain('Open<b>Neo</b>') // nav brand
+    expect(html).not.toMatch(/Neo<b>Ark<\/b>/)
+    expect(html).not.toContain('The Ark holds') // ark copy removed
+    // Title and brand must be OpenNeo; Odysseus appears only as AGPL attribution
     // (the SPDX header comment + the footer credit), never as branding.
     expect(html).not.toContain('<title>Odysseus')
     expect(html).not.toMatch(/class="brand"[^>]*>[^<]*Odysseus/)
