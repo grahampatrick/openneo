@@ -41,9 +41,9 @@ async function seed(pool: RelayPool, opts: { merger?: typeof m1 } = {}) {
   return { proposalId: proposal.id, mergeId: merge.event.id }
 }
 
-function runner(pool: RelayPool, profiles: MemoryProfileRegistry, treasurySats = 10000, paidStore = new MemoryPaidStore()) {
+function runner(pool: RelayPool, profiles: MemoryProfileRegistry, treasurySats = 10000, paidStore = new MemoryPaidStore(), wallet: Wallet = okWallet()) {
   return new PayoutRunner({
-    wallet: okWallet(),
+    wallet,
     fetchJson: () => Promise.reject(new Error('off')),
     payerSeckey: payer.seckey,
     treasury: createTreasury(treasurySats),
@@ -112,6 +112,20 @@ describe('PayoutRunner.processGovernedMerges', () => {
     const result = out.find((o) => o.mergeEventId === merge.event.id)
     expect(result?.governed).toBe(false)
     expect(result?.reason).toMatch(/not signed by a council maintainer/)
+  })
+
+  it('reports a payment failure and un-reserves it for retry', async () => {
+    const pool = new RelayPool([new MockRelay()])
+    await seed(pool)
+    const failWallet: Wallet = { payInvoice: () => Promise.reject(new Error('boom')) }
+    const store = new MemoryPaidStore()
+    const out = await runner(pool, allProfiles(), 10000, store, failWallet).processGovernedMerges(TID)
+    const recips = out[0]!.recipients
+    expect(recips.every((r) => !r.paid)).toBe(true)
+    expect(recips.some((r) => r.reason.includes('payment failed'))).toBe(true)
+    // a retry with a working wallet now succeeds (the reservation was undone)
+    const retry = await runner(pool, allProfiles(), 10000, store).processGovernedMerges(TID)
+    expect(retry[0]!.recipients.some((r) => r.paid)).toBe(true)
   })
 
   it('is idempotent — a second run pays no one again', async () => {

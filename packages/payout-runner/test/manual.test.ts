@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest'
 import { ManualPayouts } from '../src/manual'
 import { MemoryPaidStore } from '../src/paid-store'
-import { keypairFromSeed } from '@neoark/manifest'
+import { keypairFromSeed, signEvent } from '@neoark/manifest'
 import { RelayPool, MockRelay } from '@neoark/relay'
 import { submitProposal, parseProposal, submitReview, parseReview, mergeProposal, signGovernance } from '@neoark/translation-protocol'
 import { MemoryProfileRegistry } from '@neoark/payouts'
@@ -64,6 +64,36 @@ describe('ManualPayouts', () => {
     expect(plan.find((p) => p.role === 'reviewer' && p.pubkey === m1.pubkey.toLowerCase())?.sats).toBe(100) // 20%
   })
 
+  it('falls back to re-deriving approvers from reviews for an old merge (no approver tags)', async () => {
+    const pool = new RelayPool([new MockRelay({ verify: false })])
+    await pool.publish(signGovernance({ translationId: TID, maintainers: council, quorum: { minReviewers: 1, approvalThreshold: 0.67 }, createdAt: 1 }, m1.seckey))
+    const pe = submitProposal({ ref: { translationId: TID, book: 'GEN', chapter: 1, verse: 6 }, newText: 'a firmament', rationale: 'r', createdAt: 10 }, translator.seckey)
+    await pool.publish(pe)
+    const proposal = parseProposal(pe)
+    // the approval review IS present...
+    await pool.publish(submitReview({ proposalId: proposal.id, vote: 'approve', comment: '', createdAt: 20 }, m1.seckey))
+    // ...but the merge is an OLD one with NO `approver` tags (hand-crafted).
+    const oldMerge = signEvent(
+      {
+        kind: 30703,
+        created_at: 100,
+        tags: [
+          ['e', proposal.id],
+          ['ark_action', 'merge'],
+          ['ark_ref', 'GEN', '1', '6'],
+          ['ark_translation', TID],
+          ['ark_quorum', '1', '1'],
+        ],
+        content: '',
+      },
+      m1.seckey,
+    )
+    await pool.publish(oldMerge)
+    const plan = await manual(pool, profilesAll()).plan(TID)
+    // the reviewer share is recovered via the fallback (re-derive from reviews)
+    expect(plan.find((p) => p.role === 'reviewer' && p.pubkey === m1.pubkey.toLowerCase())?.sats).toBe(100)
+  })
+
   it('plans nothing for an ungoverned translation', async () => {
     const pool = new RelayPool([new MockRelay()])
     const pe = submitProposal({ ref: { translationId: TID, book: 'GEN', chapter: 1, verse: 6 }, newText: 'x', rationale: 'r', createdAt: 10 }, translator.seckey)
@@ -71,6 +101,39 @@ describe('ManualPayouts', () => {
     const proposal = parseProposal(pe)
     const reviews = [m1, m2, m3].map((k, i) => parseReview(submitReview({ proposalId: proposal.id, vote: 'approve', comment: '', createdAt: 20 + i }, k.seckey)))
     await pool.publish(mergeProposal(proposal, reviews, m1.seckey, 100).event)
+    expect(await manual(pool, profilesAll()).plan(TID)).toEqual([])
+  })
+
+  it('honors custom split percents and a founding-pubkey pin', async () => {
+    const pool = new RelayPool([new MockRelay()])
+    await seed(pool)
+    const mp = new ManualPayouts({
+      pool,
+      profiles: profilesAll(),
+      paidStore: new MemoryPaidStore(),
+      payerSeckey: payer.seckey,
+      perMergeSats: 1000,
+      percents: { translator: 80, reviewers: 20, submitter: 0 },
+      foundingPubkey: m1.pubkey,
+    })
+    const plan = await mp.plan(TID)
+    expect(plan.reduce((a, p) => a + p.sats, 0)).toBe(1000)
+    expect(plan.filter((p) => p.role === 'reviewer')).toHaveLength(3)
+  })
+
+  it('skips a merge whose proposal is not on the relays', async () => {
+    const pool = new RelayPool([new MockRelay({ verify: false })])
+    await pool.publish(signGovernance({ translationId: TID, maintainers: council, createdAt: 1 }, m1.seckey))
+    const orphanMerge = signEvent(
+      {
+        kind: 30703,
+        created_at: 100,
+        tags: [['e', 'deadbeef'.repeat(8)], ['ark_action', 'merge'], ['ark_ref', 'GEN', '1', '6'], ['ark_translation', TID], ['ark_quorum', '1', '1']],
+        content: '',
+      },
+      m1.seckey,
+    )
+    await pool.publish(orphanMerge)
     expect(await manual(pool, profilesAll()).plan(TID)).toEqual([])
   })
 
@@ -101,6 +164,15 @@ describe('ManualPayouts', () => {
     const reviewers = plan.filter((p) => p.role === 'reviewer')
     expect(reviewers.every((p) => p.blocked === 'no Lightning address on profile')).toBe(true)
     expect((await manual(pool, onlyTranslator).toPay(TID)).every((p) => p.role === 'translator')).toBe(true)
+  })
+
+  it('formatSheet lists blocked recipients with no Lightning address', async () => {
+    const pool = new RelayPool([new MockRelay()])
+    await seed(pool)
+    const onlyTranslator = new MemoryProfileRegistry().set(translator.pubkey, 'translator@strike.me')
+    const sheet = ManualPayouts.formatSheet(await manual(pool, onlyTranslator).plan(TID))
+    expect(sheet).toContain('Skipped — recipient has no Lightning address')
+    expect(sheet).toContain('reviewer')
   })
 
   it('formatSheet renders a copy-paste payout sheet', async () => {
