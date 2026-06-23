@@ -76,7 +76,7 @@
   $: refLabel = corpus ? formatReference($currentRef, corpus) : ''
 </script>
 
-<svelte:head><title>{refLabel || 'NeoArk Reader'}</title></svelte:head>
+<svelte:head><title>{refLabel || 'OpenNeo Reader'}</title></svelte:head>
 
 {#if error}
   <p class="text-red-400 font-mono">Could not load corpus: {error}</p>

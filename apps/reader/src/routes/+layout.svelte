@@ -9,7 +9,7 @@
 <div class="min-h-screen flex flex-col">
   <header class="sticky top-0 z-10 border-b border-border bg-bg/80 backdrop-blur">
     <div class="mx-auto max-w-5xl flex items-center justify-between px-4 h-14">
-      <a href="./" class="font-mono text-lg">Neo<span class="text-accent font-bold">Ark</span></a>
+      <a href="./" class="font-mono text-lg">Open<span class="text-accent font-bold">Neo</span></a>
       <span class="font-mono text-xs" class:text-accent={$online} class:text-muted={!$online}>
         {$online ? '● online' : '○ offline — reading from cache'}
       </span>

@@ -398,7 +398,7 @@
   $: changed = hasChange(currentText, newText)
 </script>
 
-<svelte:head><title>NeoArk · Translator Portal</title></svelte:head>
+<svelte:head><title>OpenNeo · Translator Portal</title></svelte:head>
 
 {#if !session}
   <div class="text-center py-16 max-w-md mx-auto">
