@@ -5,7 +5,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0
  */
-import { RelayPool, WebSocketRelay, DEFAULT_RELAYS, queryUseProofs } from '@neoark/relay'
+import { RelayPool, WebSocketRelay, DEFAULT_RELAYS } from '@neoark/relay'
 import type { WebSocketFactory } from '@neoark/relay'
 import { parseMerge, parseProposal } from '@neoark/translation-protocol'
 import { parseNote, type CommunityNote } from './notes'
@@ -43,10 +43,21 @@ export async function publishNote(
   return acks.filter((a) => a.ok).length
 }
 
+// The cite SDK's free, on-render citation (NO payment), distinct from the
+// payment-tied UP-1 use-proof (kind:30078). This is what "Where is this verse
+// used?" should count — real embeds across the web, while reading stays free.
+const KIND_CITATION = 30710
+
+export interface Citation {
+  count: number
+  /** Distinct sources (page host, context, or consumer pubkey) embedding the verse. */
+  sources: string[]
+}
+
 export interface VerseData {
   revisions: Revision[]
   notes: CommunityNote[]
-  useProofs: number
+  citations: Citation
 }
 
 function tryParse<T>(fn: () => T): T | null {
@@ -57,19 +68,41 @@ function tryParse<T>(fn: () => T): T | null {
   }
 }
 
-/** Fetch the live change history, notes, and use-proof count for one verse. */
+/** Does a cite `verse` tag ("tid:book:ch:vs" or "…:a-b") cover this verse? */
+function citationCoversVerse(verseTag: string, ref: { bookId: string; chapter: number; verse: number }): boolean {
+  const parts = verseTag.split(':')
+  if (parts.length < 4) return false
+  const [tid, book, ch, vs] = parts
+  if (tid !== TRANSLATION_ID || book !== ref.bookId || Number(ch) !== ref.chapter) return false
+  const [a, b] = (vs ?? '').split('-').map(Number)
+  return ref.verse >= a && ref.verse <= (Number.isFinite(b) ? b : a)
+}
+
+/** Count free citations (cite SDK kind:30710) for a verse + their sources. */
+export async function fetchCitations(pool: RelayPool, ref: { bookId: string; chapter: number; verse: number }): Promise<Citation> {
+  const events = await pool.query({ kinds: [KIND_CITATION], limit: 1000 }).catch(() => [])
+  const sources = new Set<string>()
+  let count = 0
+  for (const e of events) {
+    const verses = e.tags.filter((t) => t[0] === 'verse').map((t) => t[1] ?? '')
+    if (!verses.some((v) => citationCoversVerse(v, ref))) continue
+    count++
+    const src = e.tags.find((t) => t[0] === 'source')?.[1] ?? e.tags.find((t) => t[0] === 'context')?.[1] ?? `${e.pubkey.slice(0, 8)}…`
+    sources.add(src)
+  }
+  return { count, sources: [...sources] }
+}
+
+/** Fetch the live change history, notes, and citation count for one verse. */
 export async function fetchVerseData(
   pool: RelayPool,
   ref: { bookId: string; chapter: number; verse: number },
 ): Promise<VerseData> {
-  const [proposalEvents, reviewEvents, noteEvents, proofs] = await Promise.all([
+  const [proposalEvents, reviewEvents, noteEvents, citations] = await Promise.all([
     pool.query({ kinds: [KIND_PROPOSAL], limit: 500 }),
     pool.query({ kinds: [KIND_REVIEW], limit: 1000 }),
     pool.query({ kinds: [KIND_NOTE], limit: 500 }),
-    queryUseProofs(
-      { translationId: TRANSLATION_ID, passage: { book: ref.bookId, chapter: ref.chapter, verseStart: ref.verse, verseEnd: ref.verse } },
-      pool,
-    ).catch(() => []),
+    fetchCitations(pool, ref),
   ])
 
   // Proposals indexed by id → text + rationale for the merges that reference them.
@@ -108,5 +141,5 @@ export async function fetchVerseData(
   }
   notes.sort((a, b) => b.createdAt - a.createdAt)
 
-  return { revisions, notes, useProofs: proofs.length }
+  return { revisions, notes, citations }
 }

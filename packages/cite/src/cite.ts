@@ -101,7 +101,16 @@ export class NeoArkCite {
       ['t', 'neoos-use'],
     ]
     if (this.opts.context) tags.push(['context', this.opts.context])
+    const source = this.opts.source ?? this.hostname()
+    if (source) tags.push(['source', source])
     return tags
+  }
+
+  /** The embedding page's hostname, for the reader's "where used?" list. */
+  private hostname(): string | undefined {
+    const fromDoc = (this.opts.doc as unknown as { location?: { hostname?: string } } | undefined)?.location?.hostname
+    const fromGlobal = (globalThis as unknown as { location?: { hostname?: string } }).location?.hostname
+    return fromDoc ?? fromGlobal
   }
 
   private singleEvent(ref: Ref, pubkey: string, created: number): UnsignedEvent {

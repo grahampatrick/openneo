@@ -20,7 +20,8 @@
   // Live verse data from the relays (queried when a verse is opened).
   let revisions: Revision[] = []
   let verseNotes: CommunityNote[] = []
-  let usageCount = 0
+  let citationCount = 0
+  let citationSources: string[] = []
   let loadingVerse = false
 
   // Note composer.
@@ -58,7 +59,8 @@
     selected = v
     revisions = []
     verseNotes = []
-    usageCount = 0
+    citationCount = 0
+    citationSources = []
     noteDraft = ''
     noteNotice = ''
     if (!pool) return
@@ -69,7 +71,8 @@
       if (selected === v) {
         revisions = data.revisions
         verseNotes = data.notes
-        usageCount = data.useProofs
+        citationCount = data.citations.count
+        citationSources = data.citations.sources
       }
     } catch {
       /* leave empty on relay failure */
@@ -188,7 +191,14 @@
 
         <section>
           <h3 class="font-mono text-sm text-muted mb-1">Where is this verse used?</h3>
-          <p class="text-sm text-muted">{usageCount} use-proof(s) on connected relays.</p>
+          {#if citationCount}
+            <p class="text-sm text-muted mb-1">{citationCount} citation(s) across the web — reading is always free.</p>
+            {#each citationSources.slice(0, 8) as src (src)}
+              <p class="font-mono text-xs text-muted">┌ {src}</p>
+            {/each}
+          {:else}
+            <p class="text-sm text-muted">0 citations yet. Sites that embed this verse (via the cite SDK) show up here — free, no payment to read.</p>
+          {/if}
         </section>
       </div>
     </div>

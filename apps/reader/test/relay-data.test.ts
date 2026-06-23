@@ -37,7 +37,7 @@ describe('fetchVerseData', () => {
     expect(data.revisions[0]!.rationale).toBe('raqia')
     expect(data.notes).toHaveLength(1) // only the GEN 1:6 note, not GEN 1:1
     expect(data.notes[0]!.content).toBe('See raqia in context.')
-    expect(data.useProofs).toBe(0)
+    expect(data.citations.count).toBe(0)
   })
 
   it('returns empties for a verse with no merges or notes', async () => {
@@ -46,6 +46,19 @@ describe('fetchVerseData', () => {
     const data = await fetchVerseData(pool, { bookId: 'JHN', chapter: 3, verse: 16 })
     expect(data.revisions).toEqual([])
     expect(data.notes).toEqual([])
+  })
+
+  it('counts free citations (cite SDK kind:30710) for the verse with their sources', async () => {
+    const pool = new RelayPool([new MockRelay({ verify: false })])
+    // two sites embed GEN 1:6 (single + a range that covers it); one embeds GEN 1:1
+    const cite = (verse: string, source: string, at: number) =>
+      signEvent({ kind: 30710, created_at: at, tags: [['verse', verse], ['translation', TRANSLATION_ID], ['source', source]], content: '' }, noteAuthor.seckey)
+    await pool.publish(cite(`${TRANSLATION_ID}:GEN:1:6`, 'blog.example.com', 1))
+    await pool.publish(cite(`${TRANSLATION_ID}:GEN:1:5-7`, 'studyapp.io', 2)) // range covers v6
+    await pool.publish(cite(`${TRANSLATION_ID}:GEN:1:1`, 'other.site', 3)) // different verse
+    const data = await fetchVerseData(pool, ref)
+    expect(data.citations.count).toBe(2)
+    expect(data.citations.sources.sort()).toEqual(['blog.example.com', 'studyapp.io'])
   })
 
   it('publishNote signs a kind:30704 note that fetchVerseData then returns', async () => {
