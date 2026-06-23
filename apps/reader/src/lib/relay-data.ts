@@ -9,6 +9,7 @@ import { RelayPool, WebSocketRelay, DEFAULT_RELAYS, queryUseProofs } from '@neoa
 import type { WebSocketFactory } from '@neoark/relay'
 import { parseMerge, parseProposal } from '@neoark/translation-protocol'
 import { parseNote, type CommunityNote } from './notes'
+import { signWith } from './identity'
 import type { Revision } from './history'
 
 export const TRANSLATION_ID = 'neoos-en-2026'
@@ -19,6 +20,27 @@ const KIND_NOTE = 30704
 export function createReaderPool(): RelayPool {
   const factory = ((u: string) => new WebSocket(u)) as unknown as WebSocketFactory
   return new RelayPool(DEFAULT_RELAYS.map((u) => new WebSocketRelay(u, factory, { timeoutMs: 8000 })))
+}
+
+/** Sign + publish a community note (kind:30704) for a verse. Returns relays accepted. */
+export async function publishNote(
+  pool: RelayPool,
+  seckey: string,
+  ref: { bookId: string; chapter: number; verse: number },
+  content: string,
+  createdAt: number,
+): Promise<number> {
+  const event = signWith(seckey, {
+    kind: KIND_NOTE,
+    created_at: createdAt,
+    tags: [
+      ['ark_ref', ref.bookId, String(ref.chapter), String(ref.verse)],
+      ['ark_translation', TRANSLATION_ID],
+    ],
+    content: content.trim(),
+  })
+  const acks = await pool.publish(event)
+  return acks.filter((a) => a.ok).length
 }
 
 export interface VerseData {

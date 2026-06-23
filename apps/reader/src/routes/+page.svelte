@@ -6,7 +6,8 @@
   import { currentRef } from '$lib/stores'
   import { anchorLabel, type Revision } from '$lib/history'
   import { type CommunityNote } from '$lib/notes'
-  import { createReaderPool, fetchVerseData } from '$lib/relay-data'
+  import { createReaderPool, fetchVerseData, publishNote } from '$lib/relay-data'
+  import { ensureSeckey } from '$lib/identity'
   import type { RelayPool } from '@neoark/relay'
 
   let corpus: Corpus | null = null
@@ -21,6 +22,11 @@
   let verseNotes: CommunityNote[] = []
   let usageCount = 0
   let loadingVerse = false
+
+  // Note composer.
+  let noteDraft = ''
+  let postingNote = false
+  let noteNotice = ''
 
   onMount(async () => {
     try {
@@ -53,6 +59,8 @@
     revisions = []
     verseNotes = []
     usageCount = 0
+    noteDraft = ''
+    noteNotice = ''
     if (!pool) return
     loadingVerse = true
     try {
@@ -70,6 +78,27 @@
   }
   function closeVerse() {
     selected = null
+  }
+
+  async function addNote() {
+    if (!pool || !selected || !noteDraft.trim()) return
+    postingNote = true
+    noteNotice = ''
+    try {
+      const seckey = ensureSeckey() // one-click: generates + stores a key on first note
+      const ok = await publishNote(pool, seckey, { bookId: selected.bookId, chapter: selected.chapter, verse: selected.verse }, noteDraft, Math.floor(Date.now() / 1000))
+      if (ok) {
+        noteDraft = ''
+        noteNotice = `✓ Published to ${String(ok)} relay(s).`
+        const data = await fetchVerseData(pool, { bookId: selected.bookId, chapter: selected.chapter, verse: selected.verse })
+        verseNotes = data.notes
+      } else {
+        noteNotice = '⚠ No relay accepted it — try again.'
+      }
+    } catch (e) {
+      noteNotice = 'Failed: ' + (e instanceof Error ? e.message : String(e))
+    }
+    postingNote = false
   }
 
   $: chapters = corpus?.chapters($currentRef.bookId) ?? []
@@ -147,8 +176,14 @@
               <p class="text-sm mb-1"><span class="font-mono text-xs text-muted">{n.author.slice(0, 8)}…</span> {n.content}</p>
             {/each}
           {:else}
-            <p class="text-muted text-sm">No notes yet. Be the first to sign one.</p>
+            <p class="text-muted text-sm mb-2">No notes yet. Be the first to sign one.</p>
           {/if}
+          <textarea bind:value={noteDraft} rows="2" placeholder="Add a signed note (commentary, cross-reference)…" class="w-full bg-bg border border-border rounded p-2 mt-2 text-sm font-sans"></textarea>
+          <div class="flex items-center gap-2 mt-1">
+            <button disabled={!noteDraft.trim() || postingNote} on:click={addNote} class="px-3 py-1 rounded bg-accent text-bg font-mono text-xs font-bold disabled:opacity-40">Sign &amp; publish note</button>
+            {#if noteNotice}<span class="font-mono text-xs text-muted">{noteNotice}</span>{/if}
+          </div>
+          <p class="text-muted text-xs mt-1">Signed with a key generated in your browser — no account.</p>
         </section>
 
         <section>
