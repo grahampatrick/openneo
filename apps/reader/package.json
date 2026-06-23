@@ -14,7 +14,8 @@
   },
   "dependencies": {
     "@neoark/manifest": "workspace:*",
-    "@neoark/relay": "workspace:*"
+    "@neoark/relay": "workspace:*",
+    "@neoark/translation-protocol": "workspace:*"
   },
   "devDependencies": {
     "@sveltejs/adapter-static": "^3.0.0",

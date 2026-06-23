@@ -47,6 +47,9 @@ importers:
       '@neoark/relay':
         specifier: workspace:*
         version: link:../../packages/relay
+      '@neoark/translation-protocol':
+        specifier: workspace:*
+        version: link:../../packages/translation-protocol
     devDependencies:
       '@sveltejs/adapter-static':
         specifier: ^3.0.0

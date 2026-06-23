@@ -3,26 +3,31 @@
   import { base } from '$app/paths'
   import { fetchCorpus, type Corpus, type Verse, type BookMeta } from '$lib/corpus'
   import { formatReference } from '$lib/reference'
-  import { currentRef, showNotes } from '$lib/stores'
-  import { anchorLabel, sortRevisions, type Revision } from '$lib/history'
-  import { notesForVerse, groupByVerse, type CommunityNote } from '$lib/notes'
+  import { currentRef } from '$lib/stores'
+  import { anchorLabel, type Revision } from '$lib/history'
+  import { type CommunityNote } from '$lib/notes'
+  import { createReaderPool, fetchVerseData } from '$lib/relay-data'
+  import type { RelayPool } from '@neoark/relay'
 
   let corpus: Corpus | null = null
   let error = ''
   let verses: Verse[] = []
   let books: BookMeta[] = []
   let selected: Verse | null = null
+  let pool: RelayPool | null = null
 
-  // Demo data sources (real wiring is @neoark/translation-protocol + @neoark/relay).
+  // Live verse data from the relays (queried when a verse is opened).
   let revisions: Revision[] = []
-  let notes = groupByVerse([] as CommunityNote[])
+  let verseNotes: CommunityNote[] = []
   let usageCount = 0
+  let loadingVerse = false
 
   onMount(async () => {
     try {
       corpus = await fetchCorpus(base)
       books = corpus.loadedBooks()
       load()
+      pool = createReaderPool()
     } catch (e) {
       error = e instanceof Error ? e.message : String(e)
     }
@@ -43,18 +48,32 @@
     currentRef.update((r) => ({ ...r, chapter: c }))
     load()
   }
-  function openVerse(v: Verse) {
+  async function openVerse(v: Verse) {
     selected = v
-    // Live revision history, use-proofs, and notes are queried from relays in the
-    // translator portal; wiring them into the reader is in progress. Until then
-    // this panel shows honest empty state rather than placeholder data.
-    revisions = sortRevisions([])
+    revisions = []
+    verseNotes = []
     usageCount = 0
+    if (!pool) return
+    loadingVerse = true
+    try {
+      const data = await fetchVerseData(pool, { bookId: v.bookId, chapter: v.chapter, verse: v.verse })
+      // Guard against a race if the user opened a different verse meanwhile.
+      if (selected === v) {
+        revisions = data.revisions
+        verseNotes = data.notes
+        usageCount = data.useProofs
+      }
+    } catch {
+      /* leave empty on relay failure */
+    }
+    loadingVerse = false
+  }
+  function closeVerse() {
+    selected = null
   }
 
   $: chapters = corpus?.chapters($currentRef.bookId) ?? []
   $: refLabel = corpus ? formatReference($currentRef, corpus) : ''
-  $: verseNotes = selected ? notesForVerse(notes, selected.bookId, selected.chapter, selected.verse) : []
 </script>
 
 <svelte:head><title>{refLabel || 'NeoArk Reader'}</title></svelte:head>
@@ -78,9 +97,6 @@
           class:bg-accent={c === $currentRef.chapter} class:text-bg={c === $currentRef.chapter}>{c}</button>
       {/each}
     </div>
-    <label class="ml-auto text-sm font-mono flex items-center gap-1">
-      <input type="checkbox" bind:checked={$showNotes} /> notes
-    </label>
   </div>
 
   <h1 class="font-mono text-xl mb-3 text-accent">{refLabel}</h1>
@@ -90,51 +106,56 @@
       <p class="mb-1 leading-relaxed">
         <button class="text-muted font-mono text-xs mr-1 align-top" on:click={() => openVerse(v)}>{v.verse}</button>
         <span>{v.text}</span>
-        {#if $showNotes && notesForVerse(notes, v.bookId, v.chapter, v.verse).length}
-          <span class="text-accent text-xs">({notesForVerse(notes, v.bookId, v.chapter, v.verse).length} notes)</span>
-        {/if}
       </p>
     {/each}
   </div>
 
   {#if selected}
-    <aside class="mt-6 border border-border rounded-lg bg-panel p-4">
-      <div class="flex items-center justify-between mb-3">
-        <h2 class="font-mono text-accent">{corpus.bookMeta(selected.bookId)?.hebrew} {selected.chapter}:{selected.verse}</h2>
-        <button class="text-muted text-sm" on:click={() => (selected = null)}>close ✕</button>
+    <!-- Verse detail as a modal pop-up, not appended at the bottom. -->
+    <div class="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto bg-black/60 p-4 sm:p-8" on:click|self={closeVerse} role="presentation">
+      <div class="w-full max-w-xl border border-border rounded-lg bg-panel p-5 shadow-2xl mt-8" role="dialog" aria-modal="true">
+        <div class="flex items-center justify-between mb-3">
+          <h2 class="font-mono text-accent">{corpus.bookMeta(selected.bookId)?.hebrew} {selected.chapter}:{selected.verse}</h2>
+          <button class="text-muted text-sm" on:click={closeVerse}>close ✕</button>
+        </div>
+
+        <p class="text-sm mb-4">{selected.text}</p>
+
+        {#if loadingVerse}<p class="text-muted font-mono text-xs mb-3">Loading from relays…</p>{/if}
+
+        <section class="mb-4">
+          <h3 class="font-mono text-sm text-muted mb-2">Change history</h3>
+          {#if revisions.length}
+            {#each revisions as rev (rev.mergeEventId)}
+              {@const label = anchorLabel(rev.anchor)}
+              <div class="text-sm mb-2">
+                <span class="inline-block w-2 h-2 rounded-full mr-2" style="background:{label.color}"></span>
+                <span class="font-mono text-xs" style="color:{label.color}">merged · {label.text}</span>
+                <p class="mt-1">{rev.text}</p>
+                <p class="text-muted text-xs mt-1">{rev.rationale} — by {rev.maintainer.slice(0, 8)}…</p>
+              </div>
+            {/each}
+          {:else}
+            <p class="text-muted text-sm">No merged revisions for this verse yet. Propose one in the <a class="text-accent underline" href="/translate">translator</a>.</p>
+          {/if}
+        </section>
+
+        <section class="mb-4">
+          <h3 class="font-mono text-sm text-muted mb-2">Community notes</h3>
+          {#if verseNotes.length}
+            {#each verseNotes as n (n.id)}
+              <p class="text-sm mb-1"><span class="font-mono text-xs text-muted">{n.author.slice(0, 8)}…</span> {n.content}</p>
+            {/each}
+          {:else}
+            <p class="text-muted text-sm">No notes yet. Be the first to sign one.</p>
+          {/if}
+        </section>
+
+        <section>
+          <h3 class="font-mono text-sm text-muted mb-1">Where is this verse used?</h3>
+          <p class="text-sm text-muted">{usageCount} use-proof(s) on connected relays.</p>
+        </section>
       </div>
-
-      <section class="mb-4">
-        <h3 class="font-mono text-sm text-muted mb-2">Change history</h3>
-        {#if revisions.length}
-          {#each revisions as rev (rev.mergeEventId)}
-            {@const label = anchorLabel(rev.anchor)}
-            <div class="text-sm mb-2">
-              <span class="inline-block w-2 h-2 rounded-full mr-2" style="background:{label.color}"></span>
-              <span class="font-mono text-xs" style="color:{label.color}">{label.text}</span>
-              <p class="text-muted text-xs mt-1">{rev.rationale}</p>
-            </div>
-          {/each}
-        {:else}
-          <p class="text-muted text-sm">No merged revisions indexed for this verse yet. Propose one in the <a class="text-accent underline" href="/translate">translator</a>.</p>
-        {/if}
-      </section>
-
-      <section class="mb-4">
-        <h3 class="font-mono text-sm text-muted mb-2">Community notes</h3>
-        {#if verseNotes.length}
-          {#each verseNotes as n (n.id)}
-            <p class="text-sm mb-1"><span class="font-mono text-xs text-muted">{n.author.slice(0, 8)}…</span> {n.content}</p>
-          {/each}
-        {:else}
-          <p class="text-muted text-sm">No notes yet. Be the first to sign one.</p>
-        {/if}
-      </section>
-
-      <section>
-        <h3 class="font-mono text-sm text-muted mb-1">Where is this verse used?</h3>
-        <p class="text-sm text-muted">{usageCount} use-proof(s) on connected relays.</p>
-      </section>
-    </aside>
+    </div>
   {/if}
 {/if}
