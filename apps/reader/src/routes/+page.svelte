@@ -168,9 +168,15 @@
       <button on:click={() => step(-1)} title="Previous chapter" class="text-muted hover:text-accent px-2">‹</button>
       <button on:click={() => (panel = panel === 'picker' ? '' : 'picker')} class="text-accent font-medium text-center">{chapterTitle} <span class="text-xs">▾</span></button>
       <div class="flex items-center gap-3">
-        <div class="inline-flex rounded-md border border-border overflow-hidden text-xs">
-          <button on:click={() => set66(true)} class="px-2 py-0.5" class:bg-accent={only66} class:text-bg={only66} class:text-muted={!only66}>66</button>
-          <button on:click={() => set66(false)} class="px-2 py-0.5 border-l border-border" class:bg-accent={!only66} class:text-bg={!only66} class:text-muted={only66}>87</button>
+        <div class="relative group">
+          <div class="inline-flex rounded-md border border-border overflow-hidden text-xs">
+            <button on:click={() => set66(true)} class="px-2 py-0.5" class:bg-accent={only66} class:text-bg={only66} class:text-muted={!only66}>66</button>
+            <button on:click={() => set66(false)} class="px-2 py-0.5 border-l border-border" class:bg-accent={!only66} class:text-bg={!only66} class:text-muted={only66}>87</button>
+          </div>
+          <div class="pointer-events-none absolute right-0 top-full mt-2 w-64 rounded-md border border-border bg-panel p-3 text-xs leading-relaxed opacity-0 shadow-xl transition-opacity duration-150 group-hover:opacity-100 group-focus-within:opacity-100 z-30">
+            <p class="mb-1"><span class="font-semibold text-fg">66</span> <span class="text-muted">— the Protestant canon (Genesis–Revelation), in the standard order.</span></p>
+            <p><span class="font-semibold text-fg">87</span> <span class="text-muted">— the full NeoOS canon: adds the Apocrypha &amp; pseudepigrapha (Enoch, Jasher, Jubilees, 2 Baruch…) in their reading order.</span></p>
+          </div>
         </div>
         <button on:click={() => step(1)} title="Next chapter" class="text-muted hover:text-accent px-2">›</button>
       </div>
