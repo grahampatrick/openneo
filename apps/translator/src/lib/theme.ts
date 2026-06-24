@@ -9,7 +9,8 @@ import { writable, type Writable } from 'svelte/store'
 export type Theme = 'cream' | 'dark'
 const KEY = 'neoos.theme'
 
-function initial(): Theme {
+/** Resolve the startup theme: a stored choice, else the OS preference, else cream. */
+export function initialTheme(): Theme {
   if (typeof localStorage !== 'undefined') {
     const t = localStorage.getItem(KEY)
     if (t === 'cream' || t === 'dark') return t
@@ -18,7 +19,7 @@ function initial(): Theme {
   return 'cream'
 }
 
-export const theme: Writable<Theme> = writable(initial())
+export const theme: Writable<Theme> = writable(initialTheme())
 
 export function applyTheme(t: Theme): void {
   if (typeof document === 'undefined') return
