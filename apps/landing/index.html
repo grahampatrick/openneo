@@ -11,21 +11,48 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="description" content="OpenNeo — an open, peer-to-peer Bible translation system. An accuracy-first English Scripture (NeoOS), anchored to Bitcoin, with translators paid via Lightning. No gatekeeper owns the text.">
 <title>OpenNeo — open, peer-to-peer Bible translation</title>
+<script>
+  // Apply theme before paint (no flash): saved choice, else system preference.
+  (function () {
+    try {
+      var t = localStorage.getItem('neoos.theme');
+      if (t !== 'dark' && t !== 'cream') t = matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'cream';
+      document.documentElement.setAttribute('data-theme', t);
+    } catch (e) {
+      document.documentElement.setAttribute('data-theme', 'dark');
+    }
+  })();
+  function toggleTheme() {
+    var d = document.documentElement;
+    var t = d.getAttribute('data-theme') === 'dark' ? 'cream' : 'dark';
+    d.setAttribute('data-theme', t);
+    var b = document.getElementById('theme-btn');
+    if (b) b.textContent = t === 'dark' ? '☀' : '☾';
+    try { localStorage.setItem('neoos.theme', t); } catch (e) {}
+  }
+  document.addEventListener('DOMContentLoaded', function () {
+    var b = document.getElementById('theme-btn');
+    if (b) b.textContent = document.documentElement.getAttribute('data-theme') === 'dark' ? '☀' : '☾';
+  });
+</script>
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath d='M4 12 L16 5 L28 12 L28 26 L4 26 Z' fill='none' stroke='%236ee7ff' stroke-width='2' stroke-linejoin='round'/%3E%3Cpath d='M4 12 L28 12' stroke='%236ee7ff' stroke-width='2'/%3E%3C/svg%3E">
 <style>
   :root {
-    --bg: #0a0a0a;
-    --bg2: #111417;
-    --panel: #121518;
-    --fg: #e6e6e6;
-    --muted: #8a949c;
-    --border: #1e2429;
-    --accent: #6ee7ff;
-    --accent-dim: #3aa6bd;
-    --gold: #f0ad4e;
     --radius: 10px;
     --mono: ui-monospace, "SF Mono", "JetBrains Mono", Menlo, monospace;
     --sans: "Inter", "Open Sans", system-ui, sans-serif;
+    --serif: "Iowan Old Style", "Palatino Linotype", Palatino, Charter, "Source Serif Pro", Georgia, Cambria, "Times New Roman", serif;
+  }
+  /* The reader's two themes, matched exactly. */
+  [data-theme="dark"] {
+    --bg: #1a1a1a; --bg2: #201f1c; --panel: #242320; --fg: #d7d1c2; --muted: #8f897c;
+    --border: #34322c; --accent: #6fa5bf; --accent-dim: #4d7d92; --gold: #c9a24a;
+    color-scheme: dark;
+  }
+  [data-theme="cream"] {
+    --bg: #f4ecd6; --bg2: #efe7d0; --panel: #ece2c6; --fg: #33302a; --muted: #8a7f68;
+    --border: #ddd1b3; --accent: #3c6f88; --accent-dim: #5a8298; --gold: #9c6f24;
+    color-scheme: light;
   }
   * { box-sizing: border-box; }
   html { scroll-behavior: smooth; scroll-padding-top: 64px; }
@@ -33,7 +60,8 @@
     margin: 0; background: var(--bg); color: var(--fg);
     font-family: var(--sans); line-height: 1.6; -webkit-font-smoothing: antialiased;
   }
-  h1, h2, h3, .mono { font-family: var(--mono); letter-spacing: -0.02em; }
+  h1, h2, h3 { font-family: var(--serif); letter-spacing: -0.01em; }
+  .mono { font-family: var(--mono); letter-spacing: -0.02em; }
   a { color: var(--accent); text-decoration: none; }
   a:hover { text-decoration: underline; }
   .wrap { max-width: 1040px; margin: 0 auto; padding: 0 1.5rem; }
@@ -41,10 +69,13 @@
   /* Nav */
   nav {
     position: sticky; top: 0; z-index: 10; backdrop-filter: blur(8px);
-    background: rgba(10,10,10,0.8); border-bottom: 1px solid var(--border);
+    background: color-mix(in srgb, var(--bg) 82%, transparent); border-bottom: 1px solid var(--border);
   }
   nav .wrap { display: flex; align-items: center; justify-content: space-between; height: 64px; }
-  .brand { font-family: var(--mono); font-weight: 600; font-size: 1.1rem; color: var(--fg); }
+  .brand { font-family: var(--serif); font-weight: 600; font-size: 1.4rem; color: var(--fg); }
+  .theme-btn { background: none; border: 1px solid var(--border); color: var(--muted); border-radius: 8px;
+    width: 32px; height: 32px; margin-left: 1.5rem; cursor: pointer; font-size: 1rem; }
+  .theme-btn:hover { color: var(--fg); border-color: var(--accent); }
   .brand b { color: var(--accent); }
   nav .links a { color: var(--muted); margin-left: 1.5rem; font-size: 0.92rem; }
   nav .links a:hover { color: var(--fg); text-decoration: none; }
@@ -59,8 +90,8 @@
     display: inline-block; padding: 0.7rem 1.4rem; border-radius: var(--radius);
     font-family: var(--mono); font-size: 0.95rem; border: 1px solid var(--border);
   }
-  .btn.primary { background: var(--accent); color: #06262e; font-weight: 600; border-color: var(--accent); }
-  .btn.primary:hover { background: #8af0ff; text-decoration: none; }
+  .btn.primary { background: var(--accent); color: #fff; font-weight: 600; border-color: var(--accent); }
+  .btn.primary:hover { background: var(--accent-dim); text-decoration: none; }
   .btn.ghost { color: var(--fg); }
   .btn.ghost:hover { border-color: var(--accent); text-decoration: none; }
 
@@ -131,6 +162,7 @@
       <a href="#protocol">Protocol</a>
       <a href="#donate">Donate</a>
       <a href="https://github.com/grahampatrick/openneo">GitHub</a>
+      <button id="theme-btn" class="theme-btn" aria-label="Toggle dark / light" onclick="toggleTheme()">☾</button>
     </span>
   </div>
 </nav>
