@@ -34,7 +34,7 @@ describe('OpenNeo landing content', () => {
 
   it('lists features that are actually built', () => {
     for (const f of [
-      'Read NeoOS — 85 books',
+      'Read NeoOS — the 87-book canon',
       'Propose, review, merge + Bitcoin anchor',
       'Translators paid in Lightning',
       'Council governance',
