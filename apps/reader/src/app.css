@@ -2,5 +2,72 @@
 @tailwind components;
 @tailwind utilities;
 
-:root { color-scheme: dark; }
-body { background: #0a0a0a; color: #e6e6e6; font-family: Inter, system-ui, sans-serif; }
+/* Theme tokens — the two backgrounds: warm cream and charcoal dark. */
+:root,
+[data-theme='cream'] {
+  --bg: #f4ecd6;
+  --panel: #ece2c6;
+  --fg: #33302a;
+  --muted: #8a7f68;
+  --accent: #3c6f88;
+  --border: #ddd1b3;
+  --verse: #b0a589;
+  color-scheme: light;
+}
+[data-theme='dark'] {
+  --bg: #1a1a1a;
+  --panel: #242320;
+  --fg: #d7d1c2;
+  --muted: #8f897c;
+  --accent: #6fa5bf;
+  --border: #34322c;
+  --verse: #6c685c;
+  color-scheme: dark;
+}
+
+/* Reading size scale (set on <html data-size>). */
+:root { --read-size: 1.25rem; --read-leading: 1.85; }
+[data-size='sm'] { --read-size: 1.08rem; --read-leading: 1.8; }
+[data-size='md'] { --read-size: 1.25rem; --read-leading: 1.85; }
+[data-size='lg'] { --read-size: 1.5rem; --read-leading: 1.9; }
+
+body {
+  background: var(--bg);
+  color: var(--fg);
+  font-family: Inter, system-ui, sans-serif;
+  transition: background-color 0.2s, color 0.2s;
+}
+
+/* The reading column: serif, comfortable measure + leading. */
+.reading {
+  font-family:
+    'Iowan Old Style', 'Palatino Linotype', Palatino, Charter, 'Source Serif Pro', Georgia, Cambria, 'Times New Roman', serif;
+  font-size: var(--read-size);
+  line-height: var(--read-leading);
+  max-width: 38rem;
+}
+/* Superscript verse numbers — small, raised, muted; a real (inline) button. */
+.vnum {
+  background: none;
+  border: 0;
+  padding: 0;
+  font-size: 0.62em;
+  vertical-align: 0.42em;
+  color: var(--verse);
+  font-family: Inter, system-ui, sans-serif;
+  margin: 0 0.18em 0 0.05em;
+  user-select: none;
+  cursor: pointer;
+}
+.vnum:hover {
+  color: var(--accent);
+}
+/* Drop-cap chapter number at the start of a chapter. */
+.dropcap {
+  float: left;
+  font-size: 3.1em;
+  line-height: 0.86;
+  font-weight: 600;
+  margin: 0.04em 0.16em 0 0;
+  color: var(--fg);
+}
