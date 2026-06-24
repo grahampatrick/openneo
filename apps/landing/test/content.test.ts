@@ -57,10 +57,17 @@ describe('OpenNeo landing content', () => {
     expect(html).toMatch(/<svg[^>]*viewBox="0 0 35 35"/) // real generated QR, not the 29x29 placeholder
   })
 
-  it('uses the dark terminal palette', () => {
-    expect(html).toContain('#0a0a0a')
-    expect(html).toContain('#e6e6e6')
-    expect(html).toContain('#6ee7ff')
+  it('has both reader themes (cream + dark) and a theme toggle', () => {
+    expect(html).toContain('[data-theme="cream"]')
+    expect(html).toContain('[data-theme="dark"]')
+    expect(html).toContain('#f4ecd6') // cream bg (matches the reader)
+    expect(html).toContain('#1a1a1a') // dark bg (matches the reader)
+    expect(html).toContain('toggleTheme')
+  })
+
+  it('uses the reader serif for the brand + headings', () => {
+    expect(html).toContain('--serif')
+    expect(html).toContain('Iowan Old Style')
   })
 
   it('states the licenses and BSB attribution', () => {
