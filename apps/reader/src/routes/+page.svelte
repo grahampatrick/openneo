@@ -124,12 +124,19 @@
     }
     results = corpus.search(query.trim(), 60)
   }
-  $: bookName = (id: string) => corpus?.bookMeta(id)?.hebrew ?? id
+  // Both names, e.g. "Bere'shiyth — Genesis".
+  $: bookName = (id: string) => {
+    const m = corpus?.bookMeta(id)
+    return m ? `${m.hebrew} — ${m.english}` : id
+  }
 
   $: refLabel = corpus ? formatReference($currentRef, corpus) : ''
+  // Heading: "Bere'shiyth 1 — Genesis".
+  $: curMeta = corpus?.bookMeta($currentRef.bookId)
+  $: chapterTitle = curMeta ? `${curMeta.hebrew} ${$currentRef.chapter} — ${curMeta.english}` : refLabel
 </script>
 
-<svelte:head><title>{refLabel || 'OpenNeo Reader'}</title></svelte:head>
+<svelte:head><title>{chapterTitle || 'OpenNeo Reader'}</title></svelte:head>
 
 <!-- Top bar -->
 <header class="sticky top-0 z-20 border-b border-border bg-bg/90 backdrop-blur">
@@ -159,7 +166,7 @@
   <div class="border-b border-border">
     <div class="mx-auto max-w-5xl flex items-center justify-between px-4 h-12">
       <button on:click={() => step(-1)} title="Previous chapter" class="text-muted hover:text-accent px-2">‹</button>
-      <button on:click={() => (panel = panel === 'picker' ? '' : 'picker')} class="text-accent font-medium">{refLabel} <span class="text-xs">▾</span></button>
+      <button on:click={() => (panel = panel === 'picker' ? '' : 'picker')} class="text-accent font-medium text-center">{chapterTitle} <span class="text-xs">▾</span></button>
       <div class="flex items-center gap-3">
         <div class="inline-flex rounded-md border border-border overflow-hidden text-xs">
           <button on:click={() => set66(true)} class="px-2 py-0.5" class:bg-accent={only66} class:text-bg={only66} class:text-muted={!only66}>66</button>
@@ -264,10 +271,12 @@
         {/each}
       </div>
       <p class="text-xs text-muted mb-1">Books</p>
-      <div class="grid grid-cols-2 gap-1">
+      <div class="flex flex-col gap-1">
         {#each ordered as b (b.id)}
-          <button on:click={() => go(b.id, 1)} class="text-left text-sm px-2 py-1 rounded border border-border"
-            class:bg-accent={b.id === $currentRef.bookId} class:text-bg={b.id === $currentRef.bookId}>{b.hebrew}</button>
+          <button on:click={() => go(b.id, 1)} class="text-left text-sm px-2 py-1.5 rounded border border-border"
+            class:bg-accent={b.id === $currentRef.bookId} class:text-bg={b.id === $currentRef.bookId}>
+            <span>{b.hebrew}</span> <span class="text-muted" class:text-bg={b.id === $currentRef.bookId}>— {b.english}</span>
+          </button>
         {/each}
       </div>
     </div>
@@ -279,7 +288,7 @@
   <div class="fixed inset-0 z-40 flex items-start justify-center overflow-y-auto bg-black/60 p-4 sm:p-8" on:click|self={() => (selected = null)} role="presentation">
     <div class="w-full max-w-xl border border-border rounded-lg bg-panel p-5 shadow-2xl mt-8" role="dialog" aria-modal="true">
       <div class="flex items-center justify-between mb-3">
-        <h2 class="text-accent font-medium">{corpus.bookMeta(selected.bookId)?.hebrew} {selected.chapter}:{selected.verse}</h2>
+        <h2 class="text-accent font-medium">{corpus.bookMeta(selected.bookId)?.hebrew} {selected.chapter}:{selected.verse} <span class="text-muted font-normal">— {corpus.bookMeta(selected.bookId)?.english}</span></h2>
         <button class="text-muted text-sm" on:click={() => (selected = null)}>close ✕</button>
       </div>
       <p class="reading text-base mb-4" style="font-size:1.05rem">{selected.text}</p>
