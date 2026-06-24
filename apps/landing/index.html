@@ -136,6 +136,17 @@
   .layer h3 { font-size: 1rem; margin: 0 0 0.25rem; color: var(--accent); }
   .layer p { color: var(--muted); font-size: 0.9rem; margin: 0; }
 
+  /* Live-network charts */
+  .charts { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem; }
+  .chart-card { border: 1px solid var(--border); border-radius: var(--radius); background: var(--panel); padding: 1.2rem; }
+  .chart-num { font-family: var(--serif); font-size: 2rem; color: var(--fg); line-height: 1; }
+  .chart-wrap { position: relative; margin: 0.55rem 0 0.4rem; height: 56px; }
+  .chart { width: 100%; height: 56px; display: block; cursor: crosshair; }
+  .chart-tip { position: absolute; top: -1.5rem; transform: translateX(-50%); white-space: nowrap;
+    font-size: 0.7rem; color: var(--fg); background: var(--bg); border: 1px solid var(--border);
+    border-radius: 4px; padding: 1px 6px; opacity: 0; pointer-events: none; transition: opacity 0.1s; }
+  .chart-label { color: var(--muted); font-size: 0.85rem; margin: 0; }
+
   /* Donation */
   .donate { display: flex; gap: 2rem; align-items: center; flex-wrap: wrap; }
   .qr {
@@ -238,13 +249,29 @@
   <div class="wrap">
     <h2>Live network</h2>
     <p class="lead">Verifiable from public Nostr events — no backend, no dashboard you have to trust. Anyone can recount these from the relays.</p>
-    <div class="layers">
-      <div class="layer"><h3><span id="stat-proposals">—</span></h3><p>correction proposals published</p></div>
-      <div class="layer"><h3><span id="stat-merges">—</span></h3><p>merged into canon, anchored to Bitcoin</p></div>
-      <div class="layer"><h3><span id="stat-sats">—</span></h3><p>sats paid to translators (from receipts)</p></div>
-      <div class="layer"><h3><span id="stat-maintainers">—</span></h3><p>council maintainers gating merges</p></div>
+    <div class="charts">
+      <div class="chart-card">
+        <div class="chart-num" id="stat-proposals">—</div>
+        <div class="chart-wrap"><svg class="chart" id="chart-proposals" viewBox="0 0 280 56" preserveAspectRatio="none"></svg><span class="chart-tip" id="tip-proposals"></span></div>
+        <p class="chart-label">correction proposals</p>
+      </div>
+      <div class="chart-card">
+        <div class="chart-num" id="stat-merges">—</div>
+        <div class="chart-wrap"><svg class="chart" id="chart-merges" viewBox="0 0 280 56" preserveAspectRatio="none"></svg><span class="chart-tip" id="tip-merges"></span></div>
+        <p class="chart-label">merged into canon · Bitcoin-anchored</p>
+      </div>
+      <div class="chart-card">
+        <div class="chart-num" id="stat-sats">—</div>
+        <div class="chart-wrap"><svg class="chart" id="chart-sats" viewBox="0 0 280 56" preserveAspectRatio="none"></svg><span class="chart-tip" id="tip-sats"></span></div>
+        <p class="chart-label">sats paid to translators (receipts)</p>
+      </div>
+      <div class="chart-card">
+        <div class="chart-num" id="stat-maintainers">—</div>
+        <div class="chart-wrap"><svg class="chart" id="chart-council" viewBox="0 0 280 56" preserveAspectRatio="none"></svg><span class="chart-tip" id="tip-council"></span></div>
+        <p class="chart-label">council maintainers gating merges</p>
+      </div>
     </div>
-    <p style="color:var(--muted);font-size:0.82rem;margin-top:1rem">Counts query public relays live; a number stays “—” if the relays are slow or unreachable.</p>
+    <p style="color:var(--muted);font-size:0.82rem;margin-top:1rem">Charts plot the cumulative growth over time, queried live from public relays — hover any chart for the value at a point. A number stays “—” if the relays are slow or unreachable.</p>
   </div>
 </section>
 
