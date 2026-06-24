@@ -70,6 +70,13 @@ describe('OpenNeo landing content', () => {
     expect(html).toContain('Iowan Old Style')
   })
 
+  it('renders the live-network metrics as charts (not just numbers)', () => {
+    for (const id of ['chart-proposals', 'chart-merges', 'chart-sats', 'chart-council']) {
+      expect(html).toContain(`id="${id}"`)
+    }
+    expect(html).toContain('hover any chart')
+  })
+
   it('states the licenses and BSB attribution', () => {
     expect(html).toContain('AGPL-3.0')
     expect(html).toContain('CC-BY-SA 4.0')
