@@ -6,7 +6,7 @@
   import { currentRef } from '$lib/stores'
   import { anchorLabel, type Revision } from '$lib/history'
   import { createReaderPool, fetchVerseData } from '$lib/relay-data'
-  import { isCanon66, canon66Rank } from '$lib/canon'
+  import { isCanon66, canon66Rank, neoosRank } from '$lib/canon'
   import type { RelayPool } from '@neoark/relay'
 
   let corpus: Corpus | null = null
@@ -73,10 +73,11 @@
     selected = null
   }
 
-  // The book list shown in the picker: all 87, or the Protestant 66 (in standard order).
+  // The book list shown in the picker: the full NeoOS reading order (87), or the
+  // Protestant 66 in standard canonical order.
   $: visibleBooks = only66
     ? books.filter((b) => isCanon66(b.id)).sort((a, b) => canon66Rank(a.id) - canon66Rank(b.id))
-    : books
+    : [...books].sort((a, b) => neoosRank(a.id) - neoosRank(b.id))
 
   function set66(value: boolean) {
     only66 = value
