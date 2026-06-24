@@ -1,3 +1,15 @@
 @tailwind base; @tailwind components; @tailwind utilities;
-:root { color-scheme: dark; }
-body { background:#0a0a0a; color:#e6e6e6; font-family:Inter,system-ui,sans-serif; }
+
+/* The reader's two themes, matched — plus the translator's status colors. */
+:root, [data-theme='cream'] {
+  --bg: #f4ecd6; --panel: #ece2c6; --fg: #33302a; --muted: #8a7f68;
+  --accent: #3c6f88; --border: #ddd1b3; --green: #3f7d57; --gold: #9c6f24; --red: #a84d42;
+  color-scheme: light;
+}
+[data-theme='dark'] {
+  --bg: #1a1a1a; --panel: #242320; --fg: #d7d1c2; --muted: #8f897c;
+  --accent: #6fa5bf; --border: #34322c; --green: #6fb98f; --gold: #c9a24a; --red: #d08b80;
+  color-scheme: dark;
+}
+
+body { background: var(--bg); color: var(--fg); font-family: Inter, system-ui, sans-serif; transition: background-color 0.2s, color 0.2s; }
