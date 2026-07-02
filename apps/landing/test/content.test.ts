@@ -67,7 +67,7 @@ describe('OpenNeo landing content', () => {
 
   it('uses an open geometric display font for the headings', () => {
     expect(html).toContain('--display')
-    expect(html).toContain('Space Grotesk')
+    expect(html).toContain('Poppins')
     expect(html).toMatch(/h1, h2, h3 \{ font-family: var\(--display\)/)
   })
 
