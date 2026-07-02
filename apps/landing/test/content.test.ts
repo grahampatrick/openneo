@@ -76,17 +76,24 @@ describe('OpenNeo landing content', () => {
     expect(html).toMatch(/<svg[^>]*viewBox="0 0 35 35"/) // real generated QR, not the 29x29 placeholder
   })
 
-  it('has both reader themes (cream + dark) and a theme toggle', () => {
+  it('has dark + light themes with a mint-green accent and a toggle', () => {
     expect(html).toContain('[data-theme="cream"]')
     expect(html).toContain('[data-theme="dark"]')
-    expect(html).toContain('#f4ecd6') // cream bg (matches the reader)
-    expect(html).toContain('#1a1a1a') // dark bg (matches the reader)
+    expect(html).toContain('#0b0d0b') // near-black dark bg (Leo-style)
+    expect(html).toContain('#b3f5a3') // mint-green accent
     expect(html).toContain('toggleTheme')
   })
 
-  it('uses Space Grotesk for display headings, keeps the serif available', () => {
+  it('has the Leo-style hero: huge accent heading + dotted backdrop + nav CTA', () => {
+    expect(html).toContain('An open Bible, anchored to Bitcoin.')
+    expect(html).toMatch(/\.hero h1 \{[\s\S]*?color: var\(--accent\)/) // heading is the accent colour
+    expect(html).toContain('class="nav-cta"') // green nav call-to-action
+    expect(html).toMatch(/radial-gradient\(var\(--dot/) // dotted hero backdrop
+  })
+
+  it('uses Hanken Grotesk for display headings, keeps the serif available', () => {
     expect(html).toContain('--display')
-    expect(html).toContain('Space Grotesk')
+    expect(html).toContain('Hanken Grotesk')
     expect(html).toMatch(/h1, h2, h3 \{ font-family: var\(--display\)/)
     // serif token retained (reading samples / chart numerals)
     expect(html).toContain('--serif')
@@ -113,7 +120,7 @@ describe('OpenNeo brand page', () => {
     expect(brand).toContain('The OpenNeo brand')
     expect(brand).toContain('class="nmark"') // the N lettermark on the page
     expect(brand).toContain('#F5DFA0') // pillar palette documented
-    expect(brand).toContain('Space Grotesk')
+    expect(brand).toContain('Hanken Grotesk')
     // brand assets are declared original (no third-party marks reproduced)
     expect(brand).toContain('original')
     expect(brand).not.toMatch(/Aleo|Leo/)
