@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<!--
+  OpenNeo brand guidelines.
+  SPDX-License-Identifier: AGPL-3.0
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="OpenNeo brand — logo, the N lettermark, colour palette, and typography.">
+<title>OpenNeo — Brand</title>
+<script>
+  (function () {
+    try {
+      var t = localStorage.getItem('neoos.theme');
+      if (t !== 'dark' && t !== 'cream') t = matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'cream';
+      document.documentElement.setAttribute('data-theme', t);
+    } catch (e) { document.documentElement.setAttribute('data-theme', 'dark'); }
+  })();
+  function toggleTheme() {
+    var d = document.documentElement;
+    var t = d.getAttribute('data-theme') === 'dark' ? 'cream' : 'dark';
+    d.setAttribute('data-theme', t);
+    var b = document.getElementById('theme-btn');
+    if (b) b.textContent = t === 'dark' ? '☀' : '☾';
+    try { localStorage.setItem('neoos.theme', t); } catch (e) {}
+  }
+  document.addEventListener('DOMContentLoaded', function () {
+    var b = document.getElementById('theme-btn');
+    if (b) b.textContent = document.documentElement.getAttribute('data-theme') === 'dark' ? '☀' : '☾';
+  });
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --radius: 10px;
+    --mono: ui-monospace, "SF Mono", "JetBrains Mono", Menlo, monospace;
+    --sans: "Inter", "Open Sans", system-ui, sans-serif;
+    --serif: "Iowan Old Style", "Palatino Linotype", Palatino, Charter, "Source Serif Pro", Georgia, Cambria, serif;
+    --display: "Space Grotesk", "Inter", system-ui, sans-serif;
+    --p-yellow: #f5dfa0; --p-green: #bfe9c4; --p-lilac: #e6cff2; --p-peach: #f2c39b;
+  }
+  [data-theme="dark"] {
+    --bg: #1a1a1a; --panel: #242320; --fg: #d7d1c2; --muted: #8f897c;
+    --border: #34322c; --accent: #6fa5bf; color-scheme: dark;
+  }
+  [data-theme="cream"] {
+    --bg: #f4ecd6; --panel: #ece2c6; --fg: #33302a; --muted: #8a7f68;
+    --border: #ddd1b3; --accent: #3c6f88; color-scheme: light;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--fg); font-family: var(--sans); line-height: 1.6; -webkit-font-smoothing: antialiased; }
+  h1, h2, h3 { font-family: var(--display); letter-spacing: -0.02em; font-weight: 600; }
+  a { color: var(--accent); }
+  .wrap { max-width: 960px; margin: 0 auto; padding: 0 1.5rem; }
+  nav { position: sticky; top: 0; z-index: 10; backdrop-filter: blur(8px);
+    background: color-mix(in srgb, var(--bg) 82%, transparent); border-bottom: 1px solid var(--border); }
+  nav .wrap { display: flex; align-items: center; justify-content: space-between; height: 64px; }
+  .brand { font-family: var(--display); font-weight: 600; font-size: 1.3rem; letter-spacing: -0.03em;
+    color: var(--fg); display: inline-flex; align-items: baseline; text-decoration: none; }
+  .brand .nmark { height: 0.82em; width: auto; align-self: center; margin: 0 0.01em; fill: var(--accent); }
+  nav .links a { color: var(--muted); margin-left: 1.5rem; font-size: 0.92rem; text-decoration: none; }
+  nav .links a:hover { color: var(--fg); }
+  .theme-btn { background: none; border: 1px solid var(--border); color: var(--muted); border-radius: 8px;
+    width: 32px; height: 32px; margin-left: 1.5rem; cursor: pointer; font-size: 1rem; }
+  header.hero { padding: 5rem 0 2rem; }
+  header.hero .eyebrow { font-family: var(--mono); font-size: 0.72rem; letter-spacing: 0.22em; text-transform: uppercase; color: var(--muted); }
+  header.hero h1 { font-size: clamp(2.4rem, 6vw, 4rem); margin: 0.5rem 0 0.5rem; }
+  header.hero p { color: var(--muted); max-width: 40rem; }
+  section { padding: 3rem 0; border-top: 1px solid var(--border); }
+  section h2 { font-size: 1.6rem; margin: 0 0 0.4rem; }
+  section .lead { color: var(--muted); margin: 0 0 2rem; max-width: 44rem; }
+  .panel { background: var(--panel); border: 1px solid var(--border); border-radius: 14px; }
+
+  .logo-row { display: flex; gap: 1.25rem; flex-wrap: wrap; }
+  .logo-tile { flex: 1 1 260px; min-height: 170px; display: flex; align-items: center; justify-content: center; }
+  .wordmark { font-family: var(--display); font-weight: 600; font-size: 2.6rem; letter-spacing: -0.03em; color: var(--fg); display: inline-flex; align-items: baseline; }
+  .wordmark .nmark { height: 0.82em; width: auto; align-self: center; fill: var(--accent); }
+  .mono-mark { width: 96px; height: 96px; }
+  .mono-mark svg { width: 100%; height: 100%; fill: var(--accent); }
+  .caption { color: var(--muted); font-size: 0.85rem; margin-top: 0.75rem; font-family: var(--mono); }
+
+  .swatches { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1rem; }
+  .sw { border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
+  .sw .chip { height: 80px; }
+  .sw .meta { padding: 0.6rem 0.8rem; }
+  .sw .meta b { display: block; font-size: 0.9rem; }
+  .sw .meta span { font-family: var(--mono); font-size: 0.78rem; color: var(--muted); }
+
+  .type-row { padding: 1.25rem 1.5rem; border: 1px solid var(--border); border-radius: 12px; margin-bottom: 1rem; }
+  .type-row .k { font-family: var(--mono); font-size: 0.72rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--muted); }
+  .sample-display { font-family: var(--display); font-weight: 600; font-size: 2rem; letter-spacing: -0.02em; }
+  .sample-serif { font-family: var(--serif); font-size: 1.5rem; }
+  .sample-mono { font-family: var(--mono); font-size: 1.05rem; }
+
+  .dd { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+  .dd .box { border: 1px solid var(--border); border-radius: 12px; padding: 1.25rem 1.4rem; }
+  .dd h3 { margin: 0 0 0.6rem; font-size: 1rem; }
+  .dd ul { margin: 0; padding-left: 1.1rem; color: var(--muted); font-size: 0.95rem; }
+  .dd li { margin: 0.3rem 0; }
+  @media (max-width: 640px) { .dd { grid-template-columns: 1fr; } }
+  footer { border-top: 1px solid var(--border); padding: 2.5rem 0; color: var(--muted); font-size: 0.85rem; }
+</style>
+</head>
+<body>
+<nav>
+  <div class="wrap">
+    <a href="/" class="brand" aria-label="OpenNeo home">Open<svg class="nmark" viewBox="0 0 128 128" role="img"><title>N</title><path d="M22 14 H44 V92 H22 Z M22 92 H33 V105 H22 Z M33 105 H44 V118 H33 Z M84 14 H106 V114 H84 Z M22 14 H44 L106 114 H84 Z"/></svg>eo</a>
+    <span class="links">
+      <a href="/">Home</a>
+      <a href="/read">Read</a>
+      <a href="/translate">Translate</a>
+      <a href="https://github.com/grahampatrick/openneo">GitHub</a>
+      <button id="theme-btn" class="theme-btn" aria-label="Toggle dark / light" onclick="toggleTheme()">☾</button>
+    </span>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="wrap">
+    <span class="eyebrow">Brand guidelines</span>
+    <h1>The OpenNeo brand</h1>
+    <p>OpenNeo is an open protocol, and so is its identity — everything here is original and released under the project's licenses. Use it to represent OpenNeo faithfully.</p>
+  </div>
+</header>
+
+<section id="logo">
+  <div class="wrap">
+    <h2>Logo</h2>
+    <p class="lead">The wordmark pairs a geometric <b>N lettermark</b> — a straight-stroke N with a small checker foot — with the OpenNeo name. Give it room; never redraw it.</p>
+    <div class="logo-row">
+      <div class="panel logo-tile">
+        <span class="wordmark">Open<svg class="nmark" viewBox="0 0 128 128" role="img"><title>N</title><path d="M22 14 H44 V92 H22 Z M22 92 H33 V105 H22 Z M33 105 H44 V118 H33 Z M84 14 H106 V114 H84 Z M22 14 H44 L106 114 H84 Z"/></svg>eo</span>
+      </div>
+      <div class="panel logo-tile" style="flex:0 0 200px;flex-direction:column">
+        <span class="mono-mark"><svg viewBox="0 0 128 128" role="img" aria-label="OpenNeo N lettermark"><path d="M22 14 H44 V92 H22 Z M22 92 H33 V105 H22 Z M33 105 H44 V118 H33 Z M84 14 H106 V114 H84 Z M22 14 H44 L106 114 H84 Z"/></svg></span>
+      </div>
+    </div>
+    <p class="caption">Wordmark · N lettermark (app icon / monogram)</p>
+  </div>
+</section>
+
+<section id="colour">
+  <div class="wrap">
+    <h2>Colour</h2>
+    <p class="lead">Two themes carry across the whole site — warm <b>Cream</b> and charcoal <b>Dark</b>. Four pastels mark the pillars.</p>
+    <div class="swatches">
+      <div class="sw"><div class="chip" style="background:#1a1a1a"></div><div class="meta"><b>Dark bg</b><span>#1A1A1A</span></div></div>
+      <div class="sw"><div class="chip" style="background:#f4ecd6"></div><div class="meta"><b>Cream bg</b><span>#F4ECD6</span></div></div>
+      <div class="sw"><div class="chip" style="background:#6fa5bf"></div><div class="meta"><b>Accent (dark)</b><span>#6FA5BF</span></div></div>
+      <div class="sw"><div class="chip" style="background:#3c6f88"></div><div class="meta"><b>Accent (cream)</b><span>#3C6F88</span></div></div>
+      <div class="sw"><div class="chip" style="background:#f5dfa0"></div><div class="meta"><b>Pillar yellow</b><span>#F5DFA0</span></div></div>
+      <div class="sw"><div class="chip" style="background:#bfe9c4"></div><div class="meta"><b>Pillar green</b><span>#BFE9C4</span></div></div>
+      <div class="sw"><div class="chip" style="background:#e6cff2"></div><div class="meta"><b>Pillar lilac</b><span>#E6CFF2</span></div></div>
+      <div class="sw"><div class="chip" style="background:#f2c39b"></div><div class="meta"><b>Pillar peach</b><span>#F2C39B</span></div></div>
+    </div>
+  </div>
+</section>
+
+<section id="type">
+  <div class="wrap">
+    <h2>Typography</h2>
+    <p class="lead">Three faces, three jobs. <b>Space Grotesk</b> for display, a system <b>serif</b> for reading, <b>monospace</b> for code and labels — all open-licensed.</p>
+    <div class="type-row">
+      <div class="k">Display · Space Grotesk</div>
+      <div class="sample-display">Explore the OpenNeo stack</div>
+    </div>
+    <div class="type-row">
+      <div class="k">Reading · Serif (Iowan / Palatino)</div>
+      <div class="sample-serif">In the beginning Elohiym created the heavens and the earth.</div>
+    </div>
+    <div class="type-row">
+      <div class="k">Code &amp; labels · Monospace</div>
+      <div class="sample-mono">b3:b2805b78 · content-addressed · verifiable</div>
+    </div>
+  </div>
+</section>
+
+<section id="usage">
+  <div class="wrap">
+    <h2>Usage</h2>
+    <div class="dd">
+      <div class="box">
+        <h3>Do</h3>
+        <ul>
+          <li>Keep the N lettermark's checker foot intact.</li>
+          <li>Use the accent colour for the N against neutral text.</li>
+          <li>Give the logo clear space on all sides.</li>
+          <li>Use it on either the Cream or Dark background.</li>
+        </ul>
+      </div>
+      <div class="box">
+        <h3>Don't</h3>
+        <ul>
+          <li>Don't recolour the wordmark into a gradient or rainbow.</li>
+          <li>Don't stretch, rotate, or re-space the lettermark.</li>
+          <li>Don't place it on a busy or low-contrast background.</li>
+          <li>Don't swap the display face for another font.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    OpenNeo · brand assets are original and released under AGPL-3.0 (code) / CC-BY-SA 4.0 (text).
+    <a href="/">Back to home</a>
+  </div>
+</footer>
+</body>
+</html>

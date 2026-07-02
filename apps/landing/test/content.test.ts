@@ -3,11 +3,13 @@ import { readFileSync } from 'node:fs'
 import { resolve } from 'node:path'
 
 const html = readFileSync(resolve(__dirname, '..', 'index.html'), 'utf8')
+const brand = readFileSync(resolve(__dirname, '..', 'brand.html'), 'utf8')
 
 describe('OpenNeo landing content', () => {
   it('carries the OpenNeo brand, not Odysseus or NeoArk', () => {
     expect(html).toContain('<title>OpenNeo')
-    expect(html).toContain('Open<b>Neo</b>') // nav brand
+    expect(html).toContain('class="brand"') // nav brand wordmark
+    expect(html).toMatch(/>Open<svg class="nmark"[\s\S]*?<\/svg>eo</) // Open + N lettermark + eo
     expect(html).not.toMatch(/Neo<b>Ark<\/b>/)
     expect(html).not.toContain('The Ark holds') // ark copy removed
     expect(html).not.toContain('<title>Odysseus')
@@ -32,16 +34,33 @@ describe('OpenNeo landing content', () => {
     expect(html.toLowerCase()).toContain('open source')
   })
 
-  it('lists features that are actually built', () => {
-    for (const f of [
-      'Read NeoOS — the 87-book canon',
-      'Propose, review, merge + Bitcoin anchor',
-      'Translators paid in Lightning',
-      'Council governance',
-      'Open &amp; verifiable',
-    ]) {
-      expect(html).toContain(f)
+  it('shows the four pastel pillars', () => {
+    for (const label of ['Content-', 'Bitcoin-', 'Lightning-', 'verifiable']) {
+      expect(html).toContain(label)
     }
+    expect(html).toContain('class="pillars"')
+  })
+
+  it('has an "Explore the OpenNeo stack" tools grid of real shipped tools', () => {
+    expect(html).toContain('Explore the OpenNeo stack')
+    for (const tool of [
+      'OpenNeo Reader',
+      'Translator Portal',
+      'Cite SDK',
+      'Relay Protocol',
+      'Payout Runner',
+      'Crypto Core',
+    ]) {
+      expect(html).toContain(tool)
+    }
+    // every tool card points at a live route or the real repo (no vaporware links)
+    expect(html).not.toMatch(/href="\/(cli|sdk|coming-soon)"/)
+  })
+
+  it('has an original N lettermark and links to the brand page', () => {
+    expect(html).toContain('class="nmark"')
+    expect(html).toContain('<title>N</title>')
+    expect(html).toContain('href="/brand.html"')
   })
 
   it('does not claim unbuilt features', () => {
@@ -65,7 +84,11 @@ describe('OpenNeo landing content', () => {
     expect(html).toContain('toggleTheme')
   })
 
-  it('uses the reader serif for the brand + headings', () => {
+  it('uses Space Grotesk for display headings, keeps the serif available', () => {
+    expect(html).toContain('--display')
+    expect(html).toContain('Space Grotesk')
+    expect(html).toMatch(/h1, h2, h3 \{ font-family: var\(--display\)/)
+    // serif token retained (reading samples / chart numerals)
     expect(html).toContain('--serif')
     expect(html).toContain('Iowan Old Style')
   })
@@ -81,5 +104,24 @@ describe('OpenNeo landing content', () => {
     expect(html).toContain('AGPL-3.0')
     expect(html).toContain('CC-BY-SA 4.0')
     expect(html).toContain('Berean Standard Bible')
+  })
+})
+
+describe('OpenNeo brand page', () => {
+  it('documents logo, colour, and typography with original assets', () => {
+    expect(brand).toContain('<title>OpenNeo — Brand</title>')
+    expect(brand).toContain('The OpenNeo brand')
+    expect(brand).toContain('class="nmark"') // the N lettermark on the page
+    expect(brand).toContain('#F5DFA0') // pillar palette documented
+    expect(brand).toContain('Space Grotesk')
+    // brand assets are declared original (no third-party marks reproduced)
+    expect(brand).toContain('original')
+    expect(brand).not.toMatch(/Aleo|Leo/)
+  })
+
+  it('shares the cream + dark theme system', () => {
+    expect(brand).toContain('[data-theme="cream"]')
+    expect(brand).toContain('[data-theme="dark"]')
+    expect(brand).toContain('toggleTheme')
   })
 })
