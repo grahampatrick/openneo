@@ -36,35 +36,22 @@
   });
 </script>
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath d='M4 12 L16 5 L28 12 L28 26 L4 26 Z' fill='none' stroke='%236ee7ff' stroke-width='2' stroke-linejoin='round'/%3E%3Cpath d='M4 12 L28 12' stroke='%236ee7ff' stroke-width='2'/%3E%3C/svg%3E">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<!-- Hanken Grotesk: open SIL OFL geometric grotesque for the display headings. -->
-<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
   :root {
     --radius: 10px;
     --mono: ui-monospace, "SF Mono", "JetBrains Mono", Menlo, monospace;
     --sans: "Inter", "Open Sans", system-ui, sans-serif;
     --serif: "Iowan Old Style", "Palatino Linotype", Palatino, Charter, "Source Serif Pro", Georgia, Cambria, "Times New Roman", serif;
-    --display: "Hanken Grotesk", "Inter", system-ui, sans-serif;
-    /* Pastel accents for the pillar tiles + tool-card borders (work in both themes). */
-    --p-yellow: #f5dfa0;
-    --p-green: #bfe9c4;
-    --p-lilac: #e6cff2;
-    --p-peach: #f2c39b;
   }
-  /* Dark = the primary "tech" surface: near-black with a pale mint-green accent. */
+  /* The reader's two themes, matched exactly. */
   [data-theme="dark"] {
-    --bg: #0b0d0b; --bg2: #101210; --panel: #131613; --fg: #eef0ec; --muted: #9aa39a;
-    --border: #232823; --accent: #b3f5a3; --accent-dim: #8fd67e; --gold: #c9a24a;
-    --on-accent: #0b0d0b; --dot: rgba(150, 200, 150, 0.14);
+    --bg: #1a1a1a; --bg2: #201f1c; --panel: #242320; --fg: #d7d1c2; --muted: #8f897c;
+    --border: #34322c; --accent: #6fa5bf; --accent-dim: #4d7d92; --gold: #c9a24a;
     color-scheme: dark;
   }
-  /* Light = near-white with a deep readable green accent. */
   [data-theme="cream"] {
-    --bg: #f6f7f4; --bg2: #eef0ec; --panel: #ffffff; --fg: #14170f; --muted: #5c6356;
-    --border: #dde1d8; --accent: #2f7a2a; --accent-dim: #3f8f38; --gold: #9c6f24;
-    --on-accent: #ffffff; --dot: rgba(60, 120, 60, 0.12);
+    --bg: #f4ecd6; --bg2: #efe7d0; --panel: #ece2c6; --fg: #33302a; --muted: #8a7f68;
+    --border: #ddd1b3; --accent: #3c6f88; --accent-dim: #5a8298; --gold: #9c6f24;
     color-scheme: light;
   }
   * { box-sizing: border-box; }
@@ -73,10 +60,8 @@
     margin: 0; background: var(--bg); color: var(--fg);
     font-family: var(--sans); line-height: 1.6; -webkit-font-smoothing: antialiased;
   }
-  h1, h2, h3 { font-family: var(--display); letter-spacing: -0.02em; font-weight: 600; }
+  h1, h2, h3 { font-family: var(--serif); letter-spacing: -0.01em; }
   .mono { font-family: var(--mono); letter-spacing: -0.02em; }
-  .eyebrow { font-family: var(--mono); font-size: 0.72rem; letter-spacing: 0.22em;
-    text-transform: uppercase; color: var(--muted); }
   a { color: var(--accent); text-decoration: none; }
   a:hover { text-decoration: underline; }
   .wrap { max-width: 1040px; margin: 0 auto; padding: 0 1.5rem; }
@@ -87,42 +72,25 @@
     background: color-mix(in srgb, var(--bg) 82%, transparent); border-bottom: 1px solid var(--border);
   }
   nav .wrap { display: flex; align-items: center; justify-content: space-between; height: 64px; }
-  .brand { font-family: var(--display); font-weight: 600; font-size: 1.3rem; letter-spacing: -0.03em;
-    color: var(--fg); display: inline-flex; align-items: baseline; }
-  .brand .nmark { height: 0.82em; width: auto; align-self: center; margin: 0 0.01em; fill: var(--accent); }
+  .brand { font-family: var(--serif); font-weight: 400; font-size: 1.25rem; letter-spacing: -0.025em; color: var(--fg); }
   .theme-btn { background: none; border: 1px solid var(--border); color: var(--muted); border-radius: 8px;
     width: 32px; height: 32px; margin-left: 1.5rem; cursor: pointer; font-size: 1rem; }
   .theme-btn:hover { color: var(--fg); border-color: var(--accent); }
-  nav .links { display: inline-flex; align-items: center; }
+  .brand b { color: var(--accent); font-weight: inherit; }
   nav .links a { color: var(--muted); margin-left: 1.5rem; font-size: 0.92rem; }
   nav .links a:hover { color: var(--fg); text-decoration: none; }
-  .nav-cta { color: var(--accent) !important; text-transform: uppercase; font-size: 0.78rem;
-    letter-spacing: 0.08em; font-weight: 700; display: inline-flex; align-items: center; gap: 0.45rem; }
-  .nav-cta:hover { text-decoration: none; opacity: 0.85; }
-  .nav-cta .plus { width: 15px; height: 15px; fill: var(--accent); }
 
-  /* Hero — near-black, huge left-aligned mint heading, dotted backdrop */
-  .hero { position: relative; overflow: hidden; padding: 7rem 0 5rem; }
-  .hero::after {
-    content: ""; position: absolute; inset: 0; pointer-events: none; z-index: 0;
-    background-image: radial-gradient(var(--dot, transparent) 1.1px, transparent 1.4px);
-    background-size: 15px 15px;
-    -webkit-mask-image: radial-gradient(120% 95% at 80% 26%, #000 0%, transparent 62%);
-    mask-image: radial-gradient(120% 95% at 80% 26%, #000 0%, transparent 62%);
-  }
-  .hero .wrap { position: relative; z-index: 1; }
-  .hero h1 {
-    font-family: var(--display); font-weight: 700; color: var(--accent);
-    font-size: clamp(2.6rem, 8vw, 6rem); line-height: 1.02; letter-spacing: -0.03em;
-    margin: 0 0 1.5rem; max-width: 15ch;
-  }
-  .hero p.tagline { color: var(--muted); font-size: clamp(1.05rem, 2vw, 1.3rem); max-width: 40rem; margin: 0 0 2rem; }
-  .cta { display: inline-flex; gap: 1rem; flex-wrap: wrap; }
+  /* Hero */
+  .hero { text-align: center; padding: 6rem 0 4rem; }
+  .hero h1 { font-size: clamp(2rem, 5vw, 3.4rem); margin: 0 0 1rem; line-height: 1.1; }
+  .hero h1 .accent { color: var(--accent); }
+  .hero p.tagline { color: var(--muted); font-size: 1.15rem; max-width: 38rem; margin: 0 auto 2rem; }
+  .cta { display: inline-flex; gap: 1rem; flex-wrap: wrap; justify-content: center; }
   .btn {
-    display: inline-block; padding: 0.75rem 1.5rem; border-radius: var(--radius);
-    font-family: var(--display); font-weight: 600; font-size: 0.98rem; border: 1px solid var(--border);
+    display: inline-block; padding: 0.7rem 1.4rem; border-radius: var(--radius);
+    font-family: var(--mono); font-size: 0.95rem; border: 1px solid var(--border);
   }
-  .btn.primary { background: var(--accent); color: var(--on-accent); font-weight: 700; border-color: var(--accent); }
+  .btn.primary { background: var(--accent); color: #fff; font-weight: 600; border-color: var(--accent); }
   .btn.primary:hover { background: var(--accent-dim); text-decoration: none; }
   .btn.ghost { color: var(--fg); }
   .btn.ghost:hover { border-color: var(--accent); text-decoration: none; }
@@ -168,49 +136,6 @@
   .layer h3 { font-size: 1rem; margin: 0 0 0.25rem; color: var(--accent); }
   .layer p { color: var(--muted); font-size: 0.9rem; margin: 0; }
 
-  .brand:hover { text-decoration: none; }
-
-  /* Pastel pillar row */
-  .pillars {
-    display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.5rem; text-align: center;
-    background:
-      linear-gradient(var(--border) 1px, transparent 1px) 0 0 / 100% 33.33%,
-      linear-gradient(90deg, var(--border) 1px, transparent 1px) 0 0 / 25% 100%;
-    padding: 3rem 0;
-  }
-  .pillar { display: flex; flex-direction: column; align-items: center; gap: 1rem; }
-  .squircle {
-    width: 92px; height: 92px; border-radius: 27%;
-    display: flex; align-items: center; justify-content: center;
-  }
-  .squircle svg { width: 46px; height: 46px; fill: #111; }
-  .pillar .plabel {
-    font-family: var(--display); font-weight: 600; font-size: 1rem; line-height: 1.2;
-    letter-spacing: 0.01em; color: var(--fg); text-transform: uppercase;
-  }
-  @media (max-width: 720px) { .pillars { grid-template-columns: repeat(2, 1fr); background-size: 100% 50%, 50% 100%; } }
-
-  /* Tools grid ("Explore the OpenNeo stack") */
-  .tools-head { text-align: center; margin-bottom: 3rem; }
-  .tools-head h2 { font-size: clamp(2rem, 4.5vw, 3rem); margin: 0.6rem 0 0; }
-  .tools-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; }
-  .tool {
-    position: relative; display: block; background: var(--panel);
-    border: 1px solid var(--tool-accent, var(--border)); border-radius: 16px;
-    padding: 1.6rem 1.8rem; transition: transform 0.15s, box-shadow 0.15s;
-  }
-  .tool:hover { transform: translateY(-3px); text-decoration: none;
-    box-shadow: 0 8px 30px -12px var(--tool-accent, var(--border)); }
-  .tool .tname {
-    font-family: var(--display); font-weight: 600; font-size: 1.6rem; letter-spacing: -0.02em;
-    color: var(--tool-accent, var(--fg)); margin: 0 0 0.35rem;
-  }
-  .tool .tdesc { color: var(--muted); font-size: 0.98rem; margin: 0; }
-  .tool .ticon { position: absolute; top: 1.5rem; right: 1.6rem; width: 20px; height: 20px;
-    color: var(--muted); opacity: 0.8; }
-  .tool:hover .ticon { color: var(--tool-accent, var(--fg)); }
-  @media (max-width: 720px) { .tools-cols { grid-template-columns: 1fr; } }
-
   /* Live-network charts */
   .charts { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem; }
   .chart-card { border: 1px solid var(--border); border-radius: var(--radius); background: var(--panel); padding: 1.2rem; }
@@ -240,13 +165,14 @@
 <body>
 <nav>
   <div class="wrap">
-    <a href="/" class="brand" aria-label="OpenNeo home">Open<svg class="nmark" viewBox="0 0 128 128" role="img"><title>N</title><path d="M22 14 H44 V92 H22 Z M22 92 H33 V105 H22 Z M33 105 H44 V118 H33 Z M84 14 H106 V114 H84 Z M22 14 H44 L106 114 H84 Z"/></svg>eo</a>
+    <span class="brand">Open<b>Neo</b></span>
     <span class="links">
-      <a href="#tools">Tools</a>
+      <a href="/read">Read</a>
+      <a href="/translate">Translate</a>
+      <a href="#features">Features</a>
       <a href="#protocol">Protocol</a>
-      <a href="/brand.html">Brand</a>
+      <a href="#donate">Donate</a>
       <a href="https://github.com/grahampatrick/openneo">GitHub</a>
-      <a class="nav-cta" href="/read">Read now <svg class="plus" viewBox="0 0 24 24" aria-hidden="true"><path d="M10 3 h4 v7 h7 v4 h-7 v7 h-4 v-7 h-7 v-4 h7 z"/></svg></a>
       <button id="theme-btn" class="theme-btn" aria-label="Toggle dark / light" onclick="toggleTheme()">☾</button>
     </span>
   </div>
@@ -254,84 +180,53 @@
 
 <header class="hero">
   <div class="wrap">
-    <h1>An open Bible, anchored to Bitcoin.</h1>
-    <p class="tagline">OpenNeo is a peer-to-peer Scripture protocol. Every verse is content-addressed, every correction is timestamped to Bitcoin, and translators are paid in Lightning — with no gatekeeper over the text.</p>
+    <span class="tag">npub permissionless access · BLAKE3 · open &amp; verifiable</span>
+    <h1>NeoOS Ontology Scripture · <span class="accent">open source</span></h1>
+    <p class="tagline">An open, peer-to-peer Bible translation system where corrections are anchored to Bitcoin and translators are paid in Lightning — with no gatekeeper over the text.</p>
     <div class="cta">
       <a class="btn primary" href="/read">Read now</a>
       <a class="btn ghost" href="/translate">Propose a correction</a>
     </div>
+    <div class="install" id="install">
+      <code>openneo.org/read</code> — the 87-book canon, offline, in your browser. CLI coming to npm.
+    </div>
   </div>
 </header>
 
-<section id="pillars" style="border-top:none;padding:0">
-  <div class="pillars">
-    <div class="pillar">
-      <div class="squircle" style="background:var(--p-yellow)">
-        <svg viewBox="0 0 64 64" aria-hidden="true"><path d="M24 6 h6 v52 h-6 z M40 6 h6 v52 h-6 z M8 20 h48 v6 h-48 z M8 38 h48 v6 h-48 z"/></svg>
-      </div>
-      <div class="plabel">Content-<br>addressed</div>
-    </div>
-    <div class="pillar">
-      <div class="squircle" style="background:var(--p-green)">
-        <svg viewBox="0 0 64 64" aria-hidden="true"><path fill-rule="evenodd" d="M32 6 L58 32 L32 58 L6 32 Z M32 18 L44 32 L32 46 L20 32 Z"/></svg>
-      </div>
-      <div class="plabel">Bitcoin-<br>anchored</div>
-    </div>
-    <div class="pillar">
-      <div class="squircle" style="background:var(--p-lilac)">
-        <svg viewBox="0 0 64 64" aria-hidden="true"><path d="M36 4 L14 36 H28 L26 60 L50 26 H34 Z"/></svg>
-      </div>
-      <div class="plabel">Lightning-<br>paid</div>
-    </div>
-    <div class="pillar">
-      <div class="squircle" style="background:var(--p-peach)">
-        <svg viewBox="0 0 64 64" aria-hidden="true"><path d="M12 34 L26 48 L54 14 L46 6 L26 34 L20 26 Z"/></svg>
-      </div>
-      <div class="plabel">Open &amp;<br>verifiable</div>
-    </div>
-  </div>
-</section>
-
-<section id="tools">
+<section id="features">
   <div class="wrap">
-    <div class="tools-head">
-      <span class="eyebrow">Open tools for every need</span>
-      <h2>Explore the OpenNeo stack</h2>
-    </div>
-    <div class="tools-cols">
-      <div>
-        <a class="tool" href="/read" style="--tool-accent:#6fa5bf">
-          <svg class="ticon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 L17 7"/><path d="M9 7 h8 v8"/></svg>
-          <div class="tname">OpenNeo Reader</div>
-          <p class="tdesc">Read the 87-book canon, offline, in your browser.</p>
-        </a>
-        <a class="tool" href="https://github.com/grahampatrick/openneo" style="--tool-accent:#7fb98f;margin-top:1.25rem">
-          <svg class="ticon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 8 L4 12 L9 16"/><path d="M15 8 L20 12 L15 16"/></svg>
-          <div class="tname">Cite SDK</div>
-          <p class="tdesc">Embed verifiable Scripture on any website.</p>
-        </a>
-        <a class="tool" href="https://github.com/grahampatrick/openneo" style="--tool-accent:#c9a24a;margin-top:1.25rem">
-          <svg class="ticon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 8 L4 12 L9 16"/><path d="M15 8 L20 12 L15 16"/></svg>
-          <div class="tname">Payout Runner</div>
-          <p class="tdesc">Split Lightning payouts to translators on merge.</p>
-        </a>
+    <h2>Features</h2>
+    <p class="lead">A reader and a translator portal built on a content-addressed, signed, relay-distributed corpus. Live today.</p>
+    <div class="grid">
+      <div class="card">
+        <div class="clip">▶ 87-book canon</div>
+        <h3>Read NeoOS — the 87-book canon</h3>
+        <p>The standard 66, plus the Apocrypha &amp; pseudepigrapha (Enoch, Jasher, Jubilees, 2 Baruch…) most Bibles leave out — restored in their historic reading order, with a one-click toggle back to the 66-book Protestant standard. Hebrew names, content-addressed with BLAKE3, offline in your browser.</p>
       </div>
-      <div>
-        <a class="tool" href="/translate" style="--tool-accent:#b79bd6">
-          <svg class="ticon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 L17 7"/><path d="M9 7 h8 v8"/></svg>
-          <div class="tname">Translator Portal</div>
-          <p class="tdesc">Propose, review, and merge corrections — paid in Lightning.</p>
-        </a>
-        <a class="tool" href="https://github.com/grahampatrick/openneo" style="--tool-accent:#d9926a;margin-top:1.25rem">
-          <svg class="ticon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 8 L4 12 L9 16"/><path d="M15 8 L20 12 L15 16"/></svg>
-          <div class="tname">Relay Protocol</div>
-          <p class="tdesc">Content-addressed Scripture events on Nostr relays.</p>
-        </a>
-        <a class="tool" href="https://github.com/grahampatrick/openneo" style="--tool-accent:#6f8fbf;margin-top:1.25rem">
-          <svg class="ticon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 8 L4 12 L9 16"/><path d="M15 8 L20 12 L15 16"/></svg>
-          <div class="tname">Crypto Core</div>
-          <p class="tdesc">Sign &amp; verify the corpus with BLAKE3 + Schnorr.</p>
-        </a>
+      <div class="card">
+        <div class="clip">▶ propose → merge</div>
+        <h3>Propose, review, merge + Bitcoin anchor</h3>
+        <p>Propose a correction, a council reviews and votes, a maintainer merges — and the change is timestamped to Bitcoin forever. Live in the translator portal.</p>
+      </div>
+      <div class="card">
+        <div class="clip">▶ Lightning payouts</div>
+        <h3>Translators paid in Lightning</h3>
+        <p>On merge, the work is split — translator, reviewers, submitter — and paid over Lightning. No custody, signed receipts.</p>
+      </div>
+      <div class="card">
+        <div class="clip">▶ key, not account</div>
+        <h3>Identity is a key</h3>
+        <p>Sign in with one click — a Nostr key generated in your browser, or your own extension. No email, no account, no vendor.</p>
+      </div>
+      <div class="card">
+        <div class="clip">▶ council governance</div>
+        <h3>Council governance</h3>
+        <p>A known council of maintainers reviews and merges. Only their votes reach quorum — Sybil-resistant, with a signed, public, forkable maintainer set.</p>
+      </div>
+      <div class="card">
+        <div class="clip">▶ open &amp; verifiable</div>
+        <h3>Open &amp; verifiable</h3>
+        <p>Every count comes from public signed events — no backend to trust. Protocol AGPL-3.0, text CC-BY-SA 4.0. Fork the whole thing.</p>
       </div>
     </div>
   </div>
@@ -342,7 +237,7 @@
     <h2>Four interlocking layers</h2>
     <p class="lead">OpenNeo is a specialization of Nostr for Scripture, with Bitcoin for permanence and Lightning for payments.</p>
     <div class="layers">
-      <div class="layer"><h3>NeoOS</h3><p>Neo Ontology Scripture — an open source, accuracy-first English corpus (85 of 87 books today), Hebrew names, every verse content-addressed with BLAKE3.</p></div>
+      <div class="layer"><h3>NeoOS</h3><p>Neo Ontology Scripture — an open-source, accuracy-first English corpus (85 of 87 books today), Hebrew names, every verse content-addressed with BLAKE3.</p></div>
       <div class="layer"><h3>Relay Protocol</h3><p>Content-addressed events on Nostr relays. Anyone runs a relay; clients pull from many, push to many.</p></div>
       <div class="layer"><h3>Bitcoin Translation Protocol</h3><p>Immutable PR history anchored to Bitcoin via OpenTimestamps, with Lightning payouts and peer review.</p></div>
       <div class="layer"><h3>OpenNeo Reader</h3><p>PWA + CLI: read, see change history and Bitcoin anchors, propose and vote on revisions.</p></div>

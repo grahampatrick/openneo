@@ -3,13 +3,11 @@ import { readFileSync } from 'node:fs'
 import { resolve } from 'node:path'
 
 const html = readFileSync(resolve(__dirname, '..', 'index.html'), 'utf8')
-const brand = readFileSync(resolve(__dirname, '..', 'brand.html'), 'utf8')
 
 describe('OpenNeo landing content', () => {
   it('carries the OpenNeo brand, not Odysseus or NeoArk', () => {
     expect(html).toContain('<title>OpenNeo')
-    expect(html).toContain('class="brand"') // nav brand wordmark
-    expect(html).toMatch(/>Open<svg class="nmark"[\s\S]*?<\/svg>eo</) // Open + N lettermark + eo
+    expect(html).toContain('Open<b>Neo</b>') // nav brand
     expect(html).not.toMatch(/Neo<b>Ark<\/b>/)
     expect(html).not.toContain('The Ark holds') // ark copy removed
     expect(html).not.toContain('<title>Odysseus')
@@ -34,33 +32,16 @@ describe('OpenNeo landing content', () => {
     expect(html.toLowerCase()).toContain('open source')
   })
 
-  it('shows the four pastel pillars', () => {
-    for (const label of ['Content-', 'Bitcoin-', 'Lightning-', 'verifiable']) {
-      expect(html).toContain(label)
-    }
-    expect(html).toContain('class="pillars"')
-  })
-
-  it('has an "Explore the OpenNeo stack" tools grid of real shipped tools', () => {
-    expect(html).toContain('Explore the OpenNeo stack')
-    for (const tool of [
-      'OpenNeo Reader',
-      'Translator Portal',
-      'Cite SDK',
-      'Relay Protocol',
-      'Payout Runner',
-      'Crypto Core',
+  it('lists features that are actually built', () => {
+    for (const f of [
+      'Read NeoOS — the 87-book canon',
+      'Propose, review, merge + Bitcoin anchor',
+      'Translators paid in Lightning',
+      'Council governance',
+      'Open &amp; verifiable',
     ]) {
-      expect(html).toContain(tool)
+      expect(html).toContain(f)
     }
-    // every tool card points at a live route or the real repo (no vaporware links)
-    expect(html).not.toMatch(/href="\/(cli|sdk|coming-soon)"/)
-  })
-
-  it('has an original N lettermark and links to the brand page', () => {
-    expect(html).toContain('class="nmark"')
-    expect(html).toContain('<title>N</title>')
-    expect(html).toContain('href="/brand.html"')
   })
 
   it('does not claim unbuilt features', () => {
@@ -76,26 +57,15 @@ describe('OpenNeo landing content', () => {
     expect(html).toMatch(/<svg[^>]*viewBox="0 0 35 35"/) // real generated QR, not the 29x29 placeholder
   })
 
-  it('has dark + light themes with a mint-green accent and a toggle', () => {
+  it('has both reader themes (cream + dark) and a theme toggle', () => {
     expect(html).toContain('[data-theme="cream"]')
     expect(html).toContain('[data-theme="dark"]')
-    expect(html).toContain('#0b0d0b') // near-black dark bg (Leo-style)
-    expect(html).toContain('#b3f5a3') // mint-green accent
+    expect(html).toContain('#f4ecd6') // cream bg (matches the reader)
+    expect(html).toContain('#1a1a1a') // dark bg (matches the reader)
     expect(html).toContain('toggleTheme')
   })
 
-  it('has the Leo-style hero: huge accent heading + dotted backdrop + nav CTA', () => {
-    expect(html).toContain('An open Bible, anchored to Bitcoin.')
-    expect(html).toMatch(/\.hero h1 \{[\s\S]*?color: var\(--accent\)/) // heading is the accent colour
-    expect(html).toContain('class="nav-cta"') // green nav call-to-action
-    expect(html).toMatch(/radial-gradient\(var\(--dot/) // dotted hero backdrop
-  })
-
-  it('uses Hanken Grotesk for display headings, keeps the serif available', () => {
-    expect(html).toContain('--display')
-    expect(html).toContain('Hanken Grotesk')
-    expect(html).toMatch(/h1, h2, h3 \{ font-family: var\(--display\)/)
-    // serif token retained (reading samples / chart numerals)
+  it('uses the reader serif for the brand + headings', () => {
     expect(html).toContain('--serif')
     expect(html).toContain('Iowan Old Style')
   })
@@ -111,24 +81,5 @@ describe('OpenNeo landing content', () => {
     expect(html).toContain('AGPL-3.0')
     expect(html).toContain('CC-BY-SA 4.0')
     expect(html).toContain('Berean Standard Bible')
-  })
-})
-
-describe('OpenNeo brand page', () => {
-  it('documents logo, colour, and typography with original assets', () => {
-    expect(brand).toContain('<title>OpenNeo — Brand</title>')
-    expect(brand).toContain('The OpenNeo brand')
-    expect(brand).toContain('class="nmark"') // the N lettermark on the page
-    expect(brand).toContain('#F5DFA0') // pillar palette documented
-    expect(brand).toContain('Hanken Grotesk')
-    // brand assets are declared original (no third-party marks reproduced)
-    expect(brand).toContain('original')
-    expect(brand).not.toMatch(/Aleo|Leo/)
-  })
-
-  it('shares the cream + dark theme system', () => {
-    expect(brand).toContain('[data-theme="cream"]')
-    expect(brand).toContain('[data-theme="dark"]')
-    expect(brand).toContain('toggleTheme')
   })
 })
