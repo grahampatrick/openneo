@@ -57,17 +57,24 @@ describe('OpenNeo landing content', () => {
     expect(html).toMatch(/<svg[^>]*viewBox="0 0 35 35"/) // real generated QR, not the 29x29 placeholder
   })
 
-  it('has both reader themes (cream + dark) and a theme toggle', () => {
-    expect(html).toContain('[data-theme="cream"]')
+  it('has dark + light themes with a lime accent and a toggle', () => {
     expect(html).toContain('[data-theme="dark"]')
-    expect(html).toContain('#f4ecd6') // cream bg (matches the reader)
-    expect(html).toContain('#1a1a1a') // dark bg (matches the reader)
+    expect(html).toContain('[data-theme="light"]')
+    expect(html).toContain('#0b0d0b') // near-black dark bg
+    expect(html).toContain('#b3f5a3') // lime accent
     expect(html).toContain('toggleTheme')
   })
 
-  it('uses the reader serif for the brand + headings', () => {
-    expect(html).toContain('--serif')
-    expect(html).toContain('Iowan Old Style')
+  it('uses an open geometric display font for the headings', () => {
+    expect(html).toContain('--display')
+    expect(html).toContain('Space Grotesk')
+    expect(html).toMatch(/h1, h2, h3 \{ font-family: var\(--display\)/)
+  })
+
+  it('has the particle hero + tool stack', () => {
+    expect(html).toContain('id="hero-particles"')
+    expect(html).toContain('Explore the OpenNeo stack')
+    expect(html).toContain('An open Bible, verified by everyone.')
   })
 
   it('renders the live-network metrics as charts (not just numbers)', () => {
