@@ -67,14 +67,15 @@ describe('OpenNeo landing content', () => {
 
   it('uses an open geometric display font for the headings', () => {
     expect(html).toContain('--display')
-    expect(html).toContain('Poppins')
+    expect(html).toContain('Hanken Grotesk')
     expect(html).toMatch(/h1, h2, h3 \{ font-family: var\(--display\)/)
   })
 
-  it('has the particle hero + tool stack', () => {
-    expect(html).toContain('id="hero-particles"')
-    expect(html).toContain('Explore the OpenNeo stack')
-    expect(html).toContain('An open Bible, verified by everyone.')
+  it('has the hero, the 3-column tool row, and the circular features', () => {
+    expect(html).toContain('An open Bible, anchored to Bitcoin.')
+    expect(html).toContain('Tools for every reader')
+    expect(html).toContain('Start reading')
+    expect(html).toContain('class="features3"')
   })
 
   it('renders the live-network metrics as charts (not just numbers)', () => {
