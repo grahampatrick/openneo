@@ -36,116 +36,114 @@
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath d='M6 26 V6 h4 l12 16 V6 h4 v20 h-4 L10 10 v16 z' fill='%23b3f5a3'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<!-- Space Grotesk + Inter: open SIL OFL faces for display + body. -->
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<!-- Hanken Grotesk: open SIL OFL geometric grotesque for display + body. -->
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
   :root {
-    --radius: 12px;
+    --radius: 10px;
     --mono: ui-monospace, "SF Mono", "JetBrains Mono", Menlo, monospace;
-    --sans: "Inter", system-ui, sans-serif;
-    --display: "Poppins", "Inter", system-ui, sans-serif;
+    --display: "Hanken Grotesk", "Inter", system-ui, sans-serif;
+    --sans: "Hanken Grotesk", "Inter", system-ui, sans-serif;
   }
-  /* Dark-first, near-black with a bright lime accent. */
+  /* Dark-first: near-black with a light mint-green accent. */
   [data-theme="dark"] {
-    --bg: #0b0d0b; --bg2: #101310; --panel-solid: #141713;
-    --fg: #eef1ec; --muted: #929a91; --border: #23271f;
+    --bg: #0b0d0b; --panel: #16181500; --panel-solid: #141613;
+    --fg: #f3f5f1; --muted: #9aa398; --border: #26291f;
     --accent: #b3f5a3; --accent-strong: #c8ffb8; --on-accent: #0b0d0b;
-    --dot: rgba(179, 245, 163, 0.5);
+    --dot: rgba(179, 245, 163, 0.09);
     color-scheme: dark;
   }
   /* Light: near-white with a deep readable green. */
   [data-theme="light"] {
-    --bg: #f6f7f4; --bg2: #eef0ec; --panel-solid: #ffffff;
+    --bg: #f6f7f4; --panel-solid: #ffffff;
     --fg: #12150f; --muted: #59614f; --border: #dde1d6;
     --accent: #2f7a2a; --accent-strong: #256a20; --on-accent: #ffffff;
-    --dot: rgba(47, 122, 42, 0.4);
+    --dot: rgba(47, 122, 42, 0.10);
     color-scheme: light;
   }
   * { box-sizing: border-box; margin: 0; padding: 0; }
-  html { scroll-behavior: smooth; scroll-padding-top: 80px; -webkit-font-smoothing: antialiased; }
-  body { background: var(--bg); color: var(--fg); font-family: var(--sans); line-height: 1.6;
+  html { scroll-behavior: smooth; scroll-padding-top: 90px; -webkit-font-smoothing: antialiased; }
+  body { background: var(--bg); color: var(--fg); font-family: var(--sans); line-height: 1.55;
     overflow-x: hidden; transition: background-color .2s, color .2s; }
-  h1, h2, h3 { font-family: var(--display); letter-spacing: -0.02em; font-weight: 600; line-height: 1.04; }
+  h1, h2, h3 { font-family: var(--display); letter-spacing: -0.02em; font-weight: 600; line-height: 1.05; }
   a { color: var(--accent); text-decoration: none; }
-  a:hover { text-decoration: none; opacity: .85; }
-  p { margin: 0; }
-  .wrap { max-width: 1240px; margin: 0 auto; padding: 0 clamp(1.25rem, 4vw, 3.75rem); }
-  .eyebrow { font-family: var(--mono); font-size: 0.72rem; letter-spacing: 0.24em;
-    text-transform: uppercase; color: var(--muted); }
+  a:hover { opacity: .85; }
+  .wrap { max-width: 1440px; margin: 0 auto; padding: 0 clamp(1.25rem, 4vw, 3.75rem); }
+  .eyebrow { font-family: var(--mono); font-size: 0.72rem; letter-spacing: 0.24em; text-transform: uppercase; color: var(--muted); }
 
   /* ── Nav ── */
   nav { position: sticky; top: 0; z-index: 50; backdrop-filter: blur(10px);
-    background: color-mix(in srgb, var(--bg) 78%, transparent); border-bottom: 1px solid var(--border); }
-  nav .wrap { display: flex; align-items: center; justify-content: space-between; height: 72px; }
-  .brand { font-family: var(--display); font-weight: 700; font-size: 1.35rem; letter-spacing: -0.04em; color: var(--fg);
-    display: inline-flex; align-items: center; gap: .1rem; }
-  .brand svg { height: 1.15em; width: auto; }
+    background: color-mix(in srgb, var(--bg) 80%, transparent); }
+  nav .wrap { display: flex; align-items: center; justify-content: space-between; height: 86px; }
+  .brand { font-family: var(--display); font-weight: 700; font-size: 1.5rem; letter-spacing: -0.04em; color: var(--fg); }
   .brand b { color: var(--accent); font-weight: inherit; }
-  nav .links { display: flex; align-items: center; gap: 1.6rem; }
-  nav .links a { color: var(--muted); font-size: 0.9rem; font-weight: 500; }
-  nav .links a:hover { color: var(--fg); }
-  nav .links .nav-cta { color: var(--accent); text-transform: uppercase; font-size: 0.75rem;
-    letter-spacing: 0.1em; font-weight: 700; display: inline-flex; align-items: center; gap: .4rem; }
-  nav .links .nav-cta svg { width: 15px; height: 15px; fill: var(--accent); }
-  .theme-btn { background: none; border: 1px solid var(--border); color: var(--muted); border-radius: 8px;
-    width: 34px; height: 34px; cursor: pointer; font-size: 1rem; flex: none; }
-  .theme-btn:hover { color: var(--fg); border-color: var(--accent); }
-  @media (max-width: 820px) { nav .links a:not(.nav-cta) { display: none; } }
+  nav .links { display: flex; align-items: center; gap: 2.2rem; }
+  nav .links a { color: var(--fg); font-size: 1rem; font-weight: 500; }
+  nav .links a:hover { color: var(--accent); opacity: 1; }
+  nav .links .nav-cta { color: var(--accent); text-transform: uppercase; font-size: 0.82rem;
+    letter-spacing: 0.08em; font-weight: 700; display: inline-flex; align-items: center; gap: .5rem; }
+  nav .links .nav-cta svg { width: 17px; height: 17px; fill: var(--accent); }
+  .theme-btn { background: var(--panel-solid); border: 1px solid var(--border); color: var(--fg); border-radius: 10px;
+    width: 44px; height: 44px; cursor: pointer; font-size: 1.1rem; flex: none; }
+  .theme-btn:hover { border-color: var(--accent); }
+  @media (max-width: 900px) { nav .links a:not(.nav-cta) { display: none; } nav .links { gap: 1rem; } }
 
   /* ── Hero ── */
-  .hero { position: relative; overflow: hidden; padding: clamp(5rem, 15vw, 11rem) 0 clamp(4rem, 10vw, 7rem); }
-  #hero-particles { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 0; pointer-events: none;
-    -webkit-mask-image: radial-gradient(120% 100% at 78% 22%, #000 0%, transparent 60%);
-    mask-image: radial-gradient(120% 100% at 78% 22%, #000 0%, transparent 60%); }
+  .hero { position: relative; overflow: hidden; padding: clamp(4rem, 13vw, 11rem) 0 clamp(4rem, 11vw, 9rem); }
+  .hero::before { content: ""; position: absolute; inset: 0; z-index: 0; pointer-events: none;
+    background-image: radial-gradient(var(--dot) 1px, transparent 1.6px); background-size: 16px 16px;
+    -webkit-mask-image: radial-gradient(120% 105% at 72% 18%, #000 0%, transparent 66%);
+    mask-image: radial-gradient(120% 105% at 72% 18%, #000 0%, transparent 66%); }
   .hero .wrap { position: relative; z-index: 1; }
-  .hero h1 { color: var(--accent); font-size: clamp(3rem, 11vw, 8rem); font-weight: 600;
-    max-width: 14ch; margin: 0 0 1.8rem; }
-  .hero p.tagline { color: var(--muted); font-size: clamp(1.05rem, 1.8vw, 1.35rem); max-width: 44rem; margin: 0 0 2.2rem; }
-  .cta { display: flex; gap: 1rem; flex-wrap: wrap; }
-  .btn { display: inline-flex; align-items: center; gap: .5rem; padding: .85rem 1.6rem; border-radius: var(--radius);
-    font-family: var(--display); font-weight: 600; font-size: 1rem; border: 1px solid var(--border); transition: all .15s; }
-  .btn.primary { background: var(--accent); color: var(--on-accent); border-color: var(--accent); }
-  .btn.primary:hover { background: var(--accent-strong); opacity: 1; }
-  .btn.ghost { color: var(--fg); background: var(--panel-solid); }
-  .btn.ghost:hover { border-color: var(--accent); opacity: 1; }
+  .hero h1 { color: var(--accent); font-size: clamp(3rem, 10.5vw, 8.4rem); font-weight: 600; letter-spacing: -0.03em;
+    line-height: 1.0; max-width: 15ch; margin: 0 0 clamp(1.6rem, 3vw, 2.6rem); }
+  .hero p.tagline { color: var(--muted); font-size: clamp(1.05rem, 1.5vw, 1.35rem); max-width: 58ch; line-height: 1.5; }
 
   /* ── Sections ── */
-  section { padding: clamp(3.5rem, 8vw, 6.5rem) 0; }
-  section.bordered { border-top: 1px solid var(--border); }
-  .sec-head { margin-bottom: 3rem; }
-  .sec-head h2 { font-size: clamp(2rem, 5vw, 3.4rem); margin: .5rem 0 0; }
-  .sec-head p.lead { color: var(--muted); margin-top: .8rem; max-width: 46rem; font-size: 1.05rem; }
+  section { padding: clamp(4rem, 9vw, 8rem) 0; }
+  .center { text-align: center; }
+  .center h2 { color: var(--accent); font-size: clamp(2.4rem, 6vw, 4.6rem); }
+  .center .lead { color: var(--muted); max-width: 40ch; margin: 1.6rem auto 0; font-size: clamp(1.05rem, 1.6vw, 1.3rem); }
 
-  /* Triptych */
-  .triptych { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; text-align: center; }
-  .trip { display: flex; flex-direction: column; align-items: center; gap: 1.25rem; padding: 1rem; }
-  .trip .glyph { width: 84px; height: 84px; display: flex; align-items: center; justify-content: center;
-    border: 1px solid var(--border); border-radius: 22px; background: var(--panel-solid); }
-  .trip .glyph svg { width: 40px; height: 40px; stroke: var(--accent); fill: none; }
-  .trip h3 { font-size: 1.35rem; }
-  .trip p { color: var(--muted); font-size: .96rem; max-width: 24ch; }
-  @media (max-width: 760px) { .triptych { grid-template-columns: 1fr; gap: 2rem; } }
+  /* 3-column tool row (icon · big name · arrow) */
+  .cols3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2.5rem; margin-top: clamp(3rem, 6vw, 6rem); }
+  .col { display: block; color: var(--fg); }
+  .col .ic { width: 42px; height: 42px; color: var(--accent); margin-bottom: 2.5rem; }
+  .col .ic svg { width: 100%; height: 100%; }
+  .col .name { font-family: var(--display); font-weight: 600; font-size: clamp(1.8rem, 3.2vw, 2.6rem);
+    letter-spacing: -0.02em; display: inline-flex; align-items: center; gap: .7rem; }
+  .col .name .arw { width: 20px; height: 20px; color: var(--fg); }
+  .col:hover .name { color: var(--accent); }
+  .col:hover .name .arw { color: var(--accent); }
+  .col .desc { color: var(--muted); margin-top: .7rem; font-size: 1rem; max-width: 30ch; }
+  @media (max-width: 820px) { .cols3 { grid-template-columns: 1fr; gap: 3rem; } }
 
-  /* Tool stack list */
-  .stack { border-top: 1px solid var(--border); }
-  .stack a { display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 1.5rem;
-    padding: clamp(1.5rem, 3.5vw, 2.6rem) 0; border-bottom: 1px solid var(--border); color: var(--fg); transition: padding-left .2s; }
-  .stack a:hover { opacity: 1; padding-left: .6rem; }
-  .stack .tname { font-family: var(--display); font-weight: 600; font-size: clamp(1.6rem, 4vw, 2.6rem);
-    letter-spacing: -0.03em; }
-  .stack a:hover .tname { color: var(--accent); }
-  .stack .tdesc { color: var(--muted); font-size: 1rem; margin-top: .3rem; }
-  .stack .tarrow { width: 28px; height: 28px; color: var(--muted); flex: none; }
-  .stack a:hover .tarrow { color: var(--accent); }
+  /* About statement + button */
+  .about { text-align: center; }
+  .about h2 { font-size: clamp(1.9rem, 4vw, 3.4rem); font-weight: 600; max-width: 20ch; margin: 0 auto; color: var(--fg); }
+  .start-btn { display: inline-flex; align-items: center; gap: 1.2rem; margin-top: clamp(2.5rem, 5vw, 4rem);
+    background: var(--accent); color: var(--on-accent); font-family: var(--display); font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.08em; font-size: .95rem; padding: 1.1rem 2.2rem; border-radius: 2px;
+    box-shadow: 0 0 0 2px var(--bg), 0 0 0 4px var(--accent); transition: background .2s; }
+  .start-btn:hover { background: var(--accent-strong); opacity: 1; }
+  .start-btn svg { width: 20px; height: 14px; fill: var(--on-accent); }
+
+  /* Three circular feature icons */
+  .features3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2rem; margin-top: clamp(3rem, 7vw, 6rem); }
+  .feat { text-align: center; }
+  .feat .circle { width: min(30vw, 300px); height: min(30vw, 300px); margin: 0 auto; }
+  .feat .circle svg { width: 100%; height: 100%; }
+  .feat .flabel { color: var(--muted); margin-top: 1.5rem; font-size: 1.1rem; }
+  @media (max-width: 820px) { .features3 { grid-template-columns: 1fr; gap: 3.5rem; } .feat .circle { width: 220px; height: 220px; } }
 
   /* Protocol layers */
-  .layers { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 1.25rem; }
-  .layer { border: 1px solid var(--border); border-radius: var(--radius); background: var(--panel-solid); padding: 1.5rem; }
+  .layers { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1.25rem; margin-top: 3rem; }
+  .layer { border: 1px solid var(--border); border-radius: var(--radius); background: var(--panel-solid); padding: 1.6rem; }
   .layer h3 { font-size: 1.05rem; color: var(--accent); margin-bottom: .5rem; }
   .layer p { color: var(--muted); font-size: .95rem; }
 
   /* Live-network charts */
-  .charts { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 1.25rem; }
+  .charts { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1.25rem; margin-top: 3rem; }
   .chart-card { border: 1px solid var(--border); border-radius: var(--radius); background: var(--panel-solid); padding: 1.4rem; }
   .chart-num { font-family: var(--display); font-weight: 600; font-size: 2.2rem; line-height: 1; }
   .chart-wrap { position: relative; margin: .6rem 0 .4rem; height: 56px; }
@@ -157,7 +155,7 @@
   .fineprint { color: var(--muted); font-size: .82rem; margin-top: 1.25rem; }
 
   /* Donate */
-  .donate { display: flex; gap: 2.5rem; align-items: center; flex-wrap: wrap; }
+  .donate { display: flex; gap: 2.5rem; align-items: center; flex-wrap: wrap; margin-top: 2.5rem; }
   .qr { width: 168px; height: 168px; flex: none; background: #fff; border-radius: var(--radius); padding: 10px; }
   .qr svg { width: 100%; height: 100%; }
   .ln-addr { font-family: var(--mono); color: var(--accent); word-break: break-all; margin: .3rem 0; }
@@ -175,10 +173,9 @@
   <div class="wrap">
     <a href="/" class="brand" aria-label="OpenNeo home">Open<b>Neo</b></a>
     <div class="links">
-      <a href="#stack">Tools</a>
+      <a href="#tools">Tools</a>
       <a href="#protocol">Protocol</a>
       <a href="#network">Network</a>
-      <a href="#donate">Donate</a>
       <a href="https://github.com/grahampatrick/openneo">GitHub</a>
       <a class="nav-cta" href="/read">Read now
         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 3 h4 v7 h7 v4 h-7 v7 h-4 v-7 h-7 v-4 h7 z"/></svg>
@@ -189,91 +186,82 @@
 </nav>
 
 <header class="hero">
-  <canvas id="hero-particles" aria-hidden="true"></canvas>
   <div class="wrap">
-    <h1>An open Bible, verified by everyone.</h1>
-    <p class="tagline">OpenNeo is a peer-to-peer Scripture protocol — Neo Ontology Scripture (NeoOS), open source. Every verse is content-addressed, every correction is anchored to Bitcoin, and translators are paid in Lightning. No gatekeeper over the text.</p>
-    <div class="cta">
-      <a class="btn primary" href="/read">Read now</a>
-      <a class="btn ghost" href="/translate">Propose a correction</a>
-    </div>
+    <h1>An open Bible, anchored to Bitcoin.</h1>
+    <p class="tagline">OpenNeo is a peer-to-peer Scripture protocol — Neo Ontology Scripture (NeoOS), open source. Every verse is content-addressed, every correction is anchored to Bitcoin, and translators are paid in Lightning, with no gatekeeper over the text.</p>
   </div>
 </header>
 
-<section class="bordered" id="pillars">
+<section id="tools">
   <div class="wrap">
-    <div class="triptych">
-      <div class="trip">
-        <div class="glyph"><svg viewBox="0 0 40 40" stroke-width="2.4" stroke-linejoin="round" stroke-linecap="round"><path d="M20 4 L34 12 V28 L20 36 L6 28 V12 Z"/><path d="M20 4 V20 M20 20 L34 12 M20 20 L6 12"/></svg></div>
-        <h3>Content-addressed</h3>
-        <p>Every verse is hashed with BLAKE3 into one corpus root. Change a letter and the hash changes — tampering is impossible to hide.</p>
-      </div>
-      <div class="trip">
-        <div class="glyph"><svg viewBox="0 0 40 40" stroke-width="2.4" stroke-linejoin="round" stroke-linecap="round"><path d="M14 6 h9 a7 7 0 0 1 0 14 h-9 z M14 20 h11 a7 7 0 0 1 0 14 h-11 z M14 6 V34 M18 2 V6 M18 34 V38 M24 2 V6 M24 34 V38"/></svg></div>
-        <h3>Bitcoin-anchored</h3>
-        <p>Every accepted correction is timestamped to Bitcoin. The full history is immutable, public, and independently verifiable.</p>
-      </div>
-      <div class="trip">
-        <div class="glyph"><svg viewBox="0 0 40 40" stroke-width="2.4" stroke-linejoin="round" stroke-linecap="round"><path d="M22 4 L9 22 h9 l-3 14 L28 18 h-9 z"/></svg></div>
-        <h3>Lightning-paid</h3>
-        <p>When a correction merges, the work is split across translator, reviewers, and submitter — and paid over Lightning.</p>
-      </div>
+    <div class="center">
+      <h2>Tools for every reader</h2>
+      <p class="lead">Whether you want to read Scripture, correct it, or embed it anywhere, there is an OpenNeo tool for you — all open, all verifiable.</p>
     </div>
-  </div>
-</section>
-
-<section class="bordered" id="stack">
-  <div class="wrap">
-    <div class="sec-head">
-      <span class="eyebrow">Open tools for every need</span>
-      <h2>Explore the OpenNeo stack</h2>
-    </div>
-    <div class="stack">
-      <a href="/read">
-        <div><div class="tname">OpenNeo Reader</div><div class="tdesc">Read NeoOS — the 87-book canon, offline in your browser, with change history and Bitcoin anchors.</div></div>
-        <svg class="tarrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17 L17 7"/><path d="M9 7 h8 v8"/></svg>
+    <div class="cols3">
+      <a class="col" href="/read">
+        <div class="ic"><svg viewBox="0 0 42 42" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linejoin="round" stroke-linecap="round"><path d="M21 9 C17 6 10 6 6 8 V34 C10 32 17 32 21 35 C25 32 32 32 36 34 V8 C32 6 25 6 21 9 Z M21 9 V35"/></svg></div>
+        <div class="name">OpenNeo Reader <svg class="arw" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17 L17 7"/><path d="M9 7 h8 v8"/></svg></div>
+        <div class="desc">Read NeoOS — the 87-book canon, offline in your browser, with change history and Bitcoin anchors.</div>
       </a>
-      <a href="/translate">
-        <div><div class="tname">Translator Portal</div><div class="tdesc">Propose, review, merge + Bitcoin anchor — the full correction loop, in your browser.</div></div>
-        <svg class="tarrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17 L17 7"/><path d="M9 7 h8 v8"/></svg>
+      <a class="col" href="/translate">
+        <div class="ic"><svg viewBox="0 0 42 42" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linejoin="round" stroke-linecap="round"><path d="M22 34 H36 M8 34 L27 15 a3.5 3.5 0 0 0 -5 -5 L4 29 Z M23 11 L31 19"/></svg></div>
+        <div class="name">Translator Portal <svg class="arw" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17 L17 7"/><path d="M9 7 h8 v8"/></svg></div>
+        <div class="desc">Propose, review, merge + Bitcoin anchor — the full correction loop. Council governance gates every merge.</div>
       </a>
-      <a href="https://github.com/grahampatrick/openneo">
-        <div><div class="tname">Payout Runner</div><div class="tdesc">Translators paid in Lightning — signed, split receipts on every merge. No custody.</div></div>
-        <svg class="tarrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 a10 10 0 1 0 .01 0 M9 8 L4 12 L9 16 M15 8 L20 12 L15 16"/></svg>
-      </a>
-      <a href="https://github.com/grahampatrick/openneo">
-        <div><div class="tname">Governance</div><div class="tdesc">Council governance — a signed, forkable maintainer set gates every merge. Sybil-resistant by design.</div></div>
-        <svg class="tarrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 a10 10 0 1 0 .01 0 M9 8 L4 12 L9 16 M15 8 L20 12 L15 16"/></svg>
-      </a>
-      <a href="https://github.com/grahampatrick/openneo">
-        <div><div class="tname">Cite SDK</div><div class="tdesc">Open &amp; verifiable — embed any verse on any site; each citation is a free, signed use-proof.</div></div>
-        <svg class="tarrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 a10 10 0 1 0 .01 0 M9 8 L4 12 L9 16 M15 8 L20 12 L15 16"/></svg>
+      <a class="col" href="https://github.com/grahampatrick/openneo">
+        <div class="ic"><svg viewBox="0 0 42 42" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linejoin="round" stroke-linecap="round"><path d="M16 12 L6 21 L16 30 M26 12 L36 21 L26 30 M23 8 L19 34"/></svg></div>
+        <div class="name">Cite SDK <svg class="arw" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17 L17 7"/><path d="M9 7 h8 v8"/></svg></div>
+        <div class="desc">Open &amp; verifiable — embed any verse on any site; each citation is a free, signed use-proof.</div>
       </a>
     </div>
   </div>
 </section>
 
-<section class="bordered" id="protocol">
+<section id="about">
+  <div class="wrap about">
+    <h2>OpenNeo is an open, peer-to-peer system for Scripture. It lays the foundation for a Bible no platform can alter and no gatekeeper can own.</h2>
+    <a class="start-btn" href="/read">Start reading
+      <svg viewBox="0 0 24 16" aria-hidden="true"><path d="M0 6 h16 V2 l8 6 -8 6 v-4 H0 z"/></svg>
+    </a>
+    <div class="features3">
+      <div class="feat">
+        <div class="circle"><svg viewBox="0 0 200 200" fill="none" stroke="var(--border)" stroke-width="1.4"><circle cx="100" cy="100" r="96"/><g stroke="var(--fg)" stroke-linejoin="round" stroke-linecap="round" stroke-width="2"><path d="M100 58 L138 80 V124 L100 146 L62 124 V80 Z"/><path d="M100 58 V100 M100 100 L138 80 M100 100 L62 80" stroke="var(--accent)"/></g></svg></div>
+        <div class="flabel">Content-addressed</div>
+      </div>
+      <div class="feat">
+        <div class="circle"><svg viewBox="0 0 200 200" fill="none" stroke="var(--border)" stroke-width="1.4"><circle cx="100" cy="100" r="96"/><g stroke="var(--fg)" stroke-linejoin="round" stroke-linecap="round" stroke-width="2"><rect x="66" y="66" width="68" height="68" rx="6"/><path d="M100 66 V134 M66 100 H134" stroke="var(--accent)"/><circle cx="100" cy="100" r="12"/></g></svg></div>
+        <div class="flabel">Bitcoin-anchored</div>
+      </div>
+      <div class="feat">
+        <div class="circle"><svg viewBox="0 0 200 200" fill="none" stroke="var(--border)" stroke-width="1.4"><circle cx="100" cy="100" r="96"/><path d="M112 52 L74 108 h22 l-8 40 L128 92 h-22 z" stroke="var(--accent)" stroke-width="2.4" stroke-linejoin="round" stroke-linecap="round"/></svg></div>
+        <div class="flabel">Lightning-paid</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="protocol">
   <div class="wrap">
-    <div class="sec-head">
+    <div class="center">
       <span class="eyebrow">How it fits together</span>
-      <h2>Four interlocking layers</h2>
-      <p class="lead">OpenNeo is a specialization of Nostr for Scripture, with Bitcoin for permanence and Lightning for payments.</p>
+      <h2 style="margin-top:.5rem">Four interlocking layers</h2>
+      <p class="lead">A specialization of Nostr for Scripture, with Bitcoin for permanence and Lightning for payments.</p>
     </div>
     <div class="layers">
       <div class="layer"><h3>NeoOS</h3><p>Neo Ontology Scripture — an open source, accuracy-first English corpus (85 of 87 books today), Hebrew names, every verse content-addressed with BLAKE3.</p></div>
-      <div class="layer"><h3>Relay Protocol</h3><p>Content-addressed events on Nostr relays. Anyone runs a relay; clients pull from many, push to many.</p></div>
-      <div class="layer"><h3>Bitcoin Translation Protocol</h3><p>Immutable PR history anchored to Bitcoin via OpenTimestamps, with Lightning payouts and peer review.</p></div>
+      <div class="layer"><h3>Relay Protocol</h3><p>Content-addressed events on Nostr relays. Anyone runs a relay; clients pull from many, push to many. Council governance keeps merges Sybil-resistant.</p></div>
+      <div class="layer"><h3>Bitcoin Translation Protocol</h3><p>Immutable PR history anchored to Bitcoin via OpenTimestamps. Translators paid in Lightning on merge, with signed receipts and peer review.</p></div>
       <div class="layer"><h3>OpenNeo Reader</h3><p>PWA + CLI: read, see change history and Bitcoin anchors, propose and vote on revisions.</p></div>
     </div>
   </div>
 </section>
 
-<section class="bordered" id="network">
+<section id="network">
   <div class="wrap">
-    <div class="sec-head">
+    <div class="center">
       <span class="eyebrow">Live from public relays</span>
-      <h2>Live network</h2>
+      <h2 style="margin-top:.5rem">Live network</h2>
       <p class="lead">Verifiable from public Nostr events — no backend, no dashboard you have to trust. Anyone can recount these from the relays.</p>
     </div>
     <div class="charts">
@@ -302,11 +290,11 @@
   </div>
 </section>
 
-<section class="bordered" id="donate">
+<section id="donate">
   <div class="wrap">
-    <div class="sec-head">
+    <div class="center">
       <span class="eyebrow">Support the work</span>
-      <h2>Fund the protocol</h2>
+      <h2 style="margin-top:.5rem">Fund the protocol</h2>
       <p class="lead">Donations fund the translator payout pool — translators are paid in Lightning when their corrections merge. No custody by the protocol.</p>
     </div>
     <div class="donate">
@@ -329,74 +317,6 @@
     <p>Based on the Berean Standard Bible (BSB), berean.bible — dedicated to the public domain, used under CC-BY 4.0.</p>
   </div>
 </footer>
-
-<script>
-  // Original particle hero: dots sampled from the word "NEO", drifting then easing
-  // to their target positions. Themed via the --accent colour.
-  (function () {
-    var canvas = document.getElementById('hero-particles');
-    if (!canvas) return;
-    var ctx = canvas.getContext('2d');
-    var particles = [];
-    var raf;
-
-    function accent() {
-      return getComputedStyle(document.documentElement).getPropertyValue('--dot').trim() || 'rgba(179,245,163,0.5)';
-    }
-    function build() {
-      var host = canvas.parentElement;
-      var w = canvas.width = host.offsetWidth;
-      var h = canvas.height = host.offsetHeight;
-      // Render "NEO" onto an offscreen canvas and sample its pixels.
-      var off = document.createElement('canvas');
-      off.width = w; off.height = h;
-      var octx = off.getContext('2d');
-      var fs = Math.min(w * 0.34, h * 0.9);
-      octx.font = '700 ' + fs + 'px "Space Grotesk", system-ui, sans-serif';
-      octx.textAlign = 'right'; octx.textBaseline = 'middle';
-      octx.fillStyle = '#fff';
-      octx.fillText('NEO', w - w * 0.04, h * 0.42);
-      var data = octx.getImageData(0, 0, w, h).data;
-      var gap = Math.max(5, Math.round(w / 220));
-      particles = [];
-      for (var y = 0; y < h; y += gap) {
-        for (var x = 0; x < w; x += gap) {
-          if (data[(x + y * w) * 4 + 3] > 128) {
-            particles.push({
-              x: Math.random() * w, y: Math.random() * h,
-              dx: x, dy: y, vx: 0, vy: 0, r: gap * 0.28 + Math.random() * 0.6,
-            });
-          }
-        }
-      }
-    }
-    function tick() {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      ctx.fillStyle = accent();
-      for (var i = 0; i < particles.length; i++) {
-        var p = particles[i];
-        p.vx = (p.vx + (p.dx - p.x) * 0.008) * 0.9;
-        p.vy = (p.vy + (p.dy - p.y) * 0.008) * 0.9;
-        p.x += p.vx; p.y += p.vy;
-        ctx.beginPath();
-        ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
-        ctx.fill();
-      }
-      raf = requestAnimationFrame(tick);
-    }
-    var t;
-    function onResize() { clearTimeout(t); t = setTimeout(build, 150); }
-    build();
-    window.addEventListener('resize', onResize);
-    if (!window.matchMedia || !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-      tick();
-    } else {
-      // Static render for reduced-motion users.
-      ctx.fillStyle = accent();
-      for (var i = 0; i < particles.length; i++) { var p = particles[i]; ctx.beginPath(); ctx.arc(p.dx, p.dy, p.r, 0, Math.PI * 2); ctx.fill(); }
-    }
-  })();
-</script>
 <script src="stats.js" defer></script>
 </body>
 </html>
