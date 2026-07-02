@@ -9,20 +9,22 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="description" content="OpenNeo — an open, peer-to-peer Bible translation system. Neo Ontology Scripture (NeoOS), content-addressed, anchored to Bitcoin, with translators paid via Lightning. No gatekeeper owns the text.">
+<meta name="description" content="OpenNeo — an open, peer-to-peer Bible translation system. An accuracy-first English Scripture (NeoOS), anchored to Bitcoin, with translators paid via Lightning. No gatekeeper owns the text.">
 <title>OpenNeo — open, peer-to-peer Bible translation</title>
 <script>
-  // Apply theme before paint (no flash). Dark-first; saved choice wins.
+  // Apply theme before paint (no flash): saved choice, else system preference.
   (function () {
     try {
       var t = localStorage.getItem('neoos.theme');
-      if (t !== 'dark' && t !== 'light') t = matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
+      if (t !== 'dark' && t !== 'cream') t = matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'cream';
       document.documentElement.setAttribute('data-theme', t);
-    } catch (e) { document.documentElement.setAttribute('data-theme', 'dark'); }
+    } catch (e) {
+      document.documentElement.setAttribute('data-theme', 'dark');
+    }
   })();
   function toggleTheme() {
     var d = document.documentElement;
-    var t = d.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+    var t = d.getAttribute('data-theme') === 'dark' ? 'cream' : 'dark';
     d.setAttribute('data-theme', t);
     var b = document.getElementById('theme-btn');
     if (b) b.textContent = t === 'dark' ? '☀' : '☾';
@@ -33,209 +35,198 @@
     if (b) b.textContent = document.documentElement.getAttribute('data-theme') === 'dark' ? '☀' : '☾';
   });
 </script>
-<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath d='M6 26 V6 h4 l12 16 V6 h4 v20 h-4 L10 10 v16 z' fill='%23b3f5a3'/%3E%3C/svg%3E">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<!-- Hanken Grotesk: open SIL OFL geometric grotesque for display + body. -->
-<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath d='M4 12 L16 5 L28 12 L28 26 L4 26 Z' fill='none' stroke='%236ee7ff' stroke-width='2' stroke-linejoin='round'/%3E%3Cpath d='M4 12 L28 12' stroke='%236ee7ff' stroke-width='2'/%3E%3C/svg%3E">
 <style>
   :root {
     --radius: 10px;
     --mono: ui-monospace, "SF Mono", "JetBrains Mono", Menlo, monospace;
-    --display: "Hanken Grotesk", "Inter", system-ui, sans-serif;
-    --sans: "Hanken Grotesk", "Inter", system-ui, sans-serif;
+    --sans: "Inter", "Open Sans", system-ui, sans-serif;
+    --serif: "Iowan Old Style", "Palatino Linotype", Palatino, Charter, "Source Serif Pro", Georgia, Cambria, "Times New Roman", serif;
   }
-  /* Dark-first: near-black with a light mint-green accent. */
+  /* The reader's two themes, matched exactly. */
   [data-theme="dark"] {
-    --bg: #0b0d0b; --panel: #16181500; --panel-solid: #141613;
-    --fg: #f3f5f1; --muted: #9aa398; --border: #26291f;
-    --accent: #b3f5a3; --accent-strong: #c8ffb8; --on-accent: #0b0d0b;
-    --dot: rgba(179, 245, 163, 0.09);
+    --bg: #1a1a1a; --bg2: #201f1c; --panel: #242320; --fg: #d7d1c2; --muted: #8f897c;
+    --border: #34322c; --accent: #6fa5bf; --accent-dim: #4d7d92; --gold: #c9a24a;
     color-scheme: dark;
   }
-  /* Light: near-white with a deep readable green. */
-  [data-theme="light"] {
-    --bg: #f6f7f4; --panel-solid: #ffffff;
-    --fg: #12150f; --muted: #59614f; --border: #dde1d6;
-    --accent: #2f7a2a; --accent-strong: #256a20; --on-accent: #ffffff;
-    --dot: rgba(47, 122, 42, 0.10);
+  [data-theme="cream"] {
+    --bg: #f4ecd6; --bg2: #efe7d0; --panel: #ece2c6; --fg: #33302a; --muted: #8a7f68;
+    --border: #ddd1b3; --accent: #3c6f88; --accent-dim: #5a8298; --gold: #9c6f24;
     color-scheme: light;
   }
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  html { scroll-behavior: smooth; scroll-padding-top: 90px; -webkit-font-smoothing: antialiased; }
-  body { background: var(--bg); color: var(--fg); font-family: var(--sans); line-height: 1.55;
-    overflow-x: hidden; transition: background-color .2s, color .2s; }
-  h1, h2, h3 { font-family: var(--display); letter-spacing: -0.02em; font-weight: 600; line-height: 1.05; }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; scroll-padding-top: 64px; }
+  body {
+    margin: 0; background: var(--bg); color: var(--fg);
+    font-family: var(--sans); line-height: 1.6; -webkit-font-smoothing: antialiased;
+  }
+  h1, h2, h3 { font-family: var(--serif); letter-spacing: -0.01em; }
+  .mono { font-family: var(--mono); letter-spacing: -0.02em; }
   a { color: var(--accent); text-decoration: none; }
-  a:hover { opacity: .85; }
-  .wrap { max-width: 1440px; margin: 0 auto; padding: 0 clamp(1.25rem, 4vw, 3.75rem); }
-  .eyebrow { font-family: var(--mono); font-size: 0.72rem; letter-spacing: 0.24em; text-transform: uppercase; color: var(--muted); }
+  a:hover { text-decoration: underline; }
+  .wrap { max-width: 1040px; margin: 0 auto; padding: 0 1.5rem; }
 
-  /* ── Nav ── */
-  nav { position: sticky; top: 0; z-index: 50; backdrop-filter: blur(10px);
-    background: color-mix(in srgb, var(--bg) 80%, transparent); }
-  nav .wrap { display: flex; align-items: center; justify-content: space-between; height: 86px; }
-  .brand { font-family: var(--display); font-weight: 700; font-size: 1.5rem; letter-spacing: -0.04em; color: var(--fg); }
+  /* Nav */
+  nav {
+    position: sticky; top: 0; z-index: 10; backdrop-filter: blur(8px);
+    background: color-mix(in srgb, var(--bg) 82%, transparent); border-bottom: 1px solid var(--border);
+  }
+  nav .wrap { display: flex; align-items: center; justify-content: space-between; height: 64px; }
+  .brand { font-family: var(--serif); font-weight: 400; font-size: 1.25rem; letter-spacing: -0.025em; color: var(--fg); }
+  .theme-btn { background: none; border: 1px solid var(--border); color: var(--muted); border-radius: 8px;
+    width: 32px; height: 32px; margin-left: 1.5rem; cursor: pointer; font-size: 1rem; }
+  .theme-btn:hover { color: var(--fg); border-color: var(--accent); }
   .brand b { color: var(--accent); font-weight: inherit; }
-  nav .links { display: flex; align-items: center; gap: 2.2rem; }
-  nav .links a { color: var(--fg); font-size: 1rem; font-weight: 500; }
-  nav .links a:hover { color: var(--accent); opacity: 1; }
-  nav .links .nav-cta { color: var(--accent); text-transform: uppercase; font-size: 0.82rem;
-    letter-spacing: 0.08em; font-weight: 700; display: inline-flex; align-items: center; gap: .5rem; }
-  nav .links .nav-cta svg { width: 17px; height: 17px; fill: var(--accent); }
-  .theme-btn { background: var(--panel-solid); border: 1px solid var(--border); color: var(--fg); border-radius: 10px;
-    width: 44px; height: 44px; cursor: pointer; font-size: 1.1rem; flex: none; }
-  .theme-btn:hover { border-color: var(--accent); }
-  @media (max-width: 900px) { nav .links a:not(.nav-cta) { display: none; } nav .links { gap: 1rem; } }
+  nav .links a { color: var(--muted); margin-left: 1.5rem; font-size: 0.92rem; }
+  nav .links a:hover { color: var(--fg); text-decoration: none; }
 
-  /* ── Hero ── */
-  .hero { position: relative; overflow: hidden; padding: clamp(4rem, 13vw, 11rem) 0 clamp(4rem, 11vw, 9rem); }
-  .hero::before { content: ""; position: absolute; inset: 0; z-index: 0; pointer-events: none;
-    background-image: radial-gradient(var(--dot) 1px, transparent 1.6px); background-size: 16px 16px;
-    -webkit-mask-image: radial-gradient(120% 105% at 72% 18%, #000 0%, transparent 66%);
-    mask-image: radial-gradient(120% 105% at 72% 18%, #000 0%, transparent 66%); }
-  .hero .wrap { position: relative; z-index: 1; }
-  .hero h1 { color: var(--accent); font-size: clamp(3rem, 10.5vw, 8.4rem); font-weight: 600; letter-spacing: -0.03em;
-    line-height: 1.0; max-width: 15ch; margin: 0 0 clamp(1.6rem, 3vw, 2.6rem); }
-  .hero p.tagline { color: var(--muted); font-size: clamp(1.05rem, 1.5vw, 1.35rem); max-width: 58ch; line-height: 1.5; }
+  /* Hero */
+  .hero { text-align: center; padding: 6rem 0 4rem; }
+  .hero h1 { font-size: clamp(2rem, 5vw, 3.4rem); margin: 0 0 1rem; line-height: 1.1; }
+  .hero h1 .accent { color: var(--accent); }
+  .hero p.tagline { color: var(--muted); font-size: 1.15rem; max-width: 38rem; margin: 0 auto 2rem; }
+  .cta { display: inline-flex; gap: 1rem; flex-wrap: wrap; justify-content: center; }
+  .btn {
+    display: inline-block; padding: 0.7rem 1.4rem; border-radius: var(--radius);
+    font-family: var(--mono); font-size: 0.95rem; border: 1px solid var(--border);
+  }
+  .btn.primary { background: var(--accent); color: #fff; font-weight: 600; border-color: var(--accent); }
+  .btn.primary:hover { background: var(--accent-dim); text-decoration: none; }
+  .btn.ghost { color: var(--fg); }
+  .btn.ghost:hover { border-color: var(--accent); text-decoration: none; }
 
-  /* ── Sections ── */
-  section { padding: clamp(4rem, 9vw, 8rem) 0; }
-  .center { text-align: center; }
-  .center h2 { color: var(--accent); font-size: clamp(2.4rem, 6vw, 4.6rem); }
-  .center .lead { color: var(--muted); max-width: 40ch; margin: 1.6rem auto 0; font-size: clamp(1.05rem, 1.6vw, 1.3rem); }
+  /* Install block */
+  .install {
+    margin: 2.5rem auto 0; max-width: 30rem; background: var(--panel);
+    border: 1px solid var(--border); border-radius: var(--radius);
+    font-family: var(--mono); display: flex; align-items: center;
+    justify-content: space-between; padding: 0.85rem 1.1rem;
+  }
+  .install code { color: var(--accent); }
+  .install button {
+    background: none; border: 1px solid var(--border); color: var(--muted);
+    border-radius: 6px; padding: 0.25rem 0.6rem; cursor: pointer; font-family: var(--mono);
+  }
+  .install button:hover { color: var(--fg); border-color: var(--accent); }
 
-  /* 3-column tool row (icon · big name · arrow) */
-  .cols3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2.5rem; margin-top: clamp(3rem, 6vw, 6rem); }
-  .col { display: block; color: var(--fg); }
-  .col .ic { width: 42px; height: 42px; color: var(--accent); margin-bottom: 2.5rem; }
-  .col .ic svg { width: 100%; height: 100%; }
-  .col .name { font-family: var(--display); font-weight: 600; font-size: clamp(1.8rem, 3.2vw, 2.6rem);
-    letter-spacing: -0.02em; display: inline-flex; align-items: center; gap: .7rem; }
-  .col .name .arw { width: 20px; height: 20px; color: var(--fg); }
-  .col:hover .name { color: var(--accent); }
-  .col:hover .name .arw { color: var(--accent); }
-  .col .desc { color: var(--muted); margin-top: .7rem; font-size: 1rem; max-width: 30ch; }
-  @media (max-width: 820px) { .cols3 { grid-template-columns: 1fr; gap: 3rem; } }
+  /* Sections */
+  section { padding: 4rem 0; border-top: 1px solid var(--border); }
+  section h2 { font-size: 1.8rem; margin: 0 0 0.5rem; }
+  section .lead { color: var(--muted); margin: 0 0 2.5rem; max-width: 40rem; }
 
-  /* About statement + button */
-  .about { text-align: center; }
-  .about h2 { font-size: clamp(1.9rem, 4vw, 3.4rem); font-weight: 600; max-width: 20ch; margin: 0 auto; color: var(--fg); }
-  .start-btn { display: inline-flex; align-items: center; gap: 1.2rem; margin-top: clamp(2.5rem, 5vw, 4rem);
-    background: var(--accent); color: var(--on-accent); font-family: var(--display); font-weight: 700;
-    text-transform: uppercase; letter-spacing: 0.08em; font-size: .95rem; padding: 1.1rem 2.2rem; border-radius: 2px;
-    box-shadow: 0 0 0 2px var(--bg), 0 0 0 4px var(--accent); transition: background .2s; }
-  .start-btn:hover { background: var(--accent-strong); opacity: 1; }
-  .start-btn svg { width: 20px; height: 14px; fill: var(--on-accent); }
+  /* Feature grid */
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.25rem; }
+  .card {
+    background: var(--panel); border: 1px solid var(--border); border-radius: var(--radius);
+    padding: 1.5rem; transition: border-color 0.15s, transform 0.15s;
+  }
+  .card:hover { border-color: var(--accent-dim); transform: translateY(-2px); }
+  .card .clip {
+    height: 120px; border-radius: 8px; background: var(--bg2);
+    border: 1px solid var(--border); display: flex; align-items: center; justify-content: center;
+    color: var(--accent-dim); font-family: var(--mono); font-size: 0.8rem; margin-bottom: 1rem;
+  }
+  .card:hover .clip { color: var(--accent); }
+  .card h3 { font-size: 1.1rem; margin: 0 0 0.4rem; color: var(--fg); }
+  .card p { color: var(--muted); font-size: 0.92rem; margin: 0; }
 
-  /* Three circular feature icons */
-  .features3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2rem; margin-top: clamp(3rem, 7vw, 6rem); }
-  .feat { text-align: center; }
-  .feat .circle { width: min(30vw, 300px); height: min(30vw, 300px); margin: 0 auto; }
-  .feat .circle svg { width: 100%; height: 100%; }
-  .feat .flabel { color: var(--muted); margin-top: 1.5rem; font-size: 1.1rem; }
-  @media (max-width: 820px) { .features3 { grid-template-columns: 1fr; gap: 3.5rem; } .feat .circle { width: 220px; height: 220px; } }
-
-  /* Protocol layers */
-  .layers { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1.25rem; margin-top: 3rem; }
-  .layer { border: 1px solid var(--border); border-radius: var(--radius); background: var(--panel-solid); padding: 1.6rem; }
-  .layer h3 { font-size: 1.05rem; color: var(--accent); margin-bottom: .5rem; }
-  .layer p { color: var(--muted); font-size: .95rem; }
+  /* Layers */
+  .layers { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem; }
+  .layer { border-left: 2px solid var(--accent-dim); padding: 0.25rem 0 0.25rem 1rem; }
+  .layer h3 { font-size: 1rem; margin: 0 0 0.25rem; color: var(--accent); }
+  .layer p { color: var(--muted); font-size: 0.9rem; margin: 0; }
 
   /* Live-network charts */
-  .charts { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1.25rem; margin-top: 3rem; }
-  .chart-card { border: 1px solid var(--border); border-radius: var(--radius); background: var(--panel-solid); padding: 1.4rem; }
-  .chart-num { font-family: var(--display); font-weight: 600; font-size: 2.2rem; line-height: 1; }
-  .chart-wrap { position: relative; margin: .6rem 0 .4rem; height: 56px; }
+  .charts { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem; }
+  .chart-card { border: 1px solid var(--border); border-radius: var(--radius); background: var(--panel); padding: 1.2rem; }
+  .chart-num { font-family: var(--serif); font-size: 2rem; color: var(--fg); line-height: 1; }
+  .chart-wrap { position: relative; margin: 0.55rem 0 0.4rem; height: 56px; }
   .chart { width: 100%; height: 56px; display: block; cursor: crosshair; }
   .chart-tip { position: absolute; top: -1.5rem; transform: translateX(-50%); white-space: nowrap;
-    font-size: .7rem; color: var(--fg); background: var(--bg); border: 1px solid var(--border);
-    border-radius: 4px; padding: 1px 6px; opacity: 0; pointer-events: none; transition: opacity .1s; }
-  .chart-label { color: var(--muted); font-size: .85rem; }
-  .fineprint { color: var(--muted); font-size: .82rem; margin-top: 1.25rem; }
+    font-size: 0.7rem; color: var(--fg); background: var(--bg); border: 1px solid var(--border);
+    border-radius: 4px; padding: 1px 6px; opacity: 0; pointer-events: none; transition: opacity 0.1s; }
+  .chart-label { color: var(--muted); font-size: 0.85rem; margin: 0; }
 
-  /* Donate */
-  .donate { display: flex; gap: 2.5rem; align-items: center; flex-wrap: wrap; margin-top: 2.5rem; }
-  .qr { width: 168px; height: 168px; flex: none; background: #fff; border-radius: var(--radius); padding: 10px; }
-  .qr svg { width: 100%; height: 100%; }
-  .ln-addr { font-family: var(--mono); color: var(--accent); word-break: break-all; margin: .3rem 0; }
-  .copy-btn { margin-top: .5rem; background: none; border: 1px solid var(--border); color: var(--muted);
-    border-radius: 6px; padding: .3rem .7rem; cursor: pointer; font-family: var(--mono); }
-  .copy-btn:hover { color: var(--fg); border-color: var(--accent); }
+  /* Donation */
+  .donate { display: flex; gap: 2rem; align-items: center; flex-wrap: wrap; }
+  .qr {
+    width: 160px; height: 160px; flex: none; background: #fff; border-radius: var(--radius);
+    display: flex; align-items: center; justify-content: center;
+  }
+  .qr svg { width: 140px; height: 140px; }
+  .ln-addr { font-family: var(--mono); color: var(--accent); word-break: break-all; }
 
-  footer { border-top: 1px solid var(--border); padding: 2.5rem 0; color: var(--muted); font-size: .85rem; }
-  footer p { margin: .3rem 0; }
-  footer .mono { font-family: var(--mono); }
+  footer { border-top: 1px solid var(--border); padding: 2.5rem 0; color: var(--muted); font-size: 0.85rem; }
+  footer p { margin: 0.3rem 0; }
+  .tag { display: inline-block; font-family: var(--mono); font-size: 0.72rem; color: var(--accent-dim);
+    border: 1px solid var(--border); border-radius: 999px; padding: 0.1rem 0.6rem; margin-bottom: 1rem; }
 </style>
 </head>
 <body>
 <nav>
   <div class="wrap">
-    <a href="/" class="brand" aria-label="OpenNeo home">Open<b>Neo</b></a>
-    <div class="links">
-      <a href="#tools">Tools</a>
+    <span class="brand">Open<b>Neo</b></span>
+    <span class="links">
+      <a href="/read">Read</a>
+      <a href="/translate">Translate</a>
+      <a href="#features">Features</a>
       <a href="#protocol">Protocol</a>
-      <a href="#network">Network</a>
+      <a href="#donate">Donate</a>
       <a href="https://github.com/grahampatrick/openneo">GitHub</a>
-      <a class="nav-cta" href="/read">Read now
-        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 3 h4 v7 h7 v4 h-7 v7 h-4 v-7 h-7 v-4 h7 z"/></svg>
-      </a>
-      <button id="theme-btn" class="theme-btn" aria-label="Toggle dark / light" onclick="toggleTheme()">☀</button>
-    </div>
+      <button id="theme-btn" class="theme-btn" aria-label="Toggle dark / light" onclick="toggleTheme()">☾</button>
+    </span>
   </div>
 </nav>
 
 <header class="hero">
   <div class="wrap">
-    <h1>An open Bible, anchored to Bitcoin.</h1>
-    <p class="tagline">OpenNeo is a peer-to-peer Scripture protocol — Neo Ontology Scripture (NeoOS), open source. Every verse is content-addressed, every correction is anchored to Bitcoin, and translators are paid in Lightning, with no gatekeeper over the text.</p>
+    <span class="tag">npub permissionless access · BLAKE3 · open &amp; verifiable</span>
+    <h1>NeoOS Ontology Scripture · <span class="accent">open source</span></h1>
+    <p class="tagline">An open, peer-to-peer Bible translation system where corrections are anchored to Bitcoin and translators are paid in Lightning — with no gatekeeper over the text.</p>
+    <div class="cta">
+      <a class="btn primary" href="/read">Read now</a>
+      <a class="btn ghost" href="/translate">Propose a correction</a>
+    </div>
+    <div class="install" id="install">
+      <code>openneo.org/read</code> — the 87-book canon, offline, in your browser. CLI coming to npm.
+    </div>
   </div>
 </header>
 
-<section id="tools">
+<section id="features">
   <div class="wrap">
-    <div class="center">
-      <h2>Tools for every reader</h2>
-      <p class="lead">Whether you want to read Scripture, correct it, or embed it anywhere, there is an OpenNeo tool for you — all open, all verifiable.</p>
-    </div>
-    <div class="cols3">
-      <a class="col" href="/read">
-        <div class="ic"><svg viewBox="0 0 42 42" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linejoin="round" stroke-linecap="round"><path d="M21 9 C17 6 10 6 6 8 V34 C10 32 17 32 21 35 C25 32 32 32 36 34 V8 C32 6 25 6 21 9 Z M21 9 V35"/></svg></div>
-        <div class="name">OpenNeo Reader <svg class="arw" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17 L17 7"/><path d="M9 7 h8 v8"/></svg></div>
-        <div class="desc">Read NeoOS — the 87-book canon, offline in your browser, with change history and Bitcoin anchors.</div>
-      </a>
-      <a class="col" href="/translate">
-        <div class="ic"><svg viewBox="0 0 42 42" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linejoin="round" stroke-linecap="round"><path d="M22 34 H36 M8 34 L27 15 a3.5 3.5 0 0 0 -5 -5 L4 29 Z M23 11 L31 19"/></svg></div>
-        <div class="name">Translator Portal <svg class="arw" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17 L17 7"/><path d="M9 7 h8 v8"/></svg></div>
-        <div class="desc">Propose, review, merge + Bitcoin anchor — the full correction loop. Council governance gates every merge.</div>
-      </a>
-      <a class="col" href="https://github.com/grahampatrick/openneo">
-        <div class="ic"><svg viewBox="0 0 42 42" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linejoin="round" stroke-linecap="round"><path d="M16 12 L6 21 L16 30 M26 12 L36 21 L26 30 M23 8 L19 34"/></svg></div>
-        <div class="name">Cite SDK <svg class="arw" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17 L17 7"/><path d="M9 7 h8 v8"/></svg></div>
-        <div class="desc">Open &amp; verifiable — embed any verse on any site; each citation is a free, signed use-proof.</div>
-      </a>
-    </div>
-  </div>
-</section>
-
-<section id="about">
-  <div class="wrap about">
-    <h2>OpenNeo is an open, peer-to-peer system for Scripture. It lays the foundation for a Bible no platform can alter and no gatekeeper can own.</h2>
-    <a class="start-btn" href="/read">Start reading
-      <svg viewBox="0 0 24 16" aria-hidden="true"><path d="M0 6 h16 V2 l8 6 -8 6 v-4 H0 z"/></svg>
-    </a>
-    <div class="features3">
-      <div class="feat">
-        <div class="circle"><svg viewBox="0 0 200 200" fill="none" stroke="var(--border)" stroke-width="1.4"><circle cx="100" cy="100" r="96"/><g stroke="var(--fg)" stroke-linejoin="round" stroke-linecap="round" stroke-width="2"><path d="M100 58 L138 80 V124 L100 146 L62 124 V80 Z"/><path d="M100 58 V100 M100 100 L138 80 M100 100 L62 80" stroke="var(--accent)"/></g></svg></div>
-        <div class="flabel">Content-addressed</div>
+    <h2>Features</h2>
+    <p class="lead">A reader and a translator portal built on a content-addressed, signed, relay-distributed corpus. Live today.</p>
+    <div class="grid">
+      <div class="card">
+        <div class="clip">▶ 87-book canon</div>
+        <h3>Read NeoOS — the 87-book canon</h3>
+        <p>The standard 66, plus the Apocrypha &amp; pseudepigrapha (Enoch, Jasher, Jubilees, 2 Baruch…) most Bibles leave out — restored in their historic reading order, with a one-click toggle back to the 66-book Protestant standard. Hebrew names, content-addressed with BLAKE3, offline in your browser.</p>
       </div>
-      <div class="feat">
-        <div class="circle"><svg viewBox="0 0 200 200" fill="none" stroke="var(--border)" stroke-width="1.4"><circle cx="100" cy="100" r="96"/><g stroke="var(--fg)" stroke-linejoin="round" stroke-linecap="round" stroke-width="2"><rect x="66" y="66" width="68" height="68" rx="6"/><path d="M100 66 V134 M66 100 H134" stroke="var(--accent)"/><circle cx="100" cy="100" r="12"/></g></svg></div>
-        <div class="flabel">Bitcoin-anchored</div>
+      <div class="card">
+        <div class="clip">▶ propose → merge</div>
+        <h3>Propose, review, merge + Bitcoin anchor</h3>
+        <p>Propose a correction, a council reviews and votes, a maintainer merges — and the change is timestamped to Bitcoin forever. Live in the translator portal.</p>
       </div>
-      <div class="feat">
-        <div class="circle"><svg viewBox="0 0 200 200" fill="none" stroke="var(--border)" stroke-width="1.4"><circle cx="100" cy="100" r="96"/><path d="M112 52 L74 108 h22 l-8 40 L128 92 h-22 z" stroke="var(--accent)" stroke-width="2.4" stroke-linejoin="round" stroke-linecap="round"/></svg></div>
-        <div class="flabel">Lightning-paid</div>
+      <div class="card">
+        <div class="clip">▶ Lightning payouts</div>
+        <h3>Translators paid in Lightning</h3>
+        <p>On merge, the work is split — translator, reviewers, submitter — and paid over Lightning. No custody, signed receipts.</p>
+      </div>
+      <div class="card">
+        <div class="clip">▶ key, not account</div>
+        <h3>Identity is a key</h3>
+        <p>Sign in with one click — a Nostr key generated in your browser, or your own extension. No email, no account, no vendor.</p>
+      </div>
+      <div class="card">
+        <div class="clip">▶ council governance</div>
+        <h3>Council governance</h3>
+        <p>A known council of maintainers reviews and merges. Only their votes reach quorum — Sybil-resistant, with a signed, public, forkable maintainer set.</p>
+      </div>
+      <div class="card">
+        <div class="clip">▶ open &amp; verifiable</div>
+        <h3>Open &amp; verifiable</h3>
+        <p>Every count comes from public signed events — no backend to trust. Protocol AGPL-3.0, text CC-BY-SA 4.0. Fork the whole thing.</p>
       </div>
     </div>
   </div>
@@ -243,27 +234,21 @@
 
 <section id="protocol">
   <div class="wrap">
-    <div class="center">
-      <span class="eyebrow">How it fits together</span>
-      <h2 style="margin-top:.5rem">Four interlocking layers</h2>
-      <p class="lead">A specialization of Nostr for Scripture, with Bitcoin for permanence and Lightning for payments.</p>
-    </div>
+    <h2>Four interlocking layers</h2>
+    <p class="lead">OpenNeo is a specialization of Nostr for Scripture, with Bitcoin for permanence and Lightning for payments.</p>
     <div class="layers">
-      <div class="layer"><h3>NeoOS</h3><p>Neo Ontology Scripture — an open source, accuracy-first English corpus (85 of 87 books today), Hebrew names, every verse content-addressed with BLAKE3.</p></div>
-      <div class="layer"><h3>Relay Protocol</h3><p>Content-addressed events on Nostr relays. Anyone runs a relay; clients pull from many, push to many. Council governance keeps merges Sybil-resistant.</p></div>
-      <div class="layer"><h3>Bitcoin Translation Protocol</h3><p>Immutable PR history anchored to Bitcoin via OpenTimestamps. Translators paid in Lightning on merge, with signed receipts and peer review.</p></div>
+      <div class="layer"><h3>NeoOS</h3><p>Neo Ontology Scripture — an open-source, accuracy-first English corpus (85 of 87 books today), Hebrew names, every verse content-addressed with BLAKE3.</p></div>
+      <div class="layer"><h3>Relay Protocol</h3><p>Content-addressed events on Nostr relays. Anyone runs a relay; clients pull from many, push to many.</p></div>
+      <div class="layer"><h3>Bitcoin Translation Protocol</h3><p>Immutable PR history anchored to Bitcoin via OpenTimestamps, with Lightning payouts and peer review.</p></div>
       <div class="layer"><h3>OpenNeo Reader</h3><p>PWA + CLI: read, see change history and Bitcoin anchors, propose and vote on revisions.</p></div>
     </div>
   </div>
 </section>
 
-<section id="network">
+<section id="stats">
   <div class="wrap">
-    <div class="center">
-      <span class="eyebrow">Live from public relays</span>
-      <h2 style="margin-top:.5rem">Live network</h2>
-      <p class="lead">Verifiable from public Nostr events — no backend, no dashboard you have to trust. Anyone can recount these from the relays.</p>
-    </div>
+    <h2>Live network</h2>
+    <p class="lead">Verifiable from public Nostr events — no backend, no dashboard you have to trust. Anyone can recount these from the relays.</p>
     <div class="charts">
       <div class="chart-card">
         <div class="chart-num" id="stat-proposals">—</div>
@@ -286,17 +271,14 @@
         <p class="chart-label">council maintainers gating merges</p>
       </div>
     </div>
-    <p class="fineprint">Charts plot the cumulative growth over time, queried live from public relays — hover any chart for the value at a point. A number stays “—” if the relays are slow or unreachable.</p>
+    <p style="color:var(--muted);font-size:0.82rem;margin-top:1rem">Charts plot the cumulative growth over time, queried live from public relays — hover any chart for the value at a point. A number stays “—” if the relays are slow or unreachable.</p>
   </div>
 </section>
 
 <section id="donate">
   <div class="wrap">
-    <div class="center">
-      <span class="eyebrow">Support the work</span>
-      <h2 style="margin-top:.5rem">Fund the protocol</h2>
-      <p class="lead">Donations fund the translator payout pool — translators are paid in Lightning when their corrections merge. No custody by the protocol.</p>
-    </div>
+    <h2>Fund the protocol</h2>
+    <p class="lead">Donations fund the translator payout pool — translators are paid in Lightning when their corrections merge. No custody by the protocol.</p>
     <div class="donate">
       <div class="qr" aria-label="Bitcoin donation address QR">
         <svg viewBox="0 0 35 35" shape-rendering="crispEdges" xmlns="http://www.w3.org/2000/svg"><path fill="#ffffff" d="M0 0h35v35H0z"/><path stroke="#0a0a0a" d="M1 1.5h7m2 0h1m1 0h1m1 0h1m2 0h2m1 0h1m2 0h3m1 0h7M1 2.5h1m5 0h1m2 0h1m2 0h4m1 0h1m3 0h2m1 0h1m1 0h1m5 0h1M1 3.5h1m1 0h3m1 0h1m1 0h1m1 0h1m2 0h1m1 0h1m1 0h3m1 0h1m1 0h2m1 0h1m1 0h3m1 0h1M1 4.5h1m1 0h3m1 0h1m1 0h1m1 0h1m1 0h1m1 0h3m3 0h1m1 0h3m1 0h1m1 0h3m1 0h1M1 5.5h1m1 0h3m1 0h1m1 0h1m2 0h1m1 0h1m1 0h1m2 0h1m2 0h1m1 0h1m2 0h1m1 0h3m1 0h1M1 6.5h1m5 0h1m1 0h1m2 0h1m2 0h4m2 0h1m5 0h1m5 0h1M1 7.5h7m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h7M9 8.5h4m2 0h2m5 0h1m1 0h2M1 9.5h1m1 0h5m5 0h6m2 0h1m1 0h1m1 0h1m1 0h5M1 10.5h1m1 0h1m4 0h1m3 0h2m1 0h1m3 0h2m2 0h2m1 0h3m3 0h2M1 11.5h1m1 0h3m1 0h1m1 0h1m6 0h2m1 0h1m3 0h1m3 0h5M1 12.5h1m2 0h1m1 0h1m1 0h1m2 0h1m3 0h1m6 0h1m2 0h1m1 0h1m1 0h3M5 13.5h3m4 0h2m2 0h1m2 0h1m3 0h1m1 0h2m2 0h2M3 14.5h1m1 0h1m2 0h2m3 0h6m2 0h4m2 0h1m3 0h1m1 0h1M1 15.5h10m1 0h2m1 0h1m2 0h1m1 0h1m1 0h1m4 0h1m2 0h1m1 0h1M2 16.5h2m1 0h1m2 0h1m3 0h2m1 0h1m1 0h1m1 0h5m1 0h1m1 0h5m1 0h1M1 17.5h1m4 0h7m4 0h2m1 0h2m1 0h1m2 0h1m1 0h3M3 18.5h2m3 0h4m1 0h1m1 0h1m1 0h6m1 0h1m2 0h1m2 0h4M1 19.5h2m2 0h1m1 0h1m2 0h1m4 0h2m1 0h1m12 0h1M3 20.5h1m2 0h1m2 0h3m1 0h2m3 0h5m2 0h2m1 0h4m1 0h1M2 21.5h1m2 0h4m2 0h7m5 0h1m1 0h2m2 0h1m2 0h1M1 22.5h3m2 0h1m9 0h1m2 0h1m2 0h1m1 0h1m2 0h2m4 0h1M1 23.5h1m3 0h1m1 0h4m2 0h2m1 0h2m1 0h1m3 0h1m8 0h1M1 24.5h1m6 0h1m2 0h2m2 0h2m4 0h2m2 0h1m1 0h2m2 0h1m1 0h1M1 25.5h1m5 0h1m2 0h2m1 0h7m3 0h8M9 26.5h2m1 0h1m2 0h1m4 0h6m3 0h1m1 0h3M1 27.5h7m3 0h1m1 0h2m1 0h2m1 0h1m2 0h4m1 0h1m1 0h2M1 28.5h1m5 0h1m1 0h2m1 0h3m1 0h1m3 0h1m1 0h2m1 0h1m3 0h3m1 0h1M1 29.5h1m1 0h3m1 0h1m1 0h2m1 0h2m2 0h1m2 0h3m1 0h1m1 0h5m3 0h1M1 30.5h1m1 0h3m1 0h1m1 0h5m1 0h4m1 0h3m1 0h1m1 0h1m1 0h2m1 0h3M1 31.5h1m1 0h3m1 0h1m1 0h1m1 0h1m1 0h3m3 0h1m5 0h1m1 0h1M1 32.5h1m5 0h1m2 0h2m1 0h3m1 0h1m1 0h2m1 0h1m1 0h1m2 0h1m1 0h3M1 33.5h7m1 0h1m1 0h2m4 0h2m1 0h2m1 0h1m1 0h3m1 0h1m2 0h1"/></svg>
@@ -304,8 +286,8 @@
       <div>
         <p>Bitcoin address (on-chain)</p>
         <p class="ln-addr" id="btc-addr">bc1qj2qfrzfp27na8q2s0mz603z2a9zak9aclnrejt</p>
-        <button class="copy-btn" onclick="navigator.clipboard&amp;&amp;navigator.clipboard.writeText('bc1qj2qfrzfp27na8q2s0mz603z2a9zak9aclnrejt')">copy address</button>
-        <p style="color:var(--muted);font-size:.88rem;margin-top:.75rem;max-width:34rem">Default reward is 500 sats per merged correction, split across the translator, reviewers, and submitter via a signed receipt. Payouts are currently sent manually as the pool is funded.</p>
+        <button onclick="navigator.clipboard&amp;&amp;navigator.clipboard.writeText('bc1qj2qfrzfp27na8q2s0mz603z2a9zak9aclnrejt')" style="margin-top:0.5rem;background:none;border:1px solid var(--border);color:var(--muted);border-radius:6px;padding:0.25rem 0.6rem;cursor:pointer;font-family:var(--mono)">copy address</button>
+        <p style="color:var(--muted);font-size:0.88rem;margin-top:0.75rem">Default reward is 500 sats per merged correction, split across the translator, reviewers, and submitter via a signed receipt. Payouts are currently sent manually as the pool is funded.</p>
       </div>
     </div>
   </div>
